@@ -209,6 +209,7 @@ export default function transformProps(
     richTooltip,
     tooltipSortByMetric,
     xAxisBounds,
+    xAxisBoundaryGap,
     xAxisLabelRotation,
     groupby,
     groupbyB,
@@ -552,6 +553,7 @@ export default function transformProps(
           ? EchartsTimeseriesSeriesType.Bar
           : undefined,
       ),
+      boundaryGap: xAxisBoundaryGap,
     },
     yAxis: [
       {

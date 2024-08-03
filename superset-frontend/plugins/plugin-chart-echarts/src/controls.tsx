@@ -299,6 +299,19 @@ export const xAxisBounds: ControlSetItem = {
   },
 };
 
+export const xAxisBoundaryGap: ControlSetItem = {
+  name: 'xAxisBoundaryGap',
+  config: {
+    type: 'BoundsControl',
+    label: t('X Axis BoundaryGap'),
+    renderTrigger: true,
+    default: DEFAULT_FORM_DATA.xAxisBoundaryGap,
+    description: t(
+      'Boundary gap for non-category X axis. https://echarts.apache.org/zh/option.html#xAxis.boundaryGap.',
+    ),
+  },
+};
+
 export const minorTicks: ControlSetItem = {
   name: 'minorTicks',
   config: {

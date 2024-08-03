@@ -169,6 +169,7 @@ export default function transformProps(
     truncateYAxis,
     xAxis: xAxisOrig,
     xAxisBounds,
+    xAxisBoundaryGap,
     xAxisForceCategorical,
     xAxisLabelRotation,
     xAxisSortSeries,
@@ -486,6 +487,7 @@ export default function transformProps(
       xAxisMax,
       seriesType,
     ),
+    boundaryGap: xAxisBoundaryGap,
   };
 
   let yAxis: any = {
