@@ -17,16 +17,18 @@
  * under the License.
  */
 import { useEffect, useState } from 'react';
-import { nanoid } from 'nanoid';
-import {
-  StrictBroadcastChannel,
-  TabIdChannelMessage,
-} from './strictBroadcastChannel';
+import shortid from 'shortid';
+import { BroadcastChannel } from 'broadcast-channel';
 
-const TAB_ID_CHANNEL_NAME = 'tab_id_channel';
+interface TabIdChannelMessage {
+  type: 'REQUESTING_TAB_ID' | 'TAB_ID_DENIED';
+  tabId: string;
+}
 
-const channel: StrictBroadcastChannel<TabIdChannelMessage> =
-  new BroadcastChannel(TAB_ID_CHANNEL_NAME);
+// TODO: We are using broadcast-channel to support Safari.
+// The native BroadcastChannel API will be supported in Safari version 15.4.
+// After that, we should remove this dependency and use the native API.
+const channel = new BroadcastChannel<TabIdChannelMessage>('tab_id_channel');
 
 export function useTabId() {
   const [tabId, setTabId] = useState<string>();
@@ -41,7 +43,7 @@ export function useTabId() {
   useEffect(() => {
     if (!isStorageAvailable()) {
       if (!tabId) {
-        setTabId(nanoid());
+        setTabId(shortid.generate());
       }
       return;
     }
@@ -81,14 +83,14 @@ export function useTabId() {
     }
 
     channel.onmessage = messageEvent => {
-      if (messageEvent.data.tabId === tabId) {
-        if (messageEvent.data.type === 'REQUESTING_TAB_ID') {
+      if (messageEvent.tabId === tabId) {
+        if (messageEvent.type === 'REQUESTING_TAB_ID') {
           const message: TabIdChannelMessage = {
             type: 'TAB_ID_DENIED',
-            tabId: messageEvent.data.tabId,
+            tabId: messageEvent.tabId,
           };
           channel.postMessage(message);
-        } else if (messageEvent.data.type === 'TAB_ID_DENIED') {
+        } else if (messageEvent.type === 'TAB_ID_DENIED') {
           updateTabId();
         }
       }

@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useEffect, useMemo, useState, FC } from 'react';
-
+import React from 'react';
 import { isEqual, isEmpty } from 'lodash';
 import { QueryFormData, styled, t } from '@superset-ui/core';
 import { sanitizeFormData } from 'src/explore/exploreUtils/formData';
@@ -68,6 +67,12 @@ export type RowType = {
   control: string;
 };
 
+interface AlteredSliceTagState {
+  rows: RowType[];
+  hasDiffs: boolean;
+  controlsMap: ControlMap;
+}
+
 const StyledLabel = styled.span`
   ${({ theme }) => `
     font-size: ${theme.typography.sizes.s}px;
@@ -80,9 +85,7 @@ const StyledLabel = styled.span`
   `}
 `;
 
-export const alterForComparison = (
-  value?: string | null | [],
-): string | null => {
+function alterForComparison(value?: string | null | []): string | null {
   // Treat `null`, `undefined`, and empty strings as equivalent
   if (value === undefined || value === null || value === '') {
     return null;
@@ -95,82 +98,48 @@ export const alterForComparison = (
     return null;
   }
   return value;
-};
+}
 
-export const formatValueHandler = (
-  value: DiffItemType,
-  key: string,
-  controlsMap: ControlMap,
-): string | number => {
-  if (value === undefined) {
-    return 'N/A';
+class AlteredSliceTag extends React.Component<
+  AlteredSliceTagProps,
+  AlteredSliceTagState
+> {
+  constructor(props: AlteredSliceTagProps) {
+    super(props);
+    const diffs = this.getDiffs(props);
+    const controlsMap: ControlMap = getControlsForVizType(
+      props.origFormData.viz_type,
+    ) as ControlMap;
+    const rows = this.getRowsFromDiffs(diffs, controlsMap);
+
+    this.state = { rows, hasDiffs: !isEmpty(diffs), controlsMap };
   }
-  if (value === null) {
-    return 'null';
-  }
-  if (typeof value === 'boolean') {
-    return value ? 'true' : 'false';
-  }
-  if (controlsMap[key]?.type === 'AdhocFilterControl' && Array.isArray(value)) {
-    if (!value.length) {
-      return '[]';
+
+  UNSAFE_componentWillReceiveProps(newProps: AlteredSliceTagProps): void {
+    if (isEqual(this.props, newProps)) {
+      return;
     }
-    return value
-      .map((v: FilterItemType) => {
-        const filterVal =
-          v.comparator && v.comparator.constructor === Array
-            ? `[${v.comparator.join(', ')}]`
-            : v.comparator;
-        return `${v.subject} ${v.operator} ${filterVal}`;
-      })
-      .join(', ');
+    const diffs = this.getDiffs(newProps);
+    this.setState(prevState => ({
+      rows: this.getRowsFromDiffs(diffs, prevState.controlsMap),
+      hasDiffs: !isEmpty(diffs),
+    }));
   }
-  if (controlsMap[key]?.type === 'BoundsControl') {
-    return `Min: ${value[0]}, Max: ${value[1]}`;
-  }
-  if (controlsMap[key]?.type === 'CollectionControl' && Array.isArray(value)) {
-    return value.map((v: FilterItemType) => safeStringify(v)).join(', ');
-  }
-  if (
-    controlsMap[key]?.type === 'MetricsControl' &&
-    value.constructor === Array
-  ) {
-    const formattedValue = value.map((v: FilterItemType) => v?.label ?? v);
-    return formattedValue.length ? formattedValue.join(', ') : '[]';
-  }
-  if (Array.isArray(value)) {
-    const formattedValue = value.map((v: FilterItemType) => v?.label ?? v);
-    return formattedValue.length ? formattedValue.join(', ') : '[]';
-  }
-  if (typeof value === 'string' || typeof value === 'number') {
-    return value;
-  }
-  return safeStringify(value);
-};
 
-export const getRowsFromDiffs = (
-  diffs: { [key: string]: DiffType },
-  controlsMap: ControlMap,
-): RowType[] =>
-  Object.entries(diffs).map(([key, diff]) => ({
-    control: controlsMap[key]?.label || key,
-    before: formatValueHandler(diff.before, key, controlsMap),
-    after: formatValueHandler(diff.after, key, controlsMap),
-  }));
+  getRowsFromDiffs(
+    diffs: { [key: string]: DiffType },
+    controlsMap: ControlMap,
+  ): RowType[] {
+    return Object.entries(diffs).map(([key, diff]) => ({
+      control: controlsMap[key]?.label || key,
+      before: this.formatValue(diff.before, key, controlsMap),
+      after: this.formatValue(diff.after, key, controlsMap),
+    }));
+  }
 
-export const isEqualish = (val1: string, val2: string): boolean =>
-  isEqual(alterForComparison(val1), alterForComparison(val2));
-
-const AlteredSliceTag: FC<AlteredSliceTagProps> = props => {
-  const [rows, setRows] = useState<RowType[]>([]);
-  const [hasDiffs, setHasDiffs] = useState<boolean>(false);
-
-  const getDiffs = useCallback(() => {
-    // Returns all properties that differ in the
-    // current form data and the saved form data
+  getDiffs(props: AlteredSliceTagProps): { [key: string]: DiffType } {
     const ofd = sanitizeFormData(props.origFormData);
     const cfd = sanitizeFormData(props.currentFormData);
-
     const fdKeys = Object.keys(cfd);
     const diffs: { [key: string]: DiffType } = {};
     fdKeys.forEach(fdKey => {
@@ -180,23 +149,72 @@ const AlteredSliceTag: FC<AlteredSliceTagProps> = props => {
       if (['filters', 'having', 'where'].includes(fdKey)) {
         return;
       }
-      if (!isEqualish(ofd[fdKey], cfd[fdKey])) {
+      if (!this.isEqualish(ofd[fdKey], cfd[fdKey])) {
         diffs[fdKey] = { before: ofd[fdKey], after: cfd[fdKey] };
       }
     });
     return diffs;
-  }, [props.currentFormData, props.origFormData]);
+  }
 
-  useEffect(() => {
-    const diffs = getDiffs();
-    const controlsMap = getControlsForVizType(
-      props.origFormData?.viz_type,
-    ) as ControlMap;
-    setRows(getRowsFromDiffs(diffs, controlsMap));
-    setHasDiffs(!isEmpty(diffs));
-  }, [getDiffs, props.origFormData?.viz_type]);
+  isEqualish(val1: string, val2: string): boolean {
+    return isEqual(alterForComparison(val1), alterForComparison(val2));
+  }
 
-  const modalBody = useMemo(() => {
+  formatValue(
+    value: DiffItemType,
+    key: string,
+    controlsMap: ControlMap,
+  ): string | number {
+    if (value === undefined) {
+      return 'N/A';
+    }
+    if (value === null) {
+      return 'null';
+    }
+    if (
+      controlsMap[key]?.type === 'AdhocFilterControl' &&
+      Array.isArray(value)
+    ) {
+      if (!value.length) {
+        return '[]';
+      }
+      return value
+        .map((v: FilterItemType) => {
+          const filterVal =
+            v.comparator && v.comparator.constructor === Array
+              ? `[${v.comparator.join(', ')}]`
+              : v.comparator;
+          return `${v.subject} ${v.operator} ${filterVal}`;
+        })
+        .join(', ');
+    }
+    if (controlsMap[key]?.type === 'BoundsControl') {
+      return `Min: ${value[0]}, Max: ${value[1]}`;
+    }
+    if (
+      controlsMap[key]?.type === 'CollectionControl' &&
+      Array.isArray(value)
+    ) {
+      return value.map(v => safeStringify(v)).join(', ');
+    }
+    if (controlsMap[key]?.type === 'MetricsControl' && Array.isArray(value)) {
+      const formattedValue = value.map((v: FilterItemType) => v?.label ?? v);
+      return formattedValue.length ? formattedValue.join(', ') : '[]';
+    }
+    if (typeof value === 'boolean') {
+      return value ? 'true' : 'false';
+    }
+    if (Array.isArray(value)) {
+      const formattedValue = value.map((v: FilterItemType) => v?.label ?? v);
+      return formattedValue.length ? formattedValue.join(', ') : '[]';
+    }
+    if (typeof value === 'string' || typeof value === 'number') {
+      return value;
+    }
+    return safeStringify(value);
+  }
+
+  renderModalBody(): React.ReactNode {
     const columns = [
       {
         accessor: 'control',
@@ -217,35 +235,39 @@ const AlteredSliceTag: FC<AlteredSliceTagProps> = props => {
     return (
       <TableView
         columns={columns}
-        data={rows}
+        data={this.state.rows}
         pageSize={50}
         className="table-condensed"
         columnsForWrapText={columnsForWrapText}
       />
     );
-  }, [rows]);
+  }
 
-  const triggerNode = useMemo(
-    () => (
+  renderTriggerNode(): React.ReactNode {
+    return (
       <Tooltip id="difference-tooltip" title={t('Click to see difference')}>
         <StyledLabel className="label">{t('Altered')}</StyledLabel>
       </Tooltip>
-    ),
-    [],
-  );
-
-  if (!hasDiffs) {
-    return null;
+    );
   }
 
-  return (
-    <ModalTrigger
-      triggerNode={triggerNode}
-      modalTitle={t('Chart changes')}
-      modalBody={modalBody}
-      responsive
-    />
-  );
-};
+  render() {
+    // Return nothing if there are no differences
+    if (!this.state.hasDiffs) {
+      return null;
+    }
+    // Render the label-warning 'Altered' tag which the user may
+    // click to open a modal containing a table summarizing the
+    // differences in the slice
+    return (
+      <ModalTrigger
+        triggerNode={this.renderTriggerNode()}
+        modalTitle={t('Chart changes')}
+        modalBody={this.renderModalBody()}
+        responsive
+      />
+    );
+  }
+}
 
 export default AlteredSliceTag;

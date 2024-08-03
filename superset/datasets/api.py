@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 # pylint: disable=too-many-lines
+import json
 import logging
 from datetime import datetime
 from io import BytesIO
@@ -65,7 +66,6 @@ from superset.datasets.schemas import (
     GetOrCreateDatasetSchema,
     openapi_spec_methods_override,
 )
-from superset.utils import json
 from superset.utils.core import parse_boolean_string
 from superset.views.base import DatasourceFilter
 from superset.views.base_api import (
@@ -119,7 +119,6 @@ class DatasetRestApi(BaseSupersetModelRestApi):
         "owners.id",
         "owners.first_name",
         "owners.last_name",
-        "catalog",
         "schema",
         "sql",
         "table_name",
@@ -127,7 +126,6 @@ class DatasetRestApi(BaseSupersetModelRestApi):
     list_select_columns = list_columns + ["changed_on", "changed_by_fk"]
     order_columns = [
         "table_name",
-        "catalog",
         "schema",
         "changed_by.first_name",
         "changed_on_delta_humanized",
@@ -141,7 +139,6 @@ class DatasetRestApi(BaseSupersetModelRestApi):
         "sql",
         "filter_select_enabled",
         "fetch_values_predicate",
-        "catalog",
         "schema",
         "description",
         "main_dttm_col",
@@ -200,7 +197,6 @@ class DatasetRestApi(BaseSupersetModelRestApi):
     show_columns = show_select_columns + [
         "columns.type_generic",
         "database.backend",
-        "database.allow_multi_catalog",
         "columns.advanced_data_type",
         "is_managed_externally",
         "uid",
@@ -216,13 +212,12 @@ class DatasetRestApi(BaseSupersetModelRestApi):
     add_model_schema = DatasetPostSchema()
     edit_model_schema = DatasetPutSchema()
     duplicate_model_schema = DatasetDuplicateSchema()
-    add_columns = ["database", "catalog", "schema", "table_name", "sql", "owners"]
+    add_columns = ["database", "schema", "table_name", "sql", "owners"]
     edit_columns = [
         "table_name",
         "sql",
         "filter_select_enabled",
         "fetch_values_predicate",
-        "catalog",
         "schema",
         "description",
         "main_dttm_col",
@@ -242,12 +237,10 @@ class DatasetRestApi(BaseSupersetModelRestApi):
 
     base_related_field_filters = {
         "owners": [["id", BaseFilterRelatedUsers, lambda: []]],
-        "changed_by": [["id", BaseFilterRelatedUsers, lambda: []]],
         "database": [["id", DatabaseFilter, lambda: []]],
     }
     related_field_filters = {
         "owners": RelatedFieldFilter("first_name", FilterRelatedOwners),
-        "changed_by": RelatedFieldFilter("first_name", FilterRelatedOwners),
         "database": "database_name",
     }
     search_filters = {
@@ -258,7 +251,6 @@ class DatasetRestApi(BaseSupersetModelRestApi):
         "id",
         "database",
         "owners",
-        "catalog",
         "schema",
         "sql",
         "table_name",
@@ -266,7 +258,7 @@ class DatasetRestApi(BaseSupersetModelRestApi):
         "changed_by",
     ]
     allowed_rel_fields = {"database", "owners", "created_by", "changed_by"}
-    allowed_distinct_fields = {"catalog", "schema"}
+    allowed_distinct_fields = {"schema"}
 
     apispec_parameter_schemas = {
         "get_export_ids_schema": get_export_ids_schema,
@@ -537,7 +529,7 @@ class DatasetRestApi(BaseSupersetModelRestApi):
                     requested_ids
                 ).run():
                     with bundle.open(f"{root}/{file_name}", "w") as fp:
-                        fp.write(file_content().encode())
+                        fp.write(file_content.encode())
             except DatasetNotFoundError:
                 return self.response_404()
         buf.seek(0)

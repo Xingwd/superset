@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode, RefObject } from 'react';
+import React, { ReactNode } from 'react';
 
 import { css, styled, t } from '@superset-ui/core';
 import { ColumnMeta, Metric } from '@superset-ui/chart-controls';
@@ -60,7 +60,7 @@ const TooltipSection = ({
   </TooltipSectionWrapper>
 );
 
-export const isLabelTruncated = (labelRef?: RefObject<any>): boolean =>
+export const isLabelTruncated = (labelRef?: React.RefObject<any>): boolean =>
   !!(labelRef?.current?.scrollWidth > labelRef?.current?.clientWidth);
 
 export const getColumnLabelText = (column: ColumnMeta): string =>
@@ -81,7 +81,7 @@ export const getColumnTypeTooltipNode = (column: ColumnMeta): ReactNode => {
 
 export const getColumnTooltipNode = (
   column: ColumnMeta,
-  labelRef?: RefObject<any>,
+  labelRef?: React.RefObject<any>,
 ): ReactNode => {
   if (
     (!column.column_name || !column.verbose_name) &&
@@ -110,7 +110,7 @@ type MetricType = Omit<Metric, 'id'> & { label?: string };
 
 export const getMetricTooltipNode = (
   metric: MetricType,
-  labelRef?: RefObject<any>,
+  labelRef?: React.RefObject<any>,
 ): ReactNode => {
   if (
     !metric.verbose_name &&

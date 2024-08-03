@@ -16,9 +16,9 @@
 # under the License.
 # isort:skip_file
 """Unit tests for Superset"""
-
 from datetime import datetime, timedelta
 from unittest import mock
+import json
 import random
 import string
 
@@ -26,16 +26,14 @@ import pytest
 import prison
 from sqlalchemy.sql import func
 
-import tests.integration_tests.test_app  # noqa: F401
+import tests.integration_tests.test_app
 from superset import db, security_manager
 from superset.common.db_query_status import QueryStatus
 from superset.models.core import Database
 from superset.utils.database import get_example_database, get_main_database
-from superset.utils import json
 from superset.models.sql_lab import Query
 
 from tests.integration_tests.base_tests import SupersetTestCase
-from tests.integration_tests.constants import ADMIN_USERNAME, GAMMA_SQLLAB_USERNAME
 
 QUERIES_FIXTURE_COUNT = 10
 
@@ -135,7 +133,7 @@ class TestQueryApi(SupersetTestCase):
             select_sql="SELECT col1, col2 from table1",
             executed_sql="SELECT col1, col2 from table1 LIMIT 100",
         )
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         uri = f"api/v1/query/{query.id}"
         rv = self.client.get(uri)
         self.assertEqual(rv.status_code, 200)
@@ -186,7 +184,7 @@ class TestQueryApi(SupersetTestCase):
         client_id = self.get_random_string()
         query = self.insert_query(get_example_database().id, admin.id, client_id)
         max_id = db.session.query(func.max(Query.id)).scalar()
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         uri = f"api/v1/query/{max_id + 1}"
         rv = self.client.get(uri)
         self.assertEqual(rv.status_code, 404)
@@ -239,7 +237,7 @@ class TestQueryApi(SupersetTestCase):
 
         # Admin's have the "all query access" permission
         self.logout()
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         uri = f"api/v1/query/{query_gamma1.id}"
         rv = self.client.get(uri)
         self.assertEqual(rv.status_code, 200)
@@ -259,7 +257,7 @@ class TestQueryApi(SupersetTestCase):
         """
         Query API: Test get list query
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         uri = "api/v1/query/"
         rv = self.client.get(uri)
         self.assertEqual(rv.status_code, 200)
@@ -297,7 +295,7 @@ class TestQueryApi(SupersetTestCase):
         """
         Query API: Test get list query filter
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         arguments = {"filters": [{"col": "sql", "opr": "ct", "value": "table2"}]}
         uri = f"api/v1/query/?q={prison.dumps(arguments)}"
         rv = self.client.get(uri)
@@ -310,7 +308,7 @@ class TestQueryApi(SupersetTestCase):
         """
         Query API: Test get list query filter database
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         database_id = get_main_database().id
         arguments = {
             "filters": [{"col": "database", "opr": "rel_o_m", "value": database_id}]
@@ -326,7 +324,7 @@ class TestQueryApi(SupersetTestCase):
         """
         Query API: Test get list query filter user
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         alpha_id = self.get_user("alpha").id
         arguments = {"filters": [{"col": "user", "opr": "rel_o_m", "value": alpha_id}]}
         uri = f"api/v1/query/?q={prison.dumps(arguments)}"
@@ -340,7 +338,7 @@ class TestQueryApi(SupersetTestCase):
         """
         Query API: Test get list query filter changed_on
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         arguments = {
             "filters": [
                 {"col": "changed_on", "opr": "lt", "value": "2020-02-01T00:00:00Z"},
@@ -358,7 +356,7 @@ class TestQueryApi(SupersetTestCase):
         """
         Query API: Test get list query filter changed_on
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         order_columns = [
             "changed_on",
             "database.database_name",
@@ -388,7 +386,7 @@ class TestQueryApi(SupersetTestCase):
             sql="SELECT col1, col2 from table1",
         )
 
-        self.login(GAMMA_SQLLAB_USERNAME)
+        self.login(username="gamma_sqllab")
         arguments = {"filters": [{"col": "sql", "opr": "sw", "value": "SELECT col1"}]}
         uri = f"api/v1/query/?q={prison.dumps(arguments)}"
         rv = self.client.get(uri)
@@ -429,7 +427,7 @@ class TestQueryApi(SupersetTestCase):
             changed_on=now - timedelta(days=1),
         )
 
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         timestamp = datetime.timestamp(now - timedelta(days=2)) * 1000
         uri = f"api/v1/query/updated_since?q={prison.dumps({'last_updated_ms': timestamp})}"
         rv = self.client.get(uri)
@@ -465,7 +463,7 @@ class TestQueryApi(SupersetTestCase):
         form_data = {"client_id": "foo2"}
         query_mock = mock.Mock()
         query_mock.return_value = None
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         mock_superset_db_session.query().filter_by().one_or_none = query_mock
         mock_sql_lab_cancel_query.return_value = True
         rv = self.client.post(
@@ -489,7 +487,7 @@ class TestQueryApi(SupersetTestCase):
         query_mock = mock.Mock()
         query_mock.client_id = "foo"
         query_mock.status = QueryStatus.RUNNING
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         mock_superset_db_session.query().filter_by().one_or_none().return_value = (
             query_mock
         )

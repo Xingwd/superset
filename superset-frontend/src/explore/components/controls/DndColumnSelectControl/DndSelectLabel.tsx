@@ -16,7 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import { useDrop } from 'react-dnd';
 import { t, useTheme } from '@superset-ui/core';
 import ControlHeader from 'src/explore/components/ControlHeader';

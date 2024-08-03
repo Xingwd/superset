@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { MouseEvent } from 'react';
+import React from 'react';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
@@ -130,7 +130,7 @@ describe('QueryList', () => {
         .find('[data-test="open-sql-preview-0"]')
         .first()
         .props();
-      if (props.onClick) props.onClick({} as MouseEvent);
+      if (props.onClick) props.onClick({} as React.MouseEvent);
     });
     wrapper.update();
 

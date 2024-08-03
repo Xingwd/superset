@@ -32,7 +32,7 @@ const metadata = new ChartMetadata({
   name: t('deck.gl Heatmap'),
   thumbnail,
   useLegacyApi: true,
-  tags: [t('deckGL'), t('Spatial'), t('Comparison')],
+  tags: [t('deckGL'), t('Spatial'), t('Comparison'), t('Experimental')],
 });
 
 export default class HeatmapChartPlugin extends ChartPlugin {

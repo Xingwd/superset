@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import json
 from typing import Any
 
 from superset import app, db, security_manager
@@ -24,7 +25,6 @@ from superset.databases.utils import make_url_safe
 from superset.exceptions import SupersetSecurityException
 from superset.models.core import Database
 from superset.security.analytics_db_safety import check_sqlalchemy_uri
-from superset.utils import json
 
 
 def import_database(

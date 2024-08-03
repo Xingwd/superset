@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 """Unit tests for Superset"""
-
 from unittest import TestCase
 from unittest.mock import Mock, patch
 

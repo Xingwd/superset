@@ -16,15 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { styledMount as mount } from 'spec/helpers/theming';
-import { Provider } from 'react-redux';
+import React from 'react';
+import { render } from 'spec/helpers/testing-library';
 import fetchMock from 'fetch-mock';
 
-import {
-  supersetTheme,
-  SupersetClient,
-  ThemeProvider,
-} from '@superset-ui/core';
+import { SupersetClient } from '@superset-ui/core';
 
 import Modal from 'src/components/Modal';
 import PropertiesModal from 'src/dashboard/components/PropertiesModal';
@@ -58,29 +54,25 @@ fetchMock.get('glob:*/api/v1/dashboard/*', {
   },
 });
 
-const requiredProps = {
-  dashboardId: 1,
-  show: true,
-  addSuccessToast: () => {},
-};
-
-const setup = overrideProps =>
-  mount(
-    <Provider store={mockStore}>
-      <PropertiesModal {...requiredProps} {...overrideProps} />
-    </Provider>,
-    {
-      wrappingComponent: ThemeProvider,
-      wrappingComponentProps: { theme: supersetTheme },
-    },
-  );
-
 // all these tests need to be moved to dashboard/components/PropertiesModal/PropertiesModal.test.tsx
 describe.skip('PropertiesModal', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
   });
+
+  const requiredProps = {
+    dashboardId: 1,
+    show: true,
+    addSuccessToast: () => {},
+  };
+
+  function setup(overrideProps) {
+    return render(<PropertiesModal {...requiredProps} {...overrideProps} />, {
+      useRedux: true,
+      store: mockStore,
+    });
+  }
 
   describe('onColorSchemeChange', () => {
     it('sets up a default state', () => {
@@ -118,7 +110,7 @@ describe.skip('PropertiesModal', () => {
             );
           });
         });
-        it('without color_scheme in the metadata', () => {
+        describe('without color_scheme in the metadata', () => {
           const wrapper = setup();
           const modalInstance = wrapper.find('PropertiesModal').instance();
           modalInstance.setState({

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FC } from 'react';
+import React, { FC } from 'react';
 import {
   Behavior,
   SetDataMaskHook,

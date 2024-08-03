@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import json
 import re
 from typing import Any, Union
 
@@ -21,8 +22,9 @@ from marshmallow import fields, post_dump, post_load, pre_load, Schema
 from marshmallow.validate import Length, ValidationError
 
 from superset import security_manager
+from superset.exceptions import SupersetException
 from superset.tags.models import TagType
-from superset.utils import json
+from superset.utils import core as utils
 
 get_delete_ids_schema = {"type": "array", "items": {"type": "integer"}}
 get_export_ids_schema = {"type": "array", "items": {"type": "integer"}}
@@ -31,19 +33,7 @@ thumbnail_query_schema = {
     "type": "object",
     "properties": {"force": {"type": "boolean"}},
 }
-width_height_schema = {
-    "type": "array",
-    "items": {"type": "integer"},
-}
-screenshot_query_schema = {
-    "type": "object",
-    "properties": {
-        "force": {"type": "boolean"},
-        "permalink": {"type": "string"},
-        "window_size": width_height_schema,
-        "thumb_size": width_height_schema,
-    },
-}
+
 dashboard_title_description = "A title for the dashboard."
 slug_description = "Unique identifying part for the web address of the dashboard."
 owners_description = (
@@ -78,7 +68,6 @@ charts_description = (
 )
 certified_by_description = "Person or group that has certified this dashboard"
 certification_details_description = "Details of the certification"
-tags_description = "Tags to be associated with the dashboard"
 
 openapi_spec_methods_override = {
     "get": {"get": {"summary": "Get a dashboard detail information"}},
@@ -99,8 +88,8 @@ openapi_spec_methods_override = {
 
 def validate_json(value: Union[bytes, bytearray, str]) -> None:
     try:
-        json.validate_json(value)
-    except json.JSONDecodeError as ex:
+        utils.validate_json(value)
+    except SupersetException as ex:
         raise ValidationError("JSON not valid") from ex
 
 
@@ -109,7 +98,7 @@ def validate_json_metadata(value: Union[bytes, bytearray, str]) -> None:
         return
     try:
         value_obj = json.loads(value)
-    except json.JSONDecodeError as ex:
+    except json.decoder.JSONDecodeError as ex:
         raise ValidationError("JSON not valid") from ex
     errors = DashboardJSONMetadataSchema().validate(value_obj, partial=False)
     if errors:
@@ -201,13 +190,11 @@ class DashboardGetResponseSchema(Schema):
     changed_by_name = fields.String()
     changed_by = fields.Nested(UserSchema(exclude=["username"]))
     changed_on = fields.DateTime()
-    created_by = fields.Nested(UserSchema(exclude=["username"]))
     charts = fields.List(fields.String(metadata={"description": charts_description}))
     owners = fields.List(fields.Nested(UserSchema(exclude=["username"])))
     roles = fields.List(fields.Nested(RolesSchema))
     tags = fields.Nested(TagSchema, many=True)
     changed_on_humanized = fields.String(data_key="changed_on_delta_humanized")
-    created_on_humanized = fields.String(data_key="created_on_delta_humanized")
     is_managed_externally = fields.Boolean(allow_none=True, dump_default=False)
 
     # pylint: disable=unused-argument
@@ -228,8 +215,6 @@ class DatabaseSchema(Schema):
     allows_cost_estimate = fields.Bool()
     allows_virtual_table_explore = fields.Bool()
     disable_data_preview = fields.Bool()
-    disable_drill_to_detail = fields.Bool()
-    allow_multi_catalog = fields.Bool()
     explore_database_id = fields.Int()
 
 
@@ -277,19 +262,6 @@ class DashboardDatasetSchema(Schema):
             del serialized["owners"]
             del serialized["database"]
         return serialized
-
-
-class TabSchema(Schema):
-    # pylint: disable=W0108
-    children = fields.List(fields.Nested(lambda: TabSchema()))
-    value = fields.Str()
-    title = fields.Str()
-    parents = fields.List(fields.Str())
-
-
-class TabsPayloadSchema(Schema):
-    all_tabs = fields.Dict(keys=fields.String(), values=fields.String())
-    tab_tree = fields.List(fields.Nested(lambda: TabSchema))
 
 
 class BaseDashboardSchema(Schema):
@@ -393,29 +365,6 @@ class DashboardPutSchema(BaseDashboardSchema):
     )
     is_managed_externally = fields.Boolean(allow_none=True, dump_default=False)
     external_url = fields.String(allow_none=True)
-    tags = fields.List(
-        fields.Integer(metadata={"description": tags_description}, allow_none=True)
-    )
-
-
-class DashboardScreenshotPostSchema(Schema):
-    dataMask = fields.Dict(
-        keys=fields.Str(),
-        values=fields.Raw(),
-        metadata={"description": "An object representing the data mask."},
-    )
-    activeTabs = fields.List(
-        fields.Str(), metadata={"description": "A list representing active tabs."}
-    )
-    anchor = fields.String(
-        metadata={"description": "A string representing the anchor."}
-    )
-    urlParams = fields.List(
-        fields.Tuple(
-            (fields.Str(), fields.Str()),
-        ),
-        metadata={"description": "A list of tuples, each containing two strings."},
-    )
 
 
 class ChartFavStarResponseResult(Schema):
@@ -458,22 +407,3 @@ class EmbeddedDashboardResponseSchema(Schema):
     dashboard_id = fields.String()
     changed_on = fields.DateTime()
     changed_by = fields.Nested(UserSchema)
-
-
-class DashboardCacheScreenshotResponseSchema(Schema):
-    cache_key = fields.String(metadata={"description": "The cache key"})
-    dashboard_url = fields.String(
-        metadata={"description": "The url to render the dashboard"}
-    )
-    image_url = fields.String(
-        metadata={"description": "The url to fetch the screenshot"}
-    )
-
-
-class CacheScreenshotSchema(Schema):
-    dataMask = fields.Dict(keys=fields.Str(), values=fields.Raw(), required=False)
-    activeTabs = fields.List(fields.Str(), required=False)
-    anchor = fields.Str(required=False)
-    urlParams = fields.List(
-        fields.List(fields.Str(), validate=lambda x: len(x) == 2), required=False
-    )

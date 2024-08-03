@@ -16,7 +16,6 @@
 # under the License.
 # isort:skip_file
 """Unit tests for Superset"""
-
 from unittest import mock
 
 import pytest
@@ -26,8 +25,8 @@ from tests.integration_tests.test_app import app
 from superset.charts.schemas import ChartDataQueryContextSchema
 from tests.integration_tests.base_tests import SupersetTestCase
 from tests.integration_tests.fixtures.birth_names_dashboard import (
-    load_birth_names_dashboard_with_slices,  # noqa: F401
-    load_birth_names_data,  # noqa: F401
+    load_birth_names_dashboard_with_slices,
+    load_birth_names_data,
 )
 from tests.integration_tests.fixtures.query_context import get_query_context
 
@@ -39,6 +38,7 @@ class TestSchema(SupersetTestCase):
     )
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
     def test_query_context_limit_and_offset(self):
+        self.login(username="admin")
         payload = get_query_context("birth_names")
 
         # too low limit and offset
@@ -51,12 +51,14 @@ class TestSchema(SupersetTestCase):
 
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
     def test_query_context_null_timegrain(self):
+        self.login(username="admin")
         payload = get_query_context("birth_names")
         payload["queries"][0]["extras"]["time_grain_sqla"] = None
         _ = ChartDataQueryContextSchema().load(payload)
 
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
     def test_query_context_series_limit(self):
+        self.login(username="admin")
         payload = get_query_context("birth_names")
 
         payload["queries"][0]["timeseries_limit"] = 2

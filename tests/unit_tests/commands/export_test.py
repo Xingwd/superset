@@ -17,10 +17,10 @@
 # pylint: disable=invalid-name, unused-argument, import-outside-toplevel
 
 from freezegun import freeze_time
-from pytest_mock import MockerFixture
+from pytest_mock import MockFixture
 
 
-def test_export_assets_command(mocker: MockerFixture) -> None:
+def test_export_assets_command(mocker: MockFixture) -> None:
     """
     Test that all assets are exported correctly.
     """
@@ -32,9 +32,9 @@ def test_export_assets_command(mocker: MockerFixture) -> None:
     ExportDatabasesCommand.return_value.run.return_value = [
         (
             "metadata.yaml",
-            lambda: "version: 1.0.0\ntype: Database\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
+            "version: 1.0.0\ntype: Database\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
         ),
-        ("databases/example.yaml", lambda: "<DATABASE CONTENTS>"),
+        ("databases/example.yaml", "<DATABASE CONTENTS>"),
     ]
     ExportDatasetsCommand = mocker.patch(
         "superset.commands.export.assets.ExportDatasetsCommand"
@@ -42,9 +42,9 @@ def test_export_assets_command(mocker: MockerFixture) -> None:
     ExportDatasetsCommand.return_value.run.return_value = [
         (
             "metadata.yaml",
-            lambda: "version: 1.0.0\ntype: Dataset\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
+            "version: 1.0.0\ntype: Dataset\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
         ),
-        ("datasets/example/dataset.yaml", lambda: "<DATASET CONTENTS>"),
+        ("datasets/example/dataset.yaml", "<DATASET CONTENTS>"),
     ]
     ExportChartsCommand = mocker.patch(
         "superset.commands.export.assets.ExportChartsCommand"
@@ -52,9 +52,9 @@ def test_export_assets_command(mocker: MockerFixture) -> None:
     ExportChartsCommand.return_value.run.return_value = [
         (
             "metadata.yaml",
-            lambda: "version: 1.0.0\ntype: Slice\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
+            "version: 1.0.0\ntype: Slice\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
         ),
-        ("charts/pie.yaml", lambda: "<CHART CONTENTS>"),
+        ("charts/pie.yaml", "<CHART CONTENTS>"),
     ]
     ExportDashboardsCommand = mocker.patch(
         "superset.commands.export.assets.ExportDashboardsCommand"
@@ -62,9 +62,9 @@ def test_export_assets_command(mocker: MockerFixture) -> None:
     ExportDashboardsCommand.return_value.run.return_value = [
         (
             "metadata.yaml",
-            lambda: "version: 1.0.0\ntype: Dashboard\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
+            "version: 1.0.0\ntype: Dashboard\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
         ),
-        ("dashboards/sales.yaml", lambda: "<DASHBOARD CONTENTS>"),
+        ("dashboards/sales.yaml", "<DASHBOARD CONTENTS>"),
     ]
     ExportSavedQueriesCommand = mocker.patch(
         "superset.commands.export.assets.ExportSavedQueriesCommand"
@@ -72,14 +72,14 @@ def test_export_assets_command(mocker: MockerFixture) -> None:
     ExportSavedQueriesCommand.return_value.run.return_value = [
         (
             "metadata.yaml",
-            lambda: "version: 1.0.0\ntype: SavedQuery\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
+            "version: 1.0.0\ntype: SavedQuery\ntimestamp: '2022-01-01T00:00:00+00:00'\n",
         ),
-        ("queries/example/metric.yaml", lambda: "<SAVED QUERY CONTENTS>"),
+        ("queries/example/metric.yaml", "<SAVED QUERY CONTENTS>"),
     ]
 
     with freeze_time("2022-01-01T00:00:00Z"):
         command = ExportAssetsCommand()
-        output = [(file[0], file[1]()) for file in list(command.run())]
+        output = list(command.run())
 
     assert output == [
         (

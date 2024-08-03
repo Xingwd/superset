@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { ReactNode, CSSProperties } from 'react';
+import React, { ReactNode } from 'react';
 import { css, truncationCSS, useCSSTextTruncation } from '@superset-ui/core';
 import { Menu } from 'src/components/Menu';
 import { Tooltip } from 'src/components/Tooltip';
@@ -27,7 +27,6 @@ export type MenuItemWithTruncationProps = {
   tooltipText: ReactNode;
   children: ReactNode;
   onClick?: MenuProps['onClick'];
-  style?: CSSProperties;
 };
 
 export const MenuItemWithTruncation = ({

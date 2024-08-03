@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { isFrontendRoute, routes } from './routes';
 
 jest.mock('src/pages/Home', () => () => <div data-test="mock-home" />);

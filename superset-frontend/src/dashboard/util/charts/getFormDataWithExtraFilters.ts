@@ -43,8 +43,8 @@ export interface GetFormDataWithExtraFiltersArguments {
   dataMask: DataMaskStateWithId;
   nativeFilters: PartialFilters;
   extraControls: Record<string, string | boolean | null>;
-  labelsColor?: Record<string, string>;
-  labelsColorMap?: Record<string, string>;
+  labelColors?: Record<string, string>;
+  sharedLabelColors?: Record<string, string>;
   allSliceIds: number[];
 }
 
@@ -61,8 +61,8 @@ export default function getFormDataWithExtraFilters({
   sliceId,
   dataMask,
   extraControls,
-  labelsColor,
-  labelsColorMap,
+  labelColors,
+  sharedLabelColors,
   allSliceIds,
 }: GetFormDataWithExtraFiltersArguments) {
   // if dashboard metadata + filters have not changed, use cache if possible
@@ -75,10 +75,10 @@ export default function getFormDataWithExtraFilters({
     areObjectsEqual(cachedFormData?.color_namespace, colorNamespace, {
       ignoreUndefined: true,
     }) &&
-    areObjectsEqual(cachedFormData?.label_colors, labelsColor, {
+    areObjectsEqual(cachedFormData?.label_colors, labelColors, {
       ignoreUndefined: true,
     }) &&
-    areObjectsEqual(cachedFormData?.shared_label_colors, labelsColorMap, {
+    areObjectsEqual(cachedFormData?.shared_label_colors, sharedLabelColors, {
       ignoreUndefined: true,
     }) &&
     !!cachedFormData &&
@@ -110,8 +110,8 @@ export default function getFormDataWithExtraFilters({
 
   const formData = {
     ...chart.form_data,
-    label_colors: labelsColor,
-    shared_label_colors: labelsColorMap,
+    label_colors: labelColors,
+    shared_label_colors: sharedLabelColors,
     ...(colorScheme && { color_scheme: colorScheme }),
     extra_filters: getEffectiveExtraFilters(filters),
     ...extraData,

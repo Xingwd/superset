@@ -33,7 +33,7 @@ const metadata = new ChartMetadata({
     { url: example1, description: t('Demographics') },
     { url: example2, description: t('Survey Responses') },
   ],
-  name: t('Sankey Diagram (legacy)'),
+  name: t('Sankey Diagram'),
   tags: [
     t('Categorical'),
     t('Directional'),

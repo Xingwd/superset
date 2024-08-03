@@ -18,7 +18,6 @@
  */
 import fetchMock from 'fetch-mock';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { getExtensionsRegistry } from '@superset-ui/core';
 import {
   createWrapper,
   defaultStore as store,
@@ -61,7 +60,6 @@ const fakeFunctionNamesApiResult = {
 };
 
 const expectDbId = 1;
-const expectCatalog = null;
 const expectSchema = 'schema1';
 
 beforeEach(() => {
@@ -190,12 +188,7 @@ test('returns column keywords among selected tables', async () => {
     storeWithSqlLab.dispatch(
       tableApiUtil.upsertQueryData(
         'tableMetadata',
-        {
-          dbId: expectDbId,
-          catalog: null,
-          schema: expectSchema,
-          table: expectTable,
-        },
+        { dbId: expectDbId, schema: expectSchema, table: expectTable },
         {
           name: expectTable,
           columns: [
@@ -211,12 +204,7 @@ test('returns column keywords among selected tables', async () => {
     storeWithSqlLab.dispatch(
       tableApiUtil.upsertQueryData(
         'tableMetadata',
-        {
-          dbId: expectDbId,
-          catalog: null,
-          schema: expectSchema,
-          table: unexpectedTable,
-        },
+        { dbId: expectDbId, schema: expectSchema, table: unexpectedTable },
         {
           name: unexpectedTable,
           columns: [
@@ -229,12 +217,7 @@ test('returns column keywords among selected tables', async () => {
       ),
     );
     storeWithSqlLab.dispatch(
-      addTable(
-        { id: expectQueryEditorId },
-        expectTable,
-        expectCatalog,
-        expectSchema,
-      ),
+      addTable({ id: expectQueryEditorId }, expectTable, expectSchema),
     );
   });
 
@@ -243,7 +226,6 @@ test('returns column keywords among selected tables', async () => {
       useKeywords({
         queryEditorId: expectQueryEditorId,
         dbId: expectDbId,
-        catalog: null,
         schema: expectSchema,
       }),
     {
@@ -273,12 +255,7 @@ test('returns column keywords among selected tables', async () => {
 
   act(() => {
     storeWithSqlLab.dispatch(
-      addTable(
-        { id: expectQueryEditorId },
-        unexpectedTable,
-        expectCatalog,
-        expectSchema,
-      ),
+      addTable({ id: expectQueryEditorId }, unexpectedTable, expectSchema),
     );
   });
 
@@ -335,44 +312,4 @@ test('returns long keywords with docText', async () => {
       }),
     ),
   );
-});
-
-test('Add custom keywords for autocomplete', () => {
-  const expected = [
-    {
-      name: 'Custom keyword 1',
-      label: 'Custom keyword 1',
-      meta: 'Custom',
-      value: 'custom1',
-      score: 100,
-    },
-    {
-      name: 'Custom keyword 2',
-      label: 'Custom keyword 2',
-      meta: 'Custom',
-      value: 'custom2',
-      score: 50,
-    },
-  ];
-  const extensionsRegistry = getExtensionsRegistry();
-  extensionsRegistry.set(
-    'sqleditor.extension.customAutocomplete',
-    () => expected,
-  );
-  const { result } = renderHook(
-    () =>
-      useKeywords({
-        queryEditorId: 'testqueryid',
-        dbId: expectDbId,
-        schema: expectSchema,
-      }),
-    {
-      wrapper: createWrapper({
-        useRedux: true,
-        store,
-      }),
-    },
-  );
-  expect(result.current).toContainEqual(expect.objectContaining(expected[0]));
-  expect(result.current).toContainEqual(expect.objectContaining(expected[1]));
 });

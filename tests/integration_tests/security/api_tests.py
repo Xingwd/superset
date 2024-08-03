@@ -16,6 +16,7 @@
 # under the License.
 # isort:skip_file
 """Tests for security api methods"""
+import json
 
 import jwt
 import pytest
@@ -25,12 +26,10 @@ from superset import db
 from superset.daos.dashboard import EmbeddedDashboardDAO
 from superset.models.dashboard import Dashboard
 from superset.utils.urls import get_url_host
-from superset.utils import json
 from tests.integration_tests.base_tests import SupersetTestCase
-from tests.integration_tests.constants import ADMIN_USERNAME, GAMMA_USERNAME
 from tests.integration_tests.fixtures.birth_names_dashboard import (
-    load_birth_names_dashboard_with_slices,  # noqa: F401
-    load_birth_names_data,  # noqa: F401
+    load_birth_names_dashboard_with_slices,
+    load_birth_names_data,
 )
 
 
@@ -48,44 +47,34 @@ class TestSecurityCsrfApi(SupersetTestCase):
         """
         Security API: Test get CSRF token
         """
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         self._assert_get_csrf_token()
 
     def test_get_csrf_token_gamma(self):
         """
         Security API: Test get CSRF token by gamma
         """
-        self.login(GAMMA_USERNAME)
+        self.login(username="gamma")
         self._assert_get_csrf_token()
 
     def test_get_csrf_unauthorized(self):
         """
         Security API: Test get CSRF no login
         """
+        self.logout()
         uri = f"api/v1/{self.resource_name}/csrf_token/"
         response = self.client.get(uri)
         self.assert401(response)
 
-    def test_login(self):
-        """
-        Security API: Test get login
-        """
-        uri = f"api/v1/{self.resource_name}/login"
-        response = self.client.post(
-            uri,
-            json={"username": ADMIN_USERNAME, "password": "general", "provider": "db"},
-        )
-        assert response.status_code == 200
-        assert "access_token" in response.json
-
 
 class TestSecurityGuestTokenApi(SupersetTestCase):
-    uri = "api/v1/security/guest_token/"  # noqa: F541
+    uri = f"api/v1/security/guest_token/"
 
     def test_post_guest_token_unauthenticated(self):
         """
         Security API: Cannot create a guest token without authentication
         """
+        self.logout()
         response = self.client.post(self.uri)
         self.assert401(response)
 
@@ -93,7 +82,7 @@ class TestSecurityGuestTokenApi(SupersetTestCase):
         """
         Security API: Cannot create a guest token without authorization
         """
-        self.login(GAMMA_USERNAME)
+        self.login(username="gamma")
         response = self.client.post(self.uri)
         self.assert403(response)
 
@@ -101,7 +90,7 @@ class TestSecurityGuestTokenApi(SupersetTestCase):
     def test_post_guest_token_authorized(self):
         self.dash = db.session.query(Dashboard).filter_by(slug="births").first()
         self.embedded = EmbeddedDashboardDAO.upsert(self.dash, [])
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         user = {"username": "bob", "first_name": "Bob", "last_name": "Also Bob"}
         resource = {"type": "dashboard", "id": str(self.embedded.uuid)}
         rls_rule = {"dataset": 1, "clause": "1=1"}
@@ -124,7 +113,7 @@ class TestSecurityGuestTokenApi(SupersetTestCase):
 
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
     def test_post_guest_token_bad_resources(self):
-        self.login(ADMIN_USERNAME)
+        self.login(username="admin")
         user = {"username": "bob", "first_name": "Bob", "last_name": "Also Bob"}
         resource = {"type": "dashboard", "id": "bad-id"}
         rls_rule = {"dataset": 1, "clause": "1=1"}

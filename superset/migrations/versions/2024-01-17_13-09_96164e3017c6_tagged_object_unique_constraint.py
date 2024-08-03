@@ -17,9 +17,10 @@
 import enum
 
 import migration_utils as utils
+import sqlalchemy as sa
 from alembic import op
 from sqlalchemy import Column, Enum, Integer, MetaData, Table
-from sqlalchemy.sql import func, select
+from sqlalchemy.sql import and_, func, select
 
 # revision identifiers, used by Alembic.
 revision = "96164e3017c6"

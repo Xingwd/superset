@@ -25,11 +25,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from superset.connectors.sqla.models import SqlaTable, SqlMetric, TableColumn
 from superset.daos.base import BaseDAO
+from superset.daos.exceptions import DAOUpdateFailedError
 from superset.extensions import db
 from superset.models.core import Database
 from superset.models.dashboard import Dashboard
 from superset.models.slice import Slice
-from superset.sql_parse import Table
 from superset.utils.core import DatasourceType
 from superset.views.base import DatasourceFilter
 
@@ -72,26 +72,25 @@ class DatasetDAO(BaseDAO[SqlaTable]):
 
     @staticmethod
     def validate_table_exists(
-        database: Database,
-        table: Table,
+        database: Database, table_name: str, schema: str | None
     ) -> bool:
         try:
-            database.get_table(table)
+            database.get_table(table_name, schema=schema)
             return True
         except SQLAlchemyError as ex:  # pragma: no cover
-            logger.warning("Got an error %s validating table: %s", str(ex), table)
+            logger.warning("Got an error %s validating table: %s", str(ex), table_name)
             return False
 
     @staticmethod
     def validate_uniqueness(
         database_id: int,
-        table: Table,
+        schema: str | None,
+        name: str,
         dataset_id: int | None = None,
     ) -> bool:
         dataset_query = db.session.query(SqlaTable).filter(
-            SqlaTable.table_name == table.table,
-            SqlaTable.schema == table.schema,
-            SqlaTable.catalog == table.catalog,
+            SqlaTable.table_name == name,
+            SqlaTable.schema == schema,
             SqlaTable.database_id == database_id,
         )
 
@@ -104,14 +103,14 @@ class DatasetDAO(BaseDAO[SqlaTable]):
     @staticmethod
     def validate_update_uniqueness(
         database_id: int,
-        table: Table,
+        schema: str | None,
         dataset_id: int,
+        name: str,
     ) -> bool:
         dataset_query = db.session.query(SqlaTable).filter(
-            SqlaTable.table_name == table.table,
+            SqlaTable.table_name == name,
             SqlaTable.database_id == database_id,
-            SqlaTable.schema == table.schema,
-            SqlaTable.catalog == table.catalog,
+            SqlaTable.schema == schema,
             SqlaTable.id != dataset_id,
         )
         return not db.session.query(dataset_query.exists()).scalar()
@@ -170,6 +169,7 @@ class DatasetDAO(BaseDAO[SqlaTable]):
         cls,
         item: SqlaTable | None = None,
         attributes: dict[str, Any] | None = None,
+        commit: bool = True,
     ) -> SqlaTable:
         """
         Updates a Dataset model on the metadata DB
@@ -180,19 +180,21 @@ class DatasetDAO(BaseDAO[SqlaTable]):
                 cls.update_columns(
                     item,
                     attributes.pop("columns"),
+                    commit=commit,
                     override_columns=bool(attributes.get("override_columns")),
                 )
 
             if "metrics" in attributes:
-                cls.update_metrics(item, attributes.pop("metrics"))
+                cls.update_metrics(item, attributes.pop("metrics"), commit=commit)
 
-        return super().update(item, attributes)
+        return super().update(item, attributes, commit=commit)
 
     @classmethod
     def update_columns(
         cls,
         model: SqlaTable,
         property_columns: list[dict[str, Any]],
+        commit: bool = True,
         override_columns: bool = False,
     ) -> None:
         """
@@ -213,7 +215,7 @@ class DatasetDAO(BaseDAO[SqlaTable]):
                 if not DatasetDAO.validate_python_date_format(
                     column["python_date_format"]
                 ):
-                    raise ValueError(
+                    raise DAOUpdateFailedError(
                         "python_date_format is an invalid date/timestamp format."
                     )
 
@@ -243,7 +245,7 @@ class DatasetDAO(BaseDAO[SqlaTable]):
                 [
                     {**properties, "table_id": model.id}
                     for properties in property_columns
-                    if "id" not in properties
+                    if not "id" in properties
                 ],
             )
 
@@ -262,11 +264,15 @@ class DatasetDAO(BaseDAO[SqlaTable]):
                 )
             ).delete(synchronize_session="fetch")
 
+        if commit:
+            db.session.commit()
+
     @classmethod
     def update_metrics(
         cls,
         model: SqlaTable,
         property_metrics: list[dict[str, Any]],
+        commit: bool = True,
     ) -> None:
         """
         Creates/updates and/or deletes a list of metrics, based on a
@@ -291,7 +297,7 @@ class DatasetDAO(BaseDAO[SqlaTable]):
             [
                 {**properties, "table_id": model.id}
                 for properties in property_metrics
-                if "id" not in properties
+                if not "id" in properties
             ],
         )
 
@@ -308,6 +314,9 @@ class DatasetDAO(BaseDAO[SqlaTable]):
                 {metric.id for metric in model.metrics} - property_metrics_by_id.keys()
             )
         ).delete(synchronize_session="fetch")
+
+        if commit:
+            db.session.commit()
 
     @classmethod
     def find_dataset_column(cls, dataset_id: int, column_id: int) -> TableColumn | None:

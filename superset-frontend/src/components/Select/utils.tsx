@@ -18,7 +18,7 @@
  */
 import { ensureIsArray, t } from '@superset-ui/core';
 import AntdSelect, { LabeledValue as AntdLabeledValue } from 'antd/lib/select';
-import { ReactElement, RefObject } from 'react';
+import React, { ReactElement, RefObject } from 'react';
 import Icons from 'src/components/Icons';
 import { StyledHelperText, StyledLoadingText, StyledSpin } from './styles';
 import { LabeledValue, RawValue, SelectOptionsType, V } from './types';

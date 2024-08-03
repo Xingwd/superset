@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
+import React, {
   CSSProperties,
-  cloneElement,
   forwardRef,
   ReactElement,
   RefObject,
@@ -30,7 +29,6 @@ import {
   useRef,
   ReactNode,
 } from 'react';
-
 import { Global } from '@emotion/react';
 import { css, t, useTheme, usePrevious } from '@superset-ui/core';
 import { useResizeDetector } from 'react-resize-detector';
@@ -139,7 +137,7 @@ const DropdownContainer = forwardRef(
     const [popoverVisible, setPopoverVisible] = useState(false);
 
     // We use React.useState to be able to mock the state in Jest
-    const [overflowingIndex, setOverflowingIndex] = useState<number>(-1);
+    const [overflowingIndex, setOverflowingIndex] = React.useState<number>(-1);
 
     let targetRef = useRef<HTMLDivElement>(null);
     if (dropdownRef) {
@@ -153,7 +151,7 @@ const DropdownContainer = forwardRef(
         ([items, ids], item) => {
           items.push({
             id: item.id,
-            element: cloneElement(item.element, { key: item.id }),
+            element: React.cloneElement(item.element, { key: item.id }),
           });
           ids.push(item.id);
           return [items, ids];

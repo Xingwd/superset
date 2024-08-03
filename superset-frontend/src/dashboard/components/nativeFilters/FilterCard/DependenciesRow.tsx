@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { memo, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { css, t, useTheme, useTruncation } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
@@ -51,7 +51,7 @@ const DependencyValue = ({
   );
 };
 
-export const DependenciesRow = memo(({ filter }: FilterCardRowProps) => {
+export const DependenciesRow = React.memo(({ filter }: FilterCardRowProps) => {
   const dependencies = useFilterDependencies(filter);
   const [dependenciesRef, plusRef, elementsTruncated, hasHiddenElements] =
     useTruncation();

@@ -36,7 +36,7 @@
  * under the License.
  */
 import JSONbig from 'json-bigint';
-import { FC } from 'react';
+import React from 'react';
 import { JSONTree } from 'react-json-tree';
 import { useJsonTreeTheme } from 'src/hooks/useJsonTreeTheme';
 import Button from '../Button';
@@ -86,7 +86,7 @@ export interface Props {
   jsonValue: CellDataType;
 }
 
-const JsonModal: FC<Props> = ({ modalTitle, jsonObject, jsonValue }) => {
+const JsonModal: React.FC<Props> = ({ modalTitle, jsonObject, jsonValue }) => {
   const jsonTreeTheme = useJsonTreeTheme();
 
   return (

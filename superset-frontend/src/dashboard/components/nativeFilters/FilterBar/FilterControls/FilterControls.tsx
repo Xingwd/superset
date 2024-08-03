@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  memo,
-  Fragment,
+import React, {
   FC,
   useEffect,
   useCallback,
@@ -145,10 +143,10 @@ const FilterControls: FC<FilterControlsProps> = ({
       return (
         // Empty text node is to ensure there's always an element preceding
         // the OutPortal, otherwise react-reverse-portal crashes
-        <Fragment key={key}>
+        <React.Fragment key={key}>
           {'' /* eslint-disable-line react/jsx-curly-brace-presence */}
           <OutPortal node={portalNodes[filterIndex]} inView />
-        </Fragment>
+        </React.Fragment>
       );
     },
     [filtersWithValues, portalNodes],
@@ -336,4 +334,4 @@ const FilterControls: FC<FilterControlsProps> = ({
   );
 };
 
-export default memo(FilterControls);
+export default React.memo(FilterControls);

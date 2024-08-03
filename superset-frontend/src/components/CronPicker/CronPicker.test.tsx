@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { render } from 'spec/helpers/testing-library';
 import * as ReactCronPicker from 'react-js-cron';
 import { CronPicker } from './CronPicker';

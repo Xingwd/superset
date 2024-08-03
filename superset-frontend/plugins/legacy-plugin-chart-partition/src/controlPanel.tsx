@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { t, validateNonEmpty } from '@superset-ui/core';
 import {
   ColumnMeta,

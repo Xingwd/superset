@@ -28,7 +28,7 @@ from superset.models.slice import Slice
 from superset.utils.core import get_user_id
 
 if TYPE_CHECKING:
-    pass
+    from superset.connectors.sqla.models import BaseDatasource
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +62,7 @@ class ChartDAO(BaseDAO[Slice]):
                     dttm=datetime.now(),
                 )
             )
+            db.session.commit()
 
     @staticmethod
     def remove_favorite(chart: Slice) -> None:
@@ -76,3 +77,4 @@ class ChartDAO(BaseDAO[Slice]):
         )
         if fav:
             db.session.delete(fav)
+            db.session.commit()

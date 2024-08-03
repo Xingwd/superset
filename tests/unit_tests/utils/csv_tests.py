@@ -15,9 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import sys
+
 import pandas as pd
 import pyarrow as pa
-import pytest  # noqa: F401
+import pytest
 
 from superset.utils import csv
 
@@ -57,6 +59,7 @@ def test_escape_value():
     assert result == "' =10+2"
 
 
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="requires Python 3.10 or later")
 def test_df_to_escaped_csv():
     df = pd.DataFrame(
         data={

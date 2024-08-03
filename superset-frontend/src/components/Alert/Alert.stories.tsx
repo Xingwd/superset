@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import Alert, { AlertProps } from './index';
 
 type AlertType = Pick<AlertProps, 'type'>;
@@ -87,7 +88,6 @@ InteractiveAlert.args = {
 InteractiveAlert.argTypes = {
   onClose: { action: 'onClose' },
   type: {
-    control: { type: 'select' },
-    options: types,
+    control: { type: 'select', options: types },
   },
 };

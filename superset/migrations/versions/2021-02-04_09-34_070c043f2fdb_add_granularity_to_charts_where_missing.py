@@ -26,12 +26,13 @@ Create Date: 2021-02-04 09:34:13.608891
 revision = "070c043f2fdb"
 down_revision = "41ce8799acc3"
 
-from alembic import op  # noqa: E402
-from sqlalchemy import and_, Boolean, Column, Integer, String, Text  # noqa: E402
-from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
+import json
 
-from superset import db  # noqa: E402
-from superset.utils import json  # noqa: E402
+from alembic import op
+from sqlalchemy import and_, Boolean, Column, Integer, String, Text
+from sqlalchemy.ext.declarative import declarative_base
+
+from superset import db
 
 Base = declarative_base()
 
@@ -106,7 +107,7 @@ def upgrade():
             table_columns = (
                 session.query(TableColumn)
                 .filter(TableColumn.table_id == table.id)
-                .filter(TableColumn.is_dttm == True)  # noqa: E712
+                .filter(TableColumn.is_dttm == True)
                 .all()
             )
             if len(table_columns):

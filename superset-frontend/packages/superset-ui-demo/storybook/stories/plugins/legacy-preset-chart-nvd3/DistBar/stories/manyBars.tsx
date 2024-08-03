@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { SuperChart, seedRandom } from '@superset-ui/core';
 import dummyDatasource from '../../../../../shared/dummyDatasource';
 

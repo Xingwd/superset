@@ -19,7 +19,7 @@ from unittest import mock
 
 import pytest
 from flask.ctx import AppContext
-from pytest_mock import MockerFixture
+from pytest_mock import MockFixture
 
 import superset.utils.database
 from superset.exceptions import SupersetTemplateException
@@ -109,7 +109,7 @@ def test_template_kwarg_nested_module(app_context: AppContext) -> None:
         tp.process_template(template, foo={"bar": datetime})
 
 
-def test_template_hive(app_context: AppContext, mocker: MockerFixture) -> None:
+def test_template_hive(app_context: AppContext, mocker: MockFixture) -> None:
     lp_mock = mocker.patch(
         "superset.jinja_context.HiveTemplateProcessor.latest_partition"
     )
@@ -121,24 +121,7 @@ def test_template_hive(app_context: AppContext, mocker: MockerFixture) -> None:
     assert tp.process_template(template) == "the_latest"
 
 
-def test_template_spark(app_context: AppContext, mocker: MockerFixture) -> None:
-    lp_mock = mocker.patch(
-        "superset.jinja_context.SparkTemplateProcessor.latest_partition"
-    )
-    lp_mock.return_value = "the_latest"
-    database = mock.Mock()
-    database.backend = "spark"
-    template = "{{ spark.latest_partition('my_table') }}"
-    tp = get_template_processor(database=database)
-    assert tp.process_template(template) == "the_latest"
-
-    # Backwards compatibility if migrating from Hive.
-    template = "{{ hive.latest_partition('my_table') }}"
-    tp = get_template_processor(database=database)
-    assert tp.process_template(template) == "the_latest"
-
-
-def test_template_trino(app_context: AppContext, mocker: MockerFixture) -> None:
+def test_template_trino(app_context: AppContext, mocker: MockFixture) -> None:
     lp_mock = mocker.patch(
         "superset.jinja_context.TrinoTemplateProcessor.latest_partition"
     )
@@ -155,9 +138,7 @@ def test_template_trino(app_context: AppContext, mocker: MockerFixture) -> None:
     assert tp.process_template(template) == "the_latest"
 
 
-def test_template_context_addons(
-    app_context: AppContext, mocker: MockerFixture
-) -> None:
+def test_template_context_addons(app_context: AppContext, mocker: MockFixture) -> None:
     addons_mock = mocker.patch("superset.jinja_context.context_addons")
     addons_mock.return_value = {"datetime": datetime}
     maindb = superset.utils.database.get_example_database()
@@ -166,9 +147,7 @@ def test_template_context_addons(
     assert tp.process_template(template) == "SELECT '2017-01-01T00:00:00'"
 
 
-def test_custom_process_template(
-    app_context: AppContext, mocker: MockerFixture
-) -> None:
+def test_custom_process_template(app_context: AppContext, mocker: MockFixture) -> None:
     """Test macro defined in custom template processor works."""
 
     mock_dt = mocker.patch(
@@ -180,7 +159,7 @@ def test_custom_process_template(
     tp = get_template_processor(database=database)
 
     template = "SELECT '$DATE()'"
-    assert tp.process_template(template) == f"SELECT '1970-01-01'"  # noqa: F541
+    assert tp.process_template(template) == f"SELECT '1970-01-01'"
 
     template = "SELECT '$DATE(1, 2)'"
     assert tp.process_template(template) == "SELECT '1970-01-02'"

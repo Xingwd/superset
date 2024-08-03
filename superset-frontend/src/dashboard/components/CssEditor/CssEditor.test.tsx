@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { render, screen, waitFor } from 'spec/helpers/testing-library';
 import { CssEditor as AceCssEditor } from 'src/components/AsyncAceEditor';
 import { IAceEditorProps } from 'react-ace';

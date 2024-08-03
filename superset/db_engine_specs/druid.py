@@ -17,6 +17,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from datetime import datetime
 from typing import Any, TYPE_CHECKING
@@ -28,7 +29,7 @@ from superset.constants import TimeGrain
 from superset.db_engine_specs.base import BaseEngineSpec
 from superset.db_engine_specs.exceptions import SupersetDBAPIConnectionError
 from superset.exceptions import SupersetException
-from superset.utils import core as utils, json
+from superset.utils import core as utils
 
 if TYPE_CHECKING:
     from superset.connectors.sqla.models import TableColumn

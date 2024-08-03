@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { PureComponent, Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { css, styled, t } from '@superset-ui/core';
@@ -119,7 +119,7 @@ const emptyColumnContentStyles = theme => css`
   color: ${theme.colors.text.label};
 `;
 
-class Column extends PureComponent {
+class Column extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -267,7 +267,7 @@ class Column extends PureComponent {
                   <div css={emptyColumnContentStyles}>{t('Empty column')}</div>
                 ) : (
                   columnItems.map((componentId, itemIndex) => (
-                    <Fragment key={componentId}>
+                    <React.Fragment key={componentId}>
                       <DashboardComponent
                         id={componentId}
                         parentId={columnComponent.id}
@@ -303,7 +303,7 @@ class Column extends PureComponent {
                           }
                         </Droppable>
                       )}
-                    </Fragment>
+                    </React.Fragment>
                   ))
                 )}
               </ColumnStyles>

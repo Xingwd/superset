@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { t, ChartMetadata, ChartPlugin, ChartLabel } from '@superset-ui/core';
+import { t, ChartMetadata, ChartPlugin } from '@superset-ui/core';
 import transformProps from './transformProps';
 import transportation from './images/transportation.jpg';
 import channels from './images/channels.jpg';
@@ -35,8 +35,7 @@ const metadata = new ChartMetadata({
     { url: channels, caption: t('Relationships between community channels') },
     { url: employment, caption: t('Employment and education') },
   ],
-  label: ChartLabel.DEPRECATED,
-  name: t('Heatmap (legacy)'),
+  name: t('Heatmap'),
   tags: [
     t('Business'),
     t('Intensity'),
@@ -44,15 +43,11 @@ const metadata = new ChartMetadata({
     t('Density'),
     t('Predictive'),
     t('Single Metric'),
-    t('Deprecated'),
   ],
   thumbnail,
   useLegacyApi: true,
 });
 
-/**
- * @deprecated in version 4.0.
- */
 export default class HeatmapChartPlugin extends ChartPlugin {
   constructor() {
     super({

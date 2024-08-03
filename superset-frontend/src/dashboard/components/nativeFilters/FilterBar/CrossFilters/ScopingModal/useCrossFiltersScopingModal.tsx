@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { ScopingModal } from './ScopingModal';
 
 export const useCrossFiltersScopingModal = (

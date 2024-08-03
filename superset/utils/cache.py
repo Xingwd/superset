@@ -30,8 +30,8 @@ from werkzeug.wrappers import Response
 from superset import db
 from superset.extensions import cache_manager
 from superset.models.cache import CacheKey
+from superset.utils.core import json_int_dttm_ser
 from superset.utils.hashing import md5_sha_from_dict
-from superset.utils.json import json_int_dttm_ser
 
 if TYPE_CHECKING:
     from superset.stats_logger import BaseStatsLogger
@@ -119,11 +119,7 @@ def memoized_func(key: str, cache: Cache = cache_manager.cache) -> Callable[...,
 
     def wrap(f: Callable[..., Any]) -> Callable[..., Any]:
         def wrapped_f(*args: Any, **kwargs: Any) -> Any:
-            should_cache = kwargs.pop("cache", True)
-            force = kwargs.pop("force", False)
-            cache_timeout = kwargs.pop("cache_timeout", 0)
-
-            if not should_cache:
+            if not kwargs.get("cache", True):
                 return f(*args, **kwargs)
 
             # format the key using args/kwargs passed to the decorated function
@@ -133,10 +129,10 @@ def memoized_func(key: str, cache: Cache = cache_manager.cache) -> Callable[...,
             cache_key = key.format(**bound_args.arguments)
 
             obj = cache.get(cache_key)
-            if not force and obj is not None:
+            if not kwargs.get("force") and obj is not None:
                 return obj
             obj = f(*args, **kwargs)
-            cache.set(cache_key, obj, timeout=cache_timeout)
+            cache.set(cache_key, obj, timeout=kwargs.get("cache_timeout", 0))
             return obj
 
         return wrapped_f

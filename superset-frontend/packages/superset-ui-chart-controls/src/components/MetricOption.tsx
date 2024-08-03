@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useState, ReactNode, useLayoutEffect, RefObject } from 'react';
-
+import React, { useState, ReactNode, useLayoutEffect } from 'react';
 import {
   css,
   styled,
@@ -47,7 +46,7 @@ export interface MetricOptionProps {
   showFormula?: boolean;
   showType?: boolean;
   url?: string;
-  labelRef?: RefObject<any>;
+  labelRef?: React.RefObject<any>;
   shouldShowTooltip?: boolean;
 }
 

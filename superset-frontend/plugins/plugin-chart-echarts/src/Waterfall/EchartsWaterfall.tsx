@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import Echart from '../components/Echart';
 import { WaterfallChartTransformedProps } from './types';
 import { EventHandlers } from '../types';

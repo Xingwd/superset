@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { action } from '@storybook/addon-actions';
 import Label, { Type } from './index';
 

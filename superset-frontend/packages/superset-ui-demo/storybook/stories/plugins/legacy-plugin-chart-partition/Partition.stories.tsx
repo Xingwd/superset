@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { SuperChart } from '@superset-ui/core';
 import PartitionChartPlugin from '@superset-ui/legacy-plugin-chart-partition';
 import data from './data';

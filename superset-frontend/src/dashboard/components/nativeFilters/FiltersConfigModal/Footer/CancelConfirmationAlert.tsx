@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode } from 'react';
+import React from 'react';
 import { t } from '@superset-ui/core';
 import Alert from 'src/components/Alert';
 import Button, { OnClickHandler } from 'src/components/Button';
 
 export interface ConfirmationAlertProps {
   title: string;
-  children: ReactNode;
+  children: React.ReactNode;
   onConfirm: OnClickHandler;
   onDismiss: OnClickHandler;
 }

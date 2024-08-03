@@ -18,7 +18,7 @@
  */
 /* eslint-disable camelcase */
 /* eslint prefer-const: 2 */
-import { nanoid } from 'nanoid';
+import shortid from 'shortid';
 import { SupersetClient } from '@superset-ui/core';
 
 import { safeStringify } from '../utils/safeStringify';
@@ -117,7 +117,7 @@ const loggerMiddleware = store => next => action => {
       trigger_event: lastEventId,
     };
   } else {
-    lastEventId = nanoid();
+    lastEventId = shortid.generate();
     eventData = {
       ...eventData,
       event_type: 'user',

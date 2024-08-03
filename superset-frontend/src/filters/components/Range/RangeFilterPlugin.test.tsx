@@ -17,6 +17,7 @@
  * under the License.
  */
 import { AppSection, GenericDataType } from '@superset-ui/core';
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
 import RangeFilterPlugin from './RangeFilterPlugin';
 import { SingleValueType } from './SingleValueType';

@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
+import React, {
   forwardRef,
-  FocusEvent,
   ReactElement,
   RefObject,
   UIEvent,
@@ -30,16 +29,11 @@ import {
   useImperativeHandle,
   ClipboardEvent,
 } from 'react';
-
-import {
-  ensureIsArray,
-  t,
-  usePrevious,
-  getClientErrorObject,
-} from '@superset-ui/core';
+import { ensureIsArray, t, usePrevious } from '@superset-ui/core';
 import { LabeledValue as AntdLabeledValue } from 'antd/lib/select';
 import { debounce, isEqual, uniq } from 'lodash';
 import Icons from 'src/components/Icons';
+import { getClientErrorObject } from 'src/utils/getClientErrorObject';
 import { FAST_DEBOUNCE, SLOW_DEBOUNCE } from 'src/constants';
 import {
   getValue,
@@ -463,7 +457,7 @@ const AsyncSelect = forwardRef(
       fireOnChange();
     };
 
-    const handleOnBlur = (event: FocusEvent<HTMLElement>) => {
+    const handleOnBlur = (event: React.FocusEvent<HTMLElement>) => {
       setInputValue('');
       onBlur?.(event);
     };

@@ -16,22 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  useCallback,
-  useEffect,
-  useState,
-  memo,
-  ChangeEvent,
-  MouseEvent,
-} from 'react';
-
+import React, { useCallback, useEffect, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { pick } from 'lodash';
 import ButtonGroup from 'src/components/ButtonGroup';
 import Alert from 'src/components/Alert';
 import Button from 'src/components/Button';
-import { nanoid } from 'nanoid';
+import shortid from 'shortid';
 import {
   QueryState,
   styled,
@@ -61,7 +53,6 @@ import FilterableTable from 'src/components/FilterableTable';
 import CopyToClipboard from 'src/components/CopyToClipboard';
 import { addDangerToast } from 'src/components/MessageToasts/actions';
 import { prepareCopyToClipboardTabularData } from 'src/utils/common';
-import { getItem, LocalStorageKeys } from 'src/utils/localStorageHelpers';
 import {
   addQueryEditor,
   clearQueryResults,
@@ -78,7 +69,6 @@ import {
   LOG_ACTIONS_SQLLAB_DOWNLOAD_CSV,
 } from 'src/logger/LogUtils';
 import Icons from 'src/components/Icons';
-import { findPermission } from 'src/utils/findPermission';
 import ExploreCtasResultsButton from '../ExploreCtasResultsButton';
 import ExploreResultsButton from '../ExploreResultsButton';
 import HighlightedSql from '../HighlightedSql';
@@ -250,7 +240,7 @@ const ResultSet = ({
 
   const popSelectStar = (tempSchema: string | null, tempTable: string) => {
     const qe = {
-      id: nanoid(11),
+      id: shortid.generate(),
       name: tempTable,
       autorun: false,
       dbId: query.dbId,
@@ -259,11 +249,11 @@ const ResultSet = ({
     dispatch(addQueryEditor(qe));
   };
 
-  const changeSearch = (event: ChangeEvent<HTMLInputElement>) => {
+  const changeSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
   };
 
-  const createExploreResultsOnClick = async (clickEvent: MouseEvent) => {
+  const createExploreResultsOnClick = async (clickEvent: React.MouseEvent) => {
     const { results } = query;
 
     const openInNewWindow = clickEvent.metaKey;
@@ -310,12 +300,6 @@ const ResultSet = ({
         schema: query?.schema,
       };
 
-      const canExportData = findPermission(
-        'can_export_csv',
-        'SQLLab',
-        user?.roles,
-      );
-
       return (
         <ResultSetControls>
           <SaveDatasetModal
@@ -335,35 +319,29 @@ const ResultSet = ({
                 onClick={createExploreResultsOnClick}
               />
             )}
-            {csv && canExportData && (
+            {csv && (
               <Button
                 buttonSize="small"
                 href={getExportCsvUrl(query.id)}
-                data-test="export-csv-button"
                 onClick={() => logAction(LOG_ACTIONS_SQLLAB_DOWNLOAD_CSV, {})}
               >
                 <i className="fa fa-file-text-o" /> {t('Download to CSV')}
               </Button>
             )}
 
-            {canExportData && (
-              <CopyToClipboard
-                text={prepareCopyToClipboardTabularData(data, columns)}
-                wrapped={false}
-                copyNode={
-                  <Button
-                    buttonSize="small"
-                    data-test="copy-to-clipboard-button"
-                  >
-                    <i className="fa fa-clipboard" /> {t('Copy to Clipboard')}
-                  </Button>
-                }
-                hideTooltip
-                onCopyEnd={() =>
-                  logAction(LOG_ACTIONS_SQLLAB_COPY_RESULT_TO_CLIPBOARD, {})
-                }
-              />
-            )}
+            <CopyToClipboard
+              text={prepareCopyToClipboardTabularData(data, columns)}
+              wrapped={false}
+              copyNode={
+                <Button buttonSize="small">
+                  <i className="fa fa-clipboard" /> {t('Copy to Clipboard')}
+                </Button>
+              }
+              hideTooltip
+              onCopyEnd={() =>
+                logAction(LOG_ACTIONS_SQLLAB_COPY_RESULT_TO_CLIPBOARD, {})
+              }
+            />
           </ResultSetButtons>
           {search && (
             <input
@@ -616,10 +594,6 @@ const ResultSet = ({
       const expandedColumns = results.expanded_columns
         ? results.expanded_columns.map(col => col.column_name)
         : [];
-      const allowHTML = getItem(
-        LocalStorageKeys.SqllabIsRenderHtmlEnabled,
-        false,
-      );
       return (
         <ResultContainer>
           {renderControls()}
@@ -667,7 +641,6 @@ const ResultSet = ({
             height={rowsHeight}
             filterText={searchText}
             expandedColumns={expandedColumns}
-            allowHTML={allowHTML}
           />
         </ResultContainer>
       );
@@ -731,4 +704,4 @@ const ResultSet = ({
   );
 };
 
-export default memo(ResultSet);
+export default React.memo(ResultSet);

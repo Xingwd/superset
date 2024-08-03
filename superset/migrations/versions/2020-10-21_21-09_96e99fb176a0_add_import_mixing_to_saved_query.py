@@ -86,7 +86,7 @@ def upgrade():
 
 def downgrade():
     bind = op.get_bind()
-    session = db.Session(bind=bind)  # noqa: F841
+    session = db.Session(bind=bind)
 
     # Remove uuid column
     with op.batch_alter_table("saved_query") as batch_op:

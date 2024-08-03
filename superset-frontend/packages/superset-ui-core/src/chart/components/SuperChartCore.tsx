@@ -18,7 +18,7 @@
  */
 
 /* eslint-disable react/jsx-sort-default-props */
-import { PureComponent } from 'react';
+import * as React from 'react';
 import { t } from '@superset-ui/core';
 import { createSelector } from 'reselect';
 import getChartComponentRegistry from '../registries/ChartComponentRegistrySingleton';
@@ -78,7 +78,7 @@ export type Props = {
   onRenderFailure?: HandlerFunction;
 };
 
-export default class SuperChartCore extends PureComponent<Props, {}> {
+export default class SuperChartCore extends React.PureComponent<Props, {}> {
   /**
    * The HTML element that wraps all chart content
    */

@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FunctionComponent, useState, useRef, ChangeEvent } from 'react';
-
+import React, { FunctionComponent, useState, useRef } from 'react';
 import SchemaForm, { FormProps, FormValidation } from 'react-jsonschema-form';
 import { Row, Col } from 'src/components';
 import { Input, TextArea } from 'src/components/Input';
@@ -47,9 +46,7 @@ const getJSONSchema = () => {
         if (value.default && value.format === 'date-time') {
           jsonSchema.properties[key] = {
             ...value,
-            default: value.default
-              ? chrono.parseDate(value.default)?.toISOString()
-              : null,
+            default: chrono.parseDate(value.default).toISOString(),
           };
         }
       },
@@ -174,7 +171,7 @@ const ScheduleQueryButton: FunctionComponent<ScheduleQueryButtonProps> = ({
               type="text"
               placeholder={t('Label for your query')}
               value={label}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                 setLabel(event.target.value)
               }
             />
@@ -188,7 +185,7 @@ const ScheduleQueryButton: FunctionComponent<ScheduleQueryButtonProps> = ({
               rows={4}
               placeholder={t('Write a description for your query')}
               value={description}
-              onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
+              onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setDescription(event.target.value)
               }
             />

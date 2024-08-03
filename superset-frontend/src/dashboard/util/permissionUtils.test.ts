@@ -193,7 +193,8 @@ describe('canUserSaveAsDashboard with RBAC feature flag disabled', () => {
   });
 
   afterAll(() => {
-    isFeatureEnabledMock.mockRestore();
+    // @ts-ignore
+    isFeatureEnabledMock.restore();
   });
 
   it('allows owners', () => {
@@ -220,7 +221,8 @@ describe('canUserSaveAsDashboard with RBAC feature flag enabled', () => {
   });
 
   afterAll(() => {
-    isFeatureEnabledMock.mockRestore();
+    // @ts-ignore
+    isFeatureEnabledMock.restore();
   });
 
   it('allows owners', () => {

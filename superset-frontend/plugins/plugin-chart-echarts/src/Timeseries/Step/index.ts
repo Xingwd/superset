@@ -61,6 +61,7 @@ export default class EchartsTimeseriesStepChartPlugin extends EchartsChartPlugin
           t('ECharts'),
           t('Predictive'),
           t('Advanced-Analytics'),
+          t('Aesthetic'),
           t('Time'),
           t('Transformable'),
           t('Stacked'),

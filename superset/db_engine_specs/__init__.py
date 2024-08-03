@@ -27,7 +27,6 @@ at all. The classes here will use a common interface to specify all this.
 
 The general idea is to use static classes and an inheritance scheme.
 """
-
 import inspect
 import logging
 import pkgutil

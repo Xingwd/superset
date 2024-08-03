@@ -17,7 +17,7 @@
  * under the License.
  */
 import { FeatureFlag, isFeatureEnabled } from '@superset-ui/core';
-import { lazy, ComponentType, ComponentProps } from 'react';
+import React, { lazy } from 'react';
 
 // not lazy loaded since this is the home page.
 import Home from 'src/pages/Home';
@@ -125,9 +125,9 @@ const RowLevelSecurityList = lazy(
 
 type Routes = {
   path: string;
-  Component: ComponentType;
-  Fallback?: ComponentType;
-  props?: ComponentProps<any>;
+  Component: React.ComponentType;
+  Fallback?: React.ComponentType;
+  props?: React.ComponentProps<any>;
 }[];
 
 export const routes: Routes = [

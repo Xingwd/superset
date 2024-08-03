@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
-from functools import partial
 from typing import Optional
 
 from superset import is_feature_enabled
@@ -26,8 +25,8 @@ from superset.commands.database.ssh_tunnel.exceptions import (
     SSHTunnelNotFoundError,
 )
 from superset.daos.database import SSHTunnelDAO
+from superset.daos.exceptions import DAODeleteFailedError
 from superset.databases.ssh_tunnel.models import SSHTunnel
-from superset.utils.decorators import on_error, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -37,13 +36,16 @@ class DeleteSSHTunnelCommand(BaseCommand):
         self._model_id = model_id
         self._model: Optional[SSHTunnel] = None
 
-    @transaction(on_error=partial(on_error, reraise=SSHTunnelDeleteFailedError))
     def run(self) -> None:
         if not is_feature_enabled("SSH_TUNNELING"):
             raise SSHTunnelingNotEnabledError()
         self.validate()
         assert self._model
-        SSHTunnelDAO.delete([self._model])
+
+        try:
+            SSHTunnelDAO.delete([self._model])
+        except DAODeleteFailedError as ex:
+            raise SSHTunnelDeleteFailedError() from ex
 
     def validate(self) -> None:
         # Validate/populate model exists

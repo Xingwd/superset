@@ -22,7 +22,7 @@ import pytest
 from sqlalchemy import column
 
 from tests.unit_tests.db_engine_specs.utils import assert_convert_dttm
-from tests.unit_tests.fixtures.common import dttm  # noqa: F401
+from tests.unit_tests.fixtures.common import dttm
 
 
 @pytest.mark.parametrize(
@@ -35,9 +35,7 @@ from tests.unit_tests.fixtures.common import dttm  # noqa: F401
     ],
 )
 def test_convert_dttm(
-    target_type: str,
-    expected_result: Optional[str],
-    dttm: datetime,  # noqa: F811
+    target_type: str, expected_result: Optional[str], dttm: datetime
 ) -> None:
     from superset.db_engine_specs.druid import DruidEngineSpec as spec
 

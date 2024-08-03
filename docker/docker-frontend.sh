@@ -18,22 +18,12 @@
 set -e
 
 # Packages needed for puppeteer:
-if [ "$PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" = "false" ]; then
-    apt update
-    apt install -y chromium
-fi
+apt update
+apt install -y chromium
 
-if [ "$BUILD_SUPERSET_FRONTEND_IN_DOCKER" = "true" ]; then
-    echo "Building Superset frontend in dev mode inside docker container"
-    cd /app/superset-frontend
+cd /app/superset-frontend
+npm install -f --no-optional --global webpack webpack-cli
+npm install -f --no-optional
 
-    echo "Running `npm install`"
-    npm install
-
-    echo "Running frontend"
-    npm run dev
-
-else
-    echo "Skipping frontend build steps - YOU NEED TO RUN IT MANUALLY ON THE HOST!"
-    echo "https://superset.apache.org/docs/contributing/development/#webpack-dev-server"
-fi
+echo "Running frontend"
+npm run dev

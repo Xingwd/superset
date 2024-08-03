@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import TagType from 'src/types/TagType';
 import { TagsList } from '.';
 import { TagsListProps } from './TagsList';
@@ -25,11 +26,7 @@ export default {
   component: TagsList,
 };
 
-export const InteractiveTagsList = ({
-  tags,
-  editable,
-  maxTags,
-}: TagsListProps) => (
+export const InteractiveTags = ({ tags, editable, maxTags }: TagsListProps) => (
   <TagsList tags={tags} editable={editable} maxTags={maxTags} />
 );
 
@@ -46,7 +43,7 @@ const editable = true;
 
 const maxTags = 3;
 
-InteractiveTagsList.args = {
+InteractiveTags.args = {
   tags,
   editable,
   maxTags,

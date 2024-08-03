@@ -17,7 +17,7 @@
  * under the License.
  */
 import { styled, useTheme } from '@superset-ui/core';
-import { FC, RefObject, useMemo, ReactNode } from 'react';
+import React, { RefObject, useMemo } from 'react';
 import Icons from 'src/components/Icons';
 import { DropdownButton } from 'src/components/DropdownButton';
 import { DropdownButtonProps } from 'antd/lib/dropdown';
@@ -25,22 +25,24 @@ import { Menu, MenuProps } from 'src/components/Menu';
 
 const { SubMenu } = Menu;
 
-type SubMenuItemProps = { key: string; label: string | ReactNode };
+type SubMenuItemProps = { key: string; label: string | React.ReactNode };
 
 export interface DropDownSelectableProps extends Pick<MenuProps, 'onSelect'> {
   ref?: RefObject<HTMLDivElement>;
-  icon: ReactNode;
+  icon: React.ReactNode;
   info?: string;
   menuItems: {
     key: string;
-    label: string | ReactNode;
+    label: string | React.ReactNode;
     children?: SubMenuItemProps[];
     divider?: boolean;
   }[];
   selectedKeys?: string[];
 }
 
-const StyledDropdownButton = styled(DropdownButton as FC<DropdownButtonProps>)`
+const StyledDropdownButton = styled(
+  DropdownButton as React.FC<DropdownButtonProps>,
+)`
   button.ant-btn:first-of-type {
     display: none;
   }
@@ -99,7 +101,7 @@ export default (props: DropDownSelectableProps) => {
   const theme = useTheme();
   const { icon, info, menuItems, selectedKeys, onSelect } = props;
   const menuItem = useMemo(
-    () => (label: string | ReactNode, key: string, divider?: boolean) => (
+    () => (label: string | React.ReactNode, key: string, divider?: boolean) => (
       <StyleMenuItem key={key} divider={divider}>
         <StyleSubmenuItem>
           <span>{label}</span>

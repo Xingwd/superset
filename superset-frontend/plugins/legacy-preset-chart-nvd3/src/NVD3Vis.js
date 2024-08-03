@@ -29,7 +29,7 @@ import {
   getTimeFormatter,
   isDefined,
   NumberFormats,
-  SMART_DATE_VERBOSE_ID,
+  smartDateVerboseFormatter,
   t,
 } from '@superset-ui/core';
 
@@ -81,8 +81,6 @@ const NO_DATA_RENDER_DATA = [
     class: 'body',
   },
 ];
-
-const smartDateVerboseFormatter = getTimeFormatter(SMART_DATE_VERBOSE_ID);
 
 // Override the noData render function to make a prettier UX
 // Code adapted from https://github.com/novus/nvd3/blob/master/src/utils.js#L653
@@ -658,9 +656,7 @@ function nvd3Vis(element, props) {
     } else if (vizType !== 'bullet') {
       const colorFn = getScale(colorScheme);
       chart.color(
-        d =>
-          d.color ||
-          colorFn(cleanColorInput(d[colorKey]), sliceId, colorScheme),
+        d => d.color || colorFn(cleanColorInput(d[colorKey]), sliceId),
       );
     }
 

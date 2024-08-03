@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { SuperChart } from '@superset-ui/core';
 import { PivotTableChartPlugin } from '@superset-ui/plugin-chart-pivot-table';
 import { basicFormData, basicData } from './testData';

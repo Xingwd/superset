@@ -16,12 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { PureComponent, MouseEvent } from 'react';
+import React, { MouseEvent } from 'react';
 import {
   t,
   getNumberFormatter,
-  getTimeFormatter,
-  SMART_DATE_VERBOSE_ID,
+  smartDateVerboseFormatter,
   computeMaxFontSize,
   BRAND_COLOR,
   styled,
@@ -42,11 +41,11 @@ const PROPORTION = {
   TRENDLINE: 0.3,
 };
 
-class BigNumberVis extends PureComponent<BigNumberVizProps> {
+class BigNumberVis extends React.PureComponent<BigNumberVizProps> {
   static defaultProps = {
     className: '',
     headerFormatter: defaultNumberFormatter,
-    formatTime: getTimeFormatter(SMART_DATE_VERBOSE_ID),
+    formatTime: smartDateVerboseFormatter,
     headerFontSize: PROPORTION.HEADER,
     kickerFontSize: PROPORTION.KICKER,
     mainColor: BRAND_COLOR,

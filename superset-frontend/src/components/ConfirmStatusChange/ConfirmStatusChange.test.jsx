@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { mount } from 'enzyme';
 import Button from 'src/components/Button';
 import { act } from 'react-dom/test-utils';

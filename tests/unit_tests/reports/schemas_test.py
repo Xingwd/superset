@@ -17,12 +17,12 @@
 
 import pytest
 from marshmallow import ValidationError
-from pytest_mock import MockerFixture
+from pytest_mock import MockFixture
 
-from superset.reports.schemas import ReportSchedulePostSchema
+from superset.reports.schemas import ReportSchedulePostSchema, ReportSchedulePutSchema
 
 
-def test_report_post_schema_custom_width_validation(mocker: MockerFixture) -> None:
+def test_report_post_schema_custom_width_validation(mocker: MockFixture) -> None:
     """
     Test the custom width validation.
     """

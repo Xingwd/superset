@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode, ComponentType, ReactElement, FC } from 'react';
+import React from 'react';
 import { styled, useTheme } from '@superset-ui/core';
 import { Skeleton, AntdCard } from 'src/components';
 import { Tooltip } from 'src/components/Tooltip';
@@ -141,27 +141,27 @@ interface LinkProps {
   to: string;
 }
 
-const AnchorLink: FC<LinkProps> = ({ to, children }) => (
+const AnchorLink: React.FC<LinkProps> = ({ to, children }) => (
   <a href={to}>{children}</a>
 );
 
 interface CardProps {
-  title?: ReactNode;
-  subtitle?: ReactNode;
+  title?: React.ReactNode;
+  subtitle?: React.ReactNode;
   url?: string;
-  linkComponent?: ComponentType<LinkProps>;
+  linkComponent?: React.ComponentType<LinkProps>;
   imgURL?: string;
   imgFallbackURL?: string;
   imgPosition?: BackgroundPosition;
   description: string;
   loading?: boolean;
-  titleRight?: ReactNode;
-  coverLeft?: ReactNode;
-  coverRight?: ReactNode;
-  actions?: ReactNode | null;
+  titleRight?: React.ReactNode;
+  coverLeft?: React.ReactNode;
+  coverRight?: React.ReactNode;
+  actions?: React.ReactNode | null;
   rows?: number | string;
-  avatar?: ReactElement | null;
-  cover?: ReactNode | null;
+  avatar?: React.ReactElement | null;
+  cover?: React.ReactNode | null;
   certifiedBy?: string;
   certificationDetails?: string;
 }

@@ -19,6 +19,7 @@ import logging
 from abc import ABC
 from typing import Any, cast, Optional
 
+import simplejson as json
 from flask import request
 from flask_babel import lazy_gettext as _
 from sqlalchemy.exc import SQLAlchemyError
@@ -37,7 +38,7 @@ from superset.exceptions import SupersetException
 from superset.explore.exceptions import WrongEndpointError
 from superset.explore.permalink.exceptions import ExplorePermalinkGetFailedError
 from superset.extensions import security_manager
-from superset.utils import core as utils, json
+from superset.utils import core as utils
 from superset.views.utils import (
     get_datasource_info,
     get_form_data,
@@ -86,9 +87,9 @@ class GetExploreCommand(BaseCommand, ABC):
                         "Form data not found in cache, reverting to chart metadata."
                     )
             elif self._datasource_id:
-                initial_form_data["datasource"] = (
-                    f"{self._datasource_id}__{self._datasource_type}"
-                )
+                initial_form_data[
+                    "datasource"
+                ] = f"{self._datasource_id}__{self._datasource_type}"
                 if self._form_data_key:
                     message = _(
                         "Form data not found in cache, reverting to dataset metadata."

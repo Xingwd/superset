@@ -17,7 +17,7 @@
  * under the License.
  */
 import PropTypes from 'prop-types';
-import { PureComponent } from 'react';
+import React from 'react';
 import {
   ensureIsArray,
   FeatureFlag,
@@ -54,8 +54,8 @@ const propTypes = {
   // formData contains chart's own filter parameter
   // and merged with extra filter that current dashboard applying
   formData: PropTypes.object.isRequired,
-  labelsColor: PropTypes.object,
-  labelsColorMap: PropTypes.object,
+  labelColors: PropTypes.object,
+  sharedLabelColors: PropTypes.object,
   width: PropTypes.number,
   height: PropTypes.number,
   setControlValue: PropTypes.func,
@@ -105,7 +105,6 @@ const defaultProps = {
 const Styles = styled.div`
   min-height: ${p => p.height}px;
   position: relative;
-  text-align: center;
 
   .chart-tooltip {
     opacity: 0.75;
@@ -129,21 +128,6 @@ const Styles = styled.div`
   }
 `;
 
-const LoadingDiv = styled.div`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 80%;
-  transform: translate(-50%, -50%);
-`;
-
-const MessageSpan = styled.span`
-  display: block;
-  margin: ${({ theme }) => theme.gridUnit * 4}px auto;
-  width: fit-content;
-  color: ${({ theme }) => theme.colors.grayscale.base};
-`;
-
 const MonospaceDiv = styled.div`
   font-family: ${({ theme }) => theme.typography.families.monospace};
   word-break: break-word;
@@ -151,7 +135,7 @@ const MonospaceDiv = styled.div`
   white-space: pre-wrap;
 `;
 
-class Chart extends PureComponent {
+class Chart extends React.PureComponent {
   constructor(props) {
     super(props);
     this.handleRenderContainerFailure =
@@ -248,49 +232,16 @@ class Chart extends PureComponent {
     );
   }
 
-  renderSpinner(databaseName) {
-    const message = databaseName
-      ? t('Waiting on %s', databaseName)
-      : t('Waiting on database...');
-
-    return (
-      <LoadingDiv>
-        <Loading position="inline-centered" />
-        <MessageSpan>{message}</MessageSpan>
-      </LoadingDiv>
-    );
-  }
-
-  renderChartContainer() {
-    return (
-      <div className="slice_container" data-test="slice-container">
-        {this.props.isInView ||
-        !isFeatureEnabled(FeatureFlag.DashboardVirtualization) ||
-        isCurrentUserBot() ? (
-          <ChartRenderer
-            {...this.props}
-            source={this.props.dashboardId ? 'dashboard' : 'explore'}
-            data-test={this.props.vizType}
-          />
-        ) : (
-          <Loading />
-        )}
-      </div>
-    );
-  }
-
   render() {
     const {
       height,
       chartAlert,
       chartStatus,
-      datasource,
       errorMessage,
       chartIsStale,
       queriesResponse = [],
       width,
     } = this.props;
-    const databaseName = datasource?.database?.name;
 
     const isLoading = chartStatus === 'loading';
     this.renderContainerStartTime = Logger.getTimestamp();
@@ -346,9 +297,20 @@ class Chart extends PureComponent {
           height={height}
           width={width}
         >
-          {isLoading
-            ? this.renderSpinner(databaseName)
-            : this.renderChartContainer()}
+          <div className="slice_container" data-test="slice-container">
+            {this.props.isInView ||
+            !isFeatureEnabled(FeatureFlag.DashboardVirtualization) ||
+            isCurrentUserBot() ? (
+              <ChartRenderer
+                {...this.props}
+                source={this.props.dashboardId ? 'dashboard' : 'explore'}
+                data-test={this.props.vizType}
+              />
+            ) : (
+              <Loading />
+            )}
+          </div>
+          {isLoading && <Loading />}
         </Styles>
       </ErrorBoundary>
     );

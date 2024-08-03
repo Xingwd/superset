@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactElement } from 'react';
+import React from 'react';
 import { DatasourceType } from '@superset-ui/core';
 import { exploreActions } from 'src/explore/actions/exploreActions';
 import { ChartStatus } from 'src/explore/types';
@@ -73,7 +73,6 @@ export const createDataTablesPaneProps = (sliceId: number) =>
     chartStatus: 'rendered' as ChartStatus,
     onCollapseChange: jest.fn(),
     actions: exploreActions,
-    canDownload: true,
   }) as DataTablesPaneProps;
 
 export const createSamplesPaneProps = ({
@@ -91,7 +90,6 @@ export const createSamplesPaneProps = ({
     queryForce,
     isVisible: true,
     actions: exploreActions,
-    canDownload: true,
   }) as SamplesPaneProps;
 
 export const createResultsPaneOnDashboardProps = ({
@@ -103,7 +101,7 @@ export const createResultsPaneOnDashboardProps = ({
 }: {
   sliceId: number;
   vizType?: string;
-  errorMessage?: ReactElement;
+  errorMessage?: React.ReactElement;
   queryForce?: boolean;
   isRequest?: boolean;
 }) =>
@@ -118,5 +116,4 @@ export const createResultsPaneOnDashboardProps = ({
     isVisible: true,
     actions: exploreActions,
     errorMessage,
-    canDownload: true,
   }) as ResultsPaneProps;

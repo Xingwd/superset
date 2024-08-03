@@ -17,6 +17,8 @@
  * under the License.
  */
 
+import React from 'react';
+
 import { supersetTheme } from '@superset-ui/core';
 
 export default {

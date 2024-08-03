@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { isValidElement } from 'react';
+import React from 'react';
 import { ReactWrapper } from 'enzyme';
 import { styledMount as mount } from 'spec/helpers/theming';
 import Label from '.';
@@ -28,18 +28,7 @@ describe('Label', () => {
 
   // test the basic component
   it('renders the base component (no onClick)', () => {
-    expect(isValidElement(<Label />)).toBe(true);
-  });
-
-  it('renders with role=undefined when onClick is not present', () => {
-    wrapper = mount(<Label />);
-    expect(wrapper.find('span').prop('role')).toBeUndefined();
-  });
-
-  it('renders with role="button" when onClick is present', () => {
-    const mockAction = jest.fn();
-    wrapper = mount(<Label onClick={mockAction} />);
-    expect(wrapper.find('span').prop('role')).toBe('button');
+    expect(React.isValidElement(<Label />)).toBe(true);
   });
 
   it('works with an onClick handler', () => {

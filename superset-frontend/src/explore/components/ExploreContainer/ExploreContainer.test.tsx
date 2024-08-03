@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useContext } from 'react';
+import React from 'react';
 import { fireEvent, render } from 'spec/helpers/testing-library';
 import { OptionControlLabel } from 'src/explore/components/controls/OptionControls';
 
@@ -26,7 +26,7 @@ import DatasourcePanelDragOption from '../DatasourcePanel/DatasourcePanelDragOpt
 import { DndItemType } from '../DndItemType';
 
 const MockChildren = () => {
-  const dragging = useContext(DraggingContext);
+  const dragging = React.useContext(DraggingContext);
   return (
     <div data-test="mock-children" className={dragging ? 'dragging' : ''}>
       {dragging ? 'dragging' : 'not dragging'}
@@ -35,7 +35,7 @@ const MockChildren = () => {
 };
 
 const MockChildren2 = () => {
-  const [zones, dispatch] = useContext(DropzoneContext);
+  const [zones, dispatch] = React.useContext(DropzoneContext);
   return (
     <>
       <div data-test="mock-children">{Object.keys(zones).join(':')}</div>

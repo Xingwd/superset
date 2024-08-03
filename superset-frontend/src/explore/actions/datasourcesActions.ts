@@ -20,8 +20,9 @@
 import { Dispatch, AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { Dataset } from '@superset-ui/chart-controls';
-import { SupersetClient, getClientErrorObject } from '@superset-ui/core';
+import { SupersetClient } from '@superset-ui/core';
 import { addDangerToast } from 'src/components/MessageToasts/actions';
+import { getClientErrorObject } from 'src/utils/getClientErrorObject';
 import { updateFormDataByDatasource } from './exploreActions';
 import { ExplorePageState } from '../types';
 

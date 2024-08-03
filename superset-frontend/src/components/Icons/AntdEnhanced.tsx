@@ -17,102 +17,17 @@
  * under the License.
  */
 
-// NOTE: Targeted import (as opposed to `import *`) is important here for proper tree-shaking
-import {
-  AlignCenterOutlined,
-  AlignLeftOutlined,
-  AlignRightOutlined,
-  ApartmentOutlined,
-  BarChartOutlined,
-  BookOutlined,
-  CalendarOutlined,
-  CheckOutlined,
-  CheckSquareOutlined,
-  CloseOutlined,
-  ConsoleSqlOutlined,
-  CopyOutlined,
-  DatabaseOutlined,
-  DeleteFilled,
-  DownOutlined,
-  EditOutlined,
-  ExclamationCircleOutlined,
-  EyeOutlined,
-  EyeInvisibleOutlined,
-  FallOutlined,
-  FileImageOutlined,
-  FileOutlined,
-  FireOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-  FundProjectionScreenOutlined,
-  InfoCircleOutlined,
-  InsertRowBelowOutlined,
-  MonitorOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  RightOutlined,
-  SaveOutlined,
-  SearchOutlined,
-  SettingOutlined,
-  StopOutlined,
-  TagsOutlined,
-  UpOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import React from 'react';
+import * as AntdIcons from '@ant-design/icons/lib/icons';
 import { StyledIcon } from './Icon';
 import IconType from './IconType';
-
-const AntdIcons = {
-  AlignCenterOutlined,
-  AlignLeftOutlined,
-  AlignRightOutlined,
-  ApartmentOutlined,
-  BarChartOutlined,
-  BookOutlined,
-  CalendarOutlined,
-  CheckOutlined,
-  CheckSquareOutlined,
-  CloseOutlined,
-  ConsoleSqlOutlined,
-  CopyOutlined,
-  DatabaseOutlined,
-  DeleteFilled,
-  DownOutlined,
-  EditOutlined,
-  ExclamationCircleOutlined,
-  EyeOutlined,
-  EyeInvisibleOutlined,
-  FallOutlined,
-  FileImageOutlined,
-  FileOutlined,
-  FireOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-  FundProjectionScreenOutlined,
-  InfoCircleOutlined,
-  InsertRowBelowOutlined,
-  MonitorOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  RightOutlined,
-  SaveOutlined,
-  SearchOutlined,
-  SettingOutlined,
-  StopOutlined,
-  TagsOutlined,
-  UpOutlined,
-  UserOutlined,
-};
 
 const AntdEnhancedIcons = Object.keys(AntdIcons)
   .filter(k => !k.includes('TwoTone'))
   .map(k => ({
-    [k]: (props: IconType) => {
-      const whatRole = props?.onClick ? 'button' : 'img';
-      return <StyledIcon component={AntdIcons[k]} role={whatRole} {...props} />;
-    },
+    [k]: (props: IconType) => (
+      <StyledIcon component={AntdIcons[k]} {...props} />
+    ),
   }))
   .reduce((l, r) => ({ ...l, ...r }));
 

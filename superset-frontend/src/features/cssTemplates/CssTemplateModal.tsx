@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FunctionComponent, useState, useEffect, ChangeEvent } from 'react';
-
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import { styled, t } from '@superset-ui/core';
 import { useSingleViewResource } from 'src/views/CRUD/hooks';
 
@@ -137,7 +136,7 @@ const CssTemplateModal: FunctionComponent<CssTemplateModalProps> = ({
     }
   };
 
-  const onTemplateNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onTemplateNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = event;
 
     const data = {

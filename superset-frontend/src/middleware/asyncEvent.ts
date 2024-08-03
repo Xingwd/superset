@@ -23,11 +23,13 @@ import {
   makeApi,
   SupersetClient,
   logging,
+} from '@superset-ui/core';
+import { SupersetError } from 'src/components/ErrorMessage/types';
+import getBootstrapData from 'src/utils/getBootstrapData';
+import {
   getClientErrorObject,
   parseErrorJson,
-  SupersetError,
-} from '@superset-ui/core';
-import getBootstrapData from 'src/utils/getBootstrapData';
+} from '../utils/getClientErrorObject';
 
 type AsyncEvent = {
   id?: string | null;

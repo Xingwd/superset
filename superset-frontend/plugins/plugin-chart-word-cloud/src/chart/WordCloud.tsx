@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { PureComponent } from 'react';
+import React from 'react';
 import cloudLayout, { Word } from 'd3-cloud';
 import {
   PlainObject,
@@ -66,7 +66,6 @@ export interface WordCloudProps extends WordCloudVisualProps {
   height: number;
   width: number;
   sliceId: number;
-  colorScheme: string;
 }
 
 export interface WordCloudState {
@@ -89,7 +88,10 @@ const MAX_SCALE_FACTOR = 3;
 // Needed to avoid clutter when shrinking a chart with many records.
 const TOP_RESULTS_PERCENTAGE = 0.1;
 
-class WordCloud extends PureComponent<FullWordCloudProps, WordCloudState> {
+class WordCloud extends React.PureComponent<
+  FullWordCloudProps,
+  WordCloudState
+> {
   static defaultProps = defaultProps;
 
   // Cannot name it isMounted because of conflict
@@ -222,7 +224,7 @@ class WordCloud extends PureComponent<FullWordCloudProps, WordCloudState> {
 
   render() {
     const { scaleFactor } = this.state;
-    const { width, height, encoding, sliceId, colorScheme } = this.props;
+    const { width, height, encoding, sliceId } = this.props;
     const { words } = this.state;
 
     // @ts-ignore
@@ -250,11 +252,7 @@ class WordCloud extends PureComponent<FullWordCloudProps, WordCloudState> {
               fontSize={`${w.size}px`}
               fontWeight={w.weight}
               fontFamily={w.font}
-              fill={colorFn(
-                getValueFromDatum(w) as string,
-                sliceId,
-                colorScheme,
-              )}
+              fill={colorFn(getValueFromDatum(w) as string, sliceId)}
               textAnchor="middle"
               transform={`translate(${w.x}, ${w.y}) rotate(${w.rotate})`}
             >

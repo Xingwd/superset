@@ -38,7 +38,7 @@ from tests.unit_tests.db_engine_specs.utils import (
     assert_column_spec,
     assert_convert_dttm,
 )
-from tests.unit_tests.fixtures.common import dttm  # noqa: F401
+from tests.unit_tests.fixtures.common import dttm
 
 
 @pytest.mark.parametrize(
@@ -50,9 +50,7 @@ from tests.unit_tests.fixtures.common import dttm  # noqa: F401
     ],
 )
 def test_convert_dttm(
-    target_type: str,
-    expected_result: Optional[str],
-    dttm: datetime,  # noqa: F811
+    target_type: str, expected_result: Optional[str], dttm: datetime
 ) -> None:
     from superset.db_engine_specs.clickhouse import ClickHouseEngineSpec as spec
 
@@ -63,14 +61,12 @@ def test_execute_connection_error() -> None:
     from superset.db_engine_specs.clickhouse import ClickHouseEngineSpec
     from superset.db_engine_specs.exceptions import SupersetDBAPIDatabaseError
 
-    database = Mock()
     cursor = Mock()
     cursor.execute.side_effect = NewConnectionError(
         HTTPConnection("localhost"), "Exception with sensitive data"
     )
-    with pytest.raises(SupersetDBAPIDatabaseError) as excinfo:
-        ClickHouseEngineSpec.execute(cursor, "SELECT col1 from table1", database)
-    assert str(excinfo.value) == "Connection failed"
+    with pytest.raises(SupersetDBAPIDatabaseError) as ex:
+        ClickHouseEngineSpec.execute(cursor, "SELECT col1 from table1")
 
 
 @pytest.mark.parametrize(
@@ -82,9 +78,7 @@ def test_execute_connection_error() -> None:
     ],
 )
 def test_connect_convert_dttm(
-    target_type: str,
-    expected_result: Optional[str],
-    dttm: datetime,  # noqa: F811
+    target_type: str, expected_result: Optional[str], dttm: datetime
 ) -> None:
     from superset.db_engine_specs.clickhouse import ClickHouseEngineSpec as spec
 

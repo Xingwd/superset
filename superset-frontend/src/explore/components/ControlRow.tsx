@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 const NUM_COLUMNS = 12;
 
-type Control = ReactElement | null;
+type Control = React.ReactElement | null;
 
 export default function ControlRow({ controls }: { controls: Control[] }) {
   const isHiddenControl = useCallback((control: Control) => {

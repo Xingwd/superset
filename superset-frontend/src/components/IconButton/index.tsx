@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { styled } from '@superset-ui/core';
 import Button from 'src/components/Button';
 import { ButtonProps as AntdButtonProps } from 'antd/lib/button';

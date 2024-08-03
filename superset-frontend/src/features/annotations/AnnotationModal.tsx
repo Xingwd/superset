@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FunctionComponent, useState, useEffect, ChangeEvent } from 'react';
-
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import { styled, t } from '@superset-ui/core';
 import { useSingleViewResource } from 'src/views/CRUD/hooks';
 import { RangePicker } from 'src/components/DatePicker';
@@ -172,7 +171,9 @@ const AnnotationModal: FunctionComponent<AnnotationModalProps> = ({
   };
 
   const onAnnotationTextChange = (
-    event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>,
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const { target } = event;
 

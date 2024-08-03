@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { forwardRef, ReactNode } from 'react';
-
+import React, { forwardRef } from 'react';
 import { styled, t } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import { FilterRemoval } from './types';
@@ -156,7 +155,7 @@ const FilterTitleContainer = forwardRef<HTMLDivElement, Props>(
     };
 
     const renderFilterGroups = () => {
-      const items: ReactNode[] = [];
+      const items: React.ReactNode[] = [];
       filters.forEach((item, index) => {
         items.push(
           <DraggableFilter

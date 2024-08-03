@@ -18,7 +18,7 @@
  * under the License.
  */
 
-import { PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   DatasourceType,
@@ -171,7 +171,7 @@ const preventRouterLinkWhileMetaClicked = evt => {
   }
 };
 
-class DatasourceControl extends PureComponent {
+class DatasourceControl extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

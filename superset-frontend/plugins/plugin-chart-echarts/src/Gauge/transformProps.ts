@@ -24,7 +24,6 @@ import {
   getMetricLabel,
   getColumnLabel,
   getValueFormatter,
-  tooltipHtml,
 } from '@superset-ui/core';
 import { EChartsCoreOption, GaugeSeriesOption } from 'echarts';
 import { GaugeDataItemOption } from 'echarts/types/src/chart/gauge/GaugeSeries';
@@ -158,7 +157,6 @@ export default function transformProps(
   const detailOffsetFromTitle =
     FONT_SIZE_MULTIPLIERS.detailOffsetFromTitle * fontSize;
   const columnsLabelMap = new Map<string, string[]>();
-  const metricLabel = getMetricLabel(metric as QueryFormMetric);
 
   const transformedData: GaugeDataItemOption[] = data.map(
     (data_point, index) => {
@@ -170,10 +168,10 @@ export default function transformProps(
         groupbyLabels.map(col => data_point[col] as string),
       );
       let item: GaugeDataItemOption = {
-        value: data_point[metricLabel] as number,
+        value: data_point[getMetricLabel(metric as QueryFormMetric)] as number,
         name,
         itemStyle: {
-          color: colorFn(index, sliceId, colorScheme),
+          color: colorFn(index, sliceId),
         },
         title: {
           offsetCenter: [
@@ -201,7 +199,7 @@ export default function transformProps(
         item = {
           ...item,
           itemStyle: {
-            color: colorFn(index, sliceId, colorScheme),
+            color: colorFn(index, sliceId),
             opacity: OpacityEnum.SemiTransparent,
           },
           detail: {
@@ -288,7 +286,7 @@ export default function transformProps(
     ...getDefaultTooltip(refs),
     formatter: (params: CallbackDataParams) => {
       const { name, value } = params;
-      return tooltipHtml([[metricLabel, formatValue(value as number)]], name);
+      return `${name} : ${formatValue(value as number)}`;
     },
   };
 

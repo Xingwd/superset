@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { MouseEvent } from 'react';
+import React from 'react';
 import { ReactWrapper } from 'enzyme';
 import { styledMount as mount } from 'spec/helpers/theming';
 import waitForComponentToPaint from 'spec/helpers/waitForComponentToPaint';
@@ -38,7 +38,7 @@ describe('LastUpdated', () => {
     await waitForComponentToPaint(wrapper);
     const props = wrapper.find('[aria-label="refresh"]').first().props();
     if (props.onClick) {
-      props.onClick({} as MouseEvent);
+      props.onClick({} as React.MouseEvent);
     }
     expect(mockAction).toHaveBeenCalled();
   });

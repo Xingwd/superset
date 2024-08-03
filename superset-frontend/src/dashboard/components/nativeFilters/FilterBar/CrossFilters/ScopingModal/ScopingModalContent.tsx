@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { css, NativeFilterScope, styled, useTheme } from '@superset-ui/core';
 import { ChartConfiguration } from 'src/dashboard/types';
 import { ScopingTreePanel } from './ScopingTreePanel';

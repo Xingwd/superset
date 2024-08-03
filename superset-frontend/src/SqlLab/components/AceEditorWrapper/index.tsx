@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { IAceEditor } from 'react-ace/lib/types';
 import { useDispatch } from 'react-redux';
 import { css, styled, usePrevious, useTheme } from '@superset-ui/core';
@@ -74,7 +74,6 @@ const AceEditorWrapper = ({
     'id',
     'dbId',
     'sql',
-    'catalog',
     'schema',
     'templateParams',
     'cursorPosition',
@@ -162,7 +161,6 @@ const AceEditorWrapper = ({
 
   const { data: annotations } = useAnnotations({
     dbId: queryEditor.dbId,
-    catalog: queryEditor.catalog,
     schema: queryEditor.schema,
     sql: currentSql,
     templateParams: queryEditor.templateParams,
@@ -172,7 +170,6 @@ const AceEditorWrapper = ({
     {
       queryEditorId,
       dbId: queryEditor.dbId,
-      catalog: queryEditor.catalog,
       schema: queryEditor.schema,
     },
     !autocomplete,

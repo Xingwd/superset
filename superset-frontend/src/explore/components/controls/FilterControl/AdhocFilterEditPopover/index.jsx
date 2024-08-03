@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { createRef, Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Button from 'src/components/Button';
 import { styled, t } from '@superset-ui/core';
@@ -90,7 +90,7 @@ const FilterActionsContainer = styled.div`
   margin-top: ${({ theme }) => theme.gridUnit * 2}px;
 `;
 
-export default class AdhocFilterEditPopover extends Component {
+export default class AdhocFilterEditPopover extends React.Component {
   constructor(props) {
     super(props);
     this.onSave = this.onSave.bind(this);
@@ -110,7 +110,7 @@ export default class AdhocFilterEditPopover extends Component {
       isSimpleTabValid: true,
     };
 
-    this.popoverContentRef = createRef();
+    this.popoverContentRef = React.createRef();
   }
 
   componentDidMount() {

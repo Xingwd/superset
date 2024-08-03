@@ -40,7 +40,7 @@ export default {
                 'Pick a set of deck.gl charts to layer on top of one another',
               ),
               dataEndpoint:
-                'api/v1/chart/?q=(filters:!((col:viz_type,opr:sw,value:deck)))',
+                '/sliceasync/api/read?_flt_0_viz_type=deck_&_flt_7_viz_type=deck_multi',
               placeholder: t('Select charts'),
               onAsyncErrorMessage: t('Error while fetching charts'),
               mutator: (data: {

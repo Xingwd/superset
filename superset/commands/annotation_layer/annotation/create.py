@@ -16,7 +16,6 @@
 # under the License.
 import logging
 from datetime import datetime
-from functools import partial
 from typing import Any, Optional
 
 from flask_appbuilder.models.sqla import Model
@@ -31,7 +30,7 @@ from superset.commands.annotation_layer.annotation.exceptions import (
 from superset.commands.annotation_layer.exceptions import AnnotationLayerNotFoundError
 from superset.commands.base import BaseCommand
 from superset.daos.annotation_layer import AnnotationDAO, AnnotationLayerDAO
-from superset.utils.decorators import on_error, transaction
+from superset.daos.exceptions import DAOCreateFailedError
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +39,13 @@ class CreateAnnotationCommand(BaseCommand):
     def __init__(self, data: dict[str, Any]):
         self._properties = data.copy()
 
-    @transaction(on_error=partial(on_error, reraise=AnnotationCreateFailedError))
     def run(self) -> Model:
         self.validate()
-        return AnnotationDAO.create(attributes=self._properties)
+        try:
+            return AnnotationDAO.create(attributes=self._properties)
+        except DAOCreateFailedError as ex:
+            logger.exception(ex.exception)
+            raise AnnotationCreateFailedError() from ex
 
     def validate(self) -> None:
         exceptions: list[ValidationError] = []

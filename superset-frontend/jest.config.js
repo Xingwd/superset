@@ -35,9 +35,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   modulePathIgnorePatterns: ['<rootDir>/packages/generator-superset'],
   setupFilesAfterEnv: ['<rootDir>/spec/helpers/setup.ts'],
-  testEnvironmentOptions: {
-    url: 'http://localhost',
-  },
+  testURL: 'http://localhost',
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '{packages,plugins}/**/src/**/*.{js,jsx,ts,tsx}',
@@ -56,19 +54,10 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   snapshotSerializers: ['@emotion/jest/enzyme-serializer'],
   transformIgnorePatterns: [
-    'node_modules/(?!d3-(interpolate|color)|remark-gfm|markdown-table|micromark-*.|decode-named-character-reference|character-entities|mdast-util-*.|unist-util-*.|ccount|escape-string-regexp|nanoid)',
+    'node_modules/(?!d3-(interpolate|color)|remark-gfm|markdown-table|micromark-*.|decode-named-character-reference|character-entities|mdast-util-*.|unist-util-*.|ccount|escape-string-regexp)',
   ],
   globals: {
     __DEV__: true,
     caches: true,
   },
-  reporters: [
-    'default',
-    [
-      './node_modules/jest-html-reporter',
-      {
-        pageTitle: 'Test Report',
-      },
-    ],
-  ],
 };

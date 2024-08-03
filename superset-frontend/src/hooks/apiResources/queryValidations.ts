@@ -20,7 +20,6 @@ import { api, JsonResponse } from './queryApi';
 
 export type FetchValidationQueryParams = {
   dbId?: string | number;
-  catalog?: string | null;
   schema?: string;
   sql: string;
   templateParams?: string;
@@ -40,7 +39,7 @@ const queryValidationApi = api.injectEndpoints({
       FetchValidationQueryParams
     >({
       providesTags: ['QueryValidations'],
-      query: ({ dbId, catalog, schema, sql, templateParams }) => {
+      query: ({ dbId, schema, sql, templateParams }) => {
         let template_params = templateParams;
         try {
           template_params = JSON.parse(templateParams || '');
@@ -48,7 +47,6 @@ const queryValidationApi = api.injectEndpoints({
           template_params = undefined;
         }
         const postPayload = {
-          catalog,
           schema,
           sql,
           ...(template_params && { template_params }),

@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { ReactNode, Key, useMemo } from 'react';
-
+import React, { ReactNode, useMemo } from 'react';
 import { styled, t, useTruncation } from '@superset-ui/core';
 import { Tooltip } from '../Tooltip';
 
@@ -43,7 +42,7 @@ export type TruncatedListProps<ListItemType> = {
   /**
    * Returns the React key for an item.
    */
-  getKey?: (item: ListItemType) => Key;
+  getKey?: (item: ListItemType) => React.Key;
 
   /**
    * The max number of links that should appear in the tooltip.
@@ -97,7 +96,7 @@ export default function TruncatedList<ListItemType>({
   items,
   renderVisibleItem = item => item,
   renderTooltipItem = item => item,
-  getKey = item => item as unknown as Key,
+  getKey = item => item as unknown as React.Key,
   maxLinks = 20,
 }: TruncatedListProps<ListItemType>) {
   const [itemsNotInTooltipRef, plusRef, elementsTruncated, hasHiddenElements] =

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { memo, useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   createHtmlPortalNode,
   InPortal,
@@ -328,4 +328,4 @@ const FilterControl = ({
   );
 };
 
-export default memo(FilterControl);
+export default React.memo(FilterControl);

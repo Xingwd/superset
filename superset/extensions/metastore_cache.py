@@ -21,9 +21,7 @@ from uuid import UUID, uuid3
 
 from flask import current_app, Flask, has_app_context
 from flask_caching import BaseCache
-from sqlalchemy.exc import SQLAlchemyError
 
-from superset import db
 from superset.key_value.exceptions import KeyValueCreateFailedError
 from superset.key_value.types import (
     KeyValueCodec,
@@ -31,7 +29,6 @@ from superset.key_value.types import (
     PickleKeyValueCodec,
 )
 from superset.key_value.utils import get_uuid_namespace
-from superset.utils.decorators import transaction
 
 RESOURCE = KeyValueResource.METASTORE_CACHE
 
@@ -71,6 +68,15 @@ class SupersetMetastoreCache(BaseCache):
     def get_key(self, key: str) -> UUID:
         return uuid3(self.namespace, key)
 
+    @staticmethod
+    def _prune() -> None:
+        # pylint: disable=import-outside-toplevel
+        from superset.commands.key_value.delete_expired import (
+            DeleteExpiredKeyValueCommand,
+        )
+
+        DeleteExpiredKeyValueCommand(resource=RESOURCE).run()
+
     def _get_expiry(self, timeout: Optional[int]) -> Optional[datetime]:
         timeout = self._normalize_timeout(timeout)
         if timeout is not None and timeout > 0:
@@ -79,42 +85,43 @@ class SupersetMetastoreCache(BaseCache):
 
     def set(self, key: str, value: Any, timeout: Optional[int] = None) -> bool:
         # pylint: disable=import-outside-toplevel
-        from superset.daos.key_value import KeyValueDAO
+        from superset.commands.key_value.upsert import UpsertKeyValueCommand
 
-        KeyValueDAO.upsert_entry(
+        UpsertKeyValueCommand(
             resource=RESOURCE,
             key=self.get_key(key),
             value=value,
             codec=self.codec,
             expires_on=self._get_expiry(timeout),
-        )
-        db.session.commit()  # pylint: disable=consider-using-transaction
+        ).run()
         return True
 
     def add(self, key: str, value: Any, timeout: Optional[int] = None) -> bool:
         # pylint: disable=import-outside-toplevel
-        from superset.daos.key_value import KeyValueDAO
+        from superset.commands.key_value.create import CreateKeyValueCommand
 
         try:
-            KeyValueDAO.delete_expired_entries(RESOURCE)
-            KeyValueDAO.create_entry(
+            self._prune()
+            CreateKeyValueCommand(
                 resource=RESOURCE,
                 value=value,
                 codec=self.codec,
                 key=self.get_key(key),
                 expires_on=self._get_expiry(timeout),
-            )
-            db.session.commit()  # pylint: disable=consider-using-transaction
+            ).run()
             return True
-        except (SQLAlchemyError, KeyValueCreateFailedError):
-            db.session.rollback()  # pylint: disable=consider-using-transaction
+        except KeyValueCreateFailedError:
             return False
 
     def get(self, key: str) -> Any:
         # pylint: disable=import-outside-toplevel
-        from superset.daos.key_value import KeyValueDAO
+        from superset.commands.key_value.get import GetKeyValueCommand
 
-        return KeyValueDAO.get_value(RESOURCE, self.get_key(key), self.codec)
+        return GetKeyValueCommand(
+            resource=RESOURCE,
+            key=self.get_key(key),
+            codec=self.codec,
+        ).run()
 
     def has(self, key: str) -> bool:
         entry = self.get(key)
@@ -122,9 +129,8 @@ class SupersetMetastoreCache(BaseCache):
             return True
         return False
 
-    @transaction()
     def delete(self, key: str) -> Any:
         # pylint: disable=import-outside-toplevel
-        from superset.daos.key_value import KeyValueDAO
+        from superset.commands.key_value.delete import DeleteKeyValueCommand
 
-        return KeyValueDAO.delete_entry(RESOURCE, self.get_key(key))
+        return DeleteKeyValueCommand(resource=RESOURCE, key=self.get_key(key)).run()

@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FC, ChangeEvent, useEffect, useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import FormItem from 'src/components/Form/FormItem';
 import { Select } from 'src/components';
 import {
@@ -268,7 +267,7 @@ export const useSimpleTabFilterProps = (props: Props) => {
   };
 };
 
-const AdhocFilterEditPopoverSimpleTabContent: FC<Props> = props => {
+const AdhocFilterEditPopoverSimpleTabContent: React.FC<Props> = props => {
   const {
     onSubjectChange,
     onOperatorChange,
@@ -295,7 +294,9 @@ const AdhocFilterEditPopoverSimpleTabContent: FC<Props> = props => {
       ? isOperatorRelevant(operator, subject) &&
         advancedDataTypesState.advancedDataTypeOperatorList.includes(operator)
       : isOperatorRelevant(operator, subject);
-  const onInputComparatorChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onInputComparatorChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const { value } = event.target;
     setComparator(value);
     onComparatorChange(value);

@@ -16,29 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  ReactNode,
-  MouseEventHandler,
-  ReactElement,
-  ComponentType,
-} from 'react';
-import type { Editor } from 'brace';
-import { BaseFormData } from '../query';
-import { JsonResponse } from '../connection';
+import React from 'react';
 
 /**
  * A function which returns text (or marked-up text)
  * If what you want is a react component, don't use this. Use React.ComponentType instead.
  */
-type ReturningDisplayable<P = void> = (props: P) => string | ReactElement;
-
-/**
- * A function which returns the drill by options for a given dataset and chart's formData.
- */
-export type LoadDrillByOptions = (
-  datasetId: number,
-  formData: BaseFormData,
-) => Promise<JsonResponse>;
+type ReturningDisplayable<P = void> = (props: P) => string | React.ReactElement;
 
 /**
  * This type defines all available extensions of Superset's default UI.
@@ -97,15 +81,15 @@ export interface DatabaseConnectionExtension {
   /**
    * url or dataURI (recommended) of a logo to use in place of a title.  title is fallback display if no logo is provided
    */
-  logo?: ComponentType<any>;
+  logo?: React.ComponentType<any>;
   /**
    * Descriptive text displayed under the logo or title to provide user with more context about the configuration section
    */
-  description: ComponentType<any>;
+  description: React.ComponentType<any>;
   /**
    * React component to render for display in the database connection configuration
    */
-  component: ComponentType<any>;
+  component: React.ComponentType<any>;
   /**
    * Is the database extension enabled?
    */
@@ -160,72 +144,26 @@ export interface DashboardEmbedModalExtensions {
   onHide: () => void;
 }
 
-export interface ButtonProps {
-  name: ReactNode;
-  onClick?: MouseEventHandler<HTMLElement>;
-  'data-test'?: string;
-  buttonStyle:
-    | 'primary'
-    | 'secondary'
-    | 'dashed'
-    | 'link'
-    | 'warning'
-    | 'success'
-    | 'tertiary';
-}
-
-export interface SubMenuProps {
-  buttons?: Array<ButtonProps>;
-  name?: string | ReactNode;
-  activeChild?: string;
-}
-
-export interface CustomAutoCompleteArgs {
-  queryEditorId: string;
-  dbId?: string | number;
-  catalog?: string | null;
-  schema?: string;
-}
-
-interface AutocompleteItem {
-  name: string;
-  value: string;
-  score: number;
-  meta: string;
-  label?: string;
-  docHTML?: string;
-  docText?: string;
-}
-
-export interface CustomAutocomplete extends AutocompleteItem {
-  insertMatch?: (editor: Editor, data: AutocompleteItem) => void;
-}
-
 export type Extensions = Partial<{
-  'alertsreports.header.icon': ComponentType;
-  'load.drillby.options': LoadDrillByOptions;
-  'embedded.documentation.configuration_details': ComponentType<ConfigDetailsProps>;
+  'alertsreports.header.icon': React.ComponentType;
+  'embedded.documentation.configuration_details': React.ComponentType<ConfigDetailsProps>;
   'embedded.documentation.description': ReturningDisplayable;
   'embedded.documentation.url': string;
-  'embedded.modal': ComponentType<DashboardEmbedModalExtensions>;
-  'dashboard.nav.right': ComponentType;
-  'home.submenu': ComponentType<SubMenuProps>;
-  'navbar.right-menu.item.icon': ComponentType<RightMenuItemIconProps>;
-  'navbar.right': ComponentType;
-  'report-modal.dropdown.item.icon': ComponentType;
-  'root.context.provider': ComponentType;
-  'welcome.message': ComponentType;
-  'welcome.banner': ComponentType;
-  'welcome.main.replacement': ComponentType;
-  'ssh_tunnel.form.switch': ComponentType<SwitchProps>;
+  'embedded.modal': React.ComponentType<DashboardEmbedModalExtensions>;
+  'dashboard.nav.right': React.ComponentType;
+  'navbar.right-menu.item.icon': React.ComponentType<RightMenuItemIconProps>;
+  'navbar.right': React.ComponentType;
+  'report-modal.dropdown.item.icon': React.ComponentType;
+  'root.context.provider': React.ComponentType;
+  'welcome.message': React.ComponentType;
+  'welcome.banner': React.ComponentType;
+  'welcome.main.replacement': React.ComponentType;
+  'ssh_tunnel.form.switch': React.ComponentType<SwitchProps>;
   'databaseconnection.extraOption': DatabaseConnectionExtension;
   /* Custom components to show in the database and dataset delete modals */
-  'database.delete.related': ComponentType<DatabaseDeleteRelatedExtensionProps>;
-  'dataset.delete.related': ComponentType<DatasetDeleteRelatedExtensionProps>;
-  'sqleditor.extension.form': ComponentType<SQLFormExtensionProps>;
-  'sqleditor.extension.resultTable': ComponentType<SQLResultTableExtentionProps>;
-  'dashboard.slice.header': ComponentType<SliceHeaderExtension>;
-  'sqleditor.extension.customAutocomplete': (
-    args: CustomAutoCompleteArgs,
-  ) => CustomAutocomplete[] | undefined;
+  'database.delete.related': React.ComponentType<DatabaseDeleteRelatedExtensionProps>;
+  'dataset.delete.related': React.ComponentType<DatasetDeleteRelatedExtensionProps>;
+  'sqleditor.extension.form': React.ComponentType<SQLFormExtensionProps>;
+  'sqleditor.extension.resultTable': React.ComponentType<SQLResultTableExtentionProps>;
+  'dashboard.slice.header': React.ComponentType<SliceHeaderExtension>;
 }>;

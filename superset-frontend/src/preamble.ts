@@ -61,10 +61,7 @@ setupColors(
 );
 
 // Setup number formatters
-setupFormatters(
-  bootstrapData.common.d3_format,
-  bootstrapData.common.d3_time_format,
-);
+setupFormatters(bootstrapData.common.d3_format);
 
 setupDashboardComponents();
 

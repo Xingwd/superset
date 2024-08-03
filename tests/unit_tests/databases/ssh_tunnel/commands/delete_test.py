@@ -18,7 +18,7 @@
 from collections.abc import Iterator
 
 import pytest
-from pytest_mock import MockerFixture
+from pytest_mock import MockFixture
 from sqlalchemy.orm.session import Session
 
 
@@ -52,7 +52,7 @@ def session_with_data(session: Session) -> Iterator[Session]:
 
 
 def test_delete_ssh_tunnel_command(
-    mocker: MockerFixture, session_with_data: Session
+    mocker: MockFixture, session_with_data: Session
 ) -> None:
     from superset.commands.database.ssh_tunnel.delete import DeleteSSHTunnelCommand
     from superset.daos.database import DatabaseDAO

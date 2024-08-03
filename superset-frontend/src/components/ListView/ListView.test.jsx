@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { styledMount as mount } from 'spec/helpers/theming';
 import { act } from 'react-dom/test-utils';
 import { QueryParamProvider } from 'use-query-params';
@@ -151,12 +152,12 @@ describe('ListView', () => {
     expect(wrapper.find(ListView)).toExist();
     expect(mockedProps.fetchData.mock.calls[0]).toMatchInlineSnapshot(
       `
-        [
-          {
-            "filters": [],
+        Array [
+          Object {
+            "filters": Array [],
             "pageIndex": 0,
             "pageSize": 1,
-            "sortBy": [],
+            "sortBy": Array [],
           },
         ]
       `,
@@ -168,13 +169,13 @@ describe('ListView', () => {
     expect(mockedProps.fetchData).toHaveBeenCalled();
     expect(mockedProps.fetchData.mock.calls[0]).toMatchInlineSnapshot(
       `
-        [
-          {
-            "filters": [],
+        Array [
+          Object {
+            "filters": Array [],
             "pageIndex": 0,
             "pageSize": 1,
-            "sortBy": [
-              {
+            "sortBy": Array [
+              Object {
                 "desc": false,
                 "id": "id",
               },
@@ -199,13 +200,13 @@ describe('ListView', () => {
     wrapper.update();
 
     expect(mockedProps.fetchData.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        {
-          "filters": [],
+      Array [
+        Object {
+          "filters": Array [],
           "pageIndex": 1,
           "pageSize": 1,
-          "sortBy": [
-            {
+          "sortBy": Array [
+            Object {
               "desc": false,
               "id": "id",
             },
@@ -233,9 +234,9 @@ describe('ListView', () => {
 
     expect(mockedProps.bulkActions[0].onSelect.mock.calls[0])
       .toMatchInlineSnapshot(`
-      [
-        [
-          {
+      Array [
+        Array [
+          Object {
             "age": 10,
             "id": 1,
             "name": "data 1",
@@ -264,15 +265,15 @@ describe('ListView', () => {
 
     expect(mockedProps.bulkActions[0].onSelect.mock.calls[0])
       .toMatchInlineSnapshot(`
-      [
-        [
-          {
+      Array [
+        Array [
+          Object {
             "age": 10,
             "id": 1,
             "name": "data 1",
             "time": "2020-11-18T07:53:45.354Z",
           },
-          {
+          Object {
             "age": 1,
             "id": 2,
             "name": "data 2",
@@ -406,13 +407,13 @@ describe('ListView', () => {
     });
 
     expect(mockedProps.fetchData.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        {
-          "filters": [
-            {
+      Array [
+        Object {
+          "filters": Array [
+            Object {
               "id": "id",
               "operator": "eq",
-              "value": {
+              "value": Object {
                 "label": "bar",
                 "value": "bar",
               },
@@ -420,8 +421,8 @@ describe('ListView', () => {
           ],
           "pageIndex": 0,
           "pageSize": 1,
-          "sortBy": [
-            {
+          "sortBy": Array [
+            Object {
               "desc": false,
               "id": "id",
             },
@@ -431,18 +432,18 @@ describe('ListView', () => {
     `);
 
     expect(mockedProps.fetchData.mock.calls[1]).toMatchInlineSnapshot(`
-      [
-        {
-          "filters": [
-            {
+      Array [
+        Object {
+          "filters": Array [
+            Object {
               "id": "id",
               "operator": "eq",
-              "value": {
+              "value": Object {
                 "label": "bar",
                 "value": "bar",
               },
             },
-            {
+            Object {
               "id": "name",
               "operator": "ct",
               "value": "something",
@@ -450,8 +451,8 @@ describe('ListView', () => {
           ],
           "pageIndex": 0,
           "pageSize": 1,
-          "sortBy": [
-            {
+          "sortBy": Array [
+            Object {
               "desc": false,
               "id": "id",
             },

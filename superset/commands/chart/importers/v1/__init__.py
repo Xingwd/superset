@@ -18,7 +18,7 @@
 from typing import Any
 
 from marshmallow import Schema
-from sqlalchemy.orm import Session  # noqa: F401
+from sqlalchemy.orm import Session
 
 from superset.charts.schemas import ImportV1ChartSchema
 from superset.commands.chart.exceptions import ChartImportError
@@ -33,6 +33,7 @@ from superset.datasets.schemas import ImportV1DatasetSchema
 
 
 class ImportChartsCommand(ImportModelsCommand):
+
     """Import charts"""
 
     dao = ChartDAO

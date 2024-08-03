@@ -16,11 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { SupersetClient, logging, t } from '@superset-ui/core';
 import { DatasetObject } from 'src/features/datasets/AddDataset/types';
 import { addDangerToast } from 'src/components/MessageToasts/actions';
-import { toQueryString } from 'src/utils/urlUtils';
 import DatasetPanel from './DatasetPanel';
 import { ITableColumn, IDatabaseTable, isIDatabaseTable } from './types';
 
@@ -52,9 +51,8 @@ export interface IDatasetPanelWrapperProps {
    */
   dbId?: number;
   /**
-   * The selected catalog/schema for the database
+   * The selected schema for the database
    */
-  catalog?: string | null;
   schema?: string | null;
   setHasColumns?: Function;
   datasets?: DatasetObject[] | undefined;
@@ -63,7 +61,6 @@ export interface IDatasetPanelWrapperProps {
 const DatasetPanelWrapper = ({
   tableName,
   dbId,
-  catalog,
   schema,
   setHasColumns,
   datasets,
@@ -77,11 +74,7 @@ const DatasetPanelWrapper = ({
     const { dbId, tableName, schema } = props;
     setLoading(true);
     setHasColumns?.(false);
-    const path = `/api/v1/database/${dbId}/table_metadata/${toQueryString({
-      name: tableName,
-      catalog,
-      schema,
-    })}`;
+    const path = `/api/v1/database/${dbId}/table/${tableName}/${schema}/`;
     try {
       const response = await SupersetClient.get({
         endpoint: path,

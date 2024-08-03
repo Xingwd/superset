@@ -20,7 +20,6 @@ import { DatabaseObject } from 'src/components/DatabaseSelector';
 
 export enum DatasetActionType {
   SelectDatabase,
-  SelectCatalog,
   SelectSchema,
   SelectTable,
   ChangeDataset,
@@ -28,7 +27,6 @@ export enum DatasetActionType {
 
 export interface DatasetObject {
   db: DatabaseObject & { owners: [number] };
-  catalog?: string | null;
   schema?: string | null;
   dataset_name: string;
   table_name?: string | null;
@@ -52,7 +50,6 @@ export type DSReducerActionType =
   | {
       type:
         | DatasetActionType.ChangeDataset
-        | DatasetActionType.SelectCatalog
         | DatasetActionType.SelectSchema
         | DatasetActionType.SelectTable;
       payload: DatasetReducerPayloadType;

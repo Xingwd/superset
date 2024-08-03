@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FocusEventHandler } from 'react';
+import React from 'react';
 import * as uiCore from '@superset-ui/core';
 import { act } from 'react-dom/test-utils';
 import { fireEvent, render, waitFor } from 'spec/helpers/testing-library';
@@ -45,7 +45,7 @@ jest.mock('src/components/AsyncAceEditor', () => ({
     value,
   }: {
     onChange: (value: string) => void;
-    onBlur: FocusEventHandler<HTMLTextAreaElement>;
+    onBlur: React.FocusEventHandler<HTMLTextAreaElement>;
     value: string;
   }) => (
     <textarea
@@ -160,20 +160,10 @@ describe('SqlEditor', () => {
   });
 
   it('does not render SqlEditor if no db selected', async () => {
-    const queryEditor = initialState.sqlLab.queryEditors[2];
-    const { findByText } = setup({ ...mockedProps, queryEditor }, store);
-    expect(
-      await findByText('Select a database to write a query'),
-    ).toBeInTheDocument();
-  });
-
-  it('renders db unavailable message', async () => {
     const queryEditor = initialState.sqlLab.queryEditors[1];
     const { findByText } = setup({ ...mockedProps, queryEditor }, store);
     expect(
-      await findByText(
-        'The database that was used to generate this query could not be found',
-      ),
+      await findByText('Select a database to write a query'),
     ).toBeInTheDocument();
   });
 
@@ -304,88 +294,6 @@ describe('SqlEditor', () => {
     ).toBeInTheDocument();
   });
 
-  describe('with EstimateQueryCost enabled', () => {
-    let isFeatureEnabledMock: jest.MockInstance<
-      boolean,
-      [feature: FeatureFlag]
-    >;
-    beforeEach(() => {
-      isFeatureEnabledMock = jest
-        .spyOn(uiCore, 'isFeatureEnabled')
-        .mockImplementation(
-          featureFlag => featureFlag === uiCore.FeatureFlag.EstimateQueryCost,
-        );
-    });
-    afterEach(() => {
-      isFeatureEnabledMock.mockClear();
-    });
-
-    it('sends the catalog and schema to the endpoint', async () => {
-      const estimateApi = 'http://localhost/api/v1/sqllab/estimate/';
-      fetchMock.post(estimateApi, {});
-
-      store = createStore({
-        ...initialState,
-        sqlLab: {
-          ...initialState.sqlLab,
-          databases: {
-            2023: {
-              allow_ctas: false,
-              allow_cvas: false,
-              allow_dml: false,
-              allow_file_upload: false,
-              allow_run_async: false,
-              backend: 'postgresql',
-              database_name: 'examples',
-              expose_in_sqllab: true,
-              force_ctas_schema: null,
-              id: 1,
-              allows_cost_estimate: true,
-            },
-          },
-          unsavedQueryEditor: {
-            id: defaultQueryEditor.id,
-            dbId: 2023,
-            sql: 'SELECT * FROM t',
-            schema: 'public',
-            catalog: 'prod',
-          },
-        },
-      });
-      const { findByText } = setup(mockedProps, store);
-      const button = await findByText('Estimate cost');
-      expect(button).toBeInTheDocument();
-
-      // click button
-      fireEvent.click(button);
-      await waitFor(() => {
-        expect(fetchMock.lastUrl()).toEqual(estimateApi);
-        expect(fetchMock.lastOptions()).toEqual(
-          expect.objectContaining({
-            body: JSON.stringify({
-              database_id: 2023,
-              catalog: 'prod',
-              schema: 'public',
-              sql: 'SELECT * FROM t',
-              template_params: {},
-            }),
-            cache: 'default',
-            credentials: 'same-origin',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              'X-CSRFToken': '1234',
-            },
-            method: 'POST',
-            mode: 'same-origin',
-            redirect: 'follow',
-            signal: undefined,
-          }),
-        );
-      });
-    });
-  });
-
   describe('with SqllabBackendPersistence enabled', () => {
     let isFeatureEnabledMock: jest.MockInstance<
       boolean,
@@ -421,8 +329,7 @@ describe('SqlEditor', () => {
       await waitFor(() =>
         expect(fetchMock.calls('glob:*/tabstateview/*').length).toBe(1),
       );
-      // it will be called from EditorAutoSync
-      expect(fetchMock.calls(switchTabApi).length).toBe(0);
+      expect(fetchMock.calls(switchTabApi).length).toBe(1);
     });
   });
 });

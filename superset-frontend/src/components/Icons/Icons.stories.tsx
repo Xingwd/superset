@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { styled, supersetTheme } from '@superset-ui/core';
 import Icons from '.';
 import IconType from './IconType';
@@ -71,13 +72,11 @@ InteractiveIcons.argTypes = {
   },
   iconSize: {
     defaultValue: 'xl',
-    control: { type: 'inline-radio' },
-    options: ['s', 'l', 'm', 'xl', 'xxl'],
+    control: { type: 'inline-radio', options: ['s', 'l', 'm', 'xl', 'xxl'] },
   },
   iconColor: {
     defaultValue: null,
-    control: { type: 'select' },
-    options: palette,
+    control: { type: 'select', options: palette },
   },
   theme: {
     table: {

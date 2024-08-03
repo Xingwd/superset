@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { createRef, PureComponent, Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { debounce } from 'lodash';
@@ -126,7 +126,7 @@ const emptyRowContentStyles = theme => css`
   color: ${theme.colors.text.label};
 `;
 
-class Row extends PureComponent {
+class Row extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -147,7 +147,7 @@ class Row extends PureComponent {
       FAST_DEBOUNCE,
     );
 
-    this.containerRef = createRef();
+    this.containerRef = React.createRef();
     this.observerEnabler = null;
     this.observerDisabler = null;
   }
@@ -352,7 +352,7 @@ class Row extends PureComponent {
               )}
               {rowItems.length > 0 &&
                 rowItems.map((componentId, itemIndex) => (
-                  <Fragment key={componentId}>
+                  <React.Fragment key={componentId}>
                     <DashboardComponent
                       key={componentId}
                       id={componentId}
@@ -395,7 +395,7 @@ class Row extends PureComponent {
                         }
                       </Droppable>
                     )}
-                  </Fragment>
+                  </React.Fragment>
                 ))}
             </GridRow>
           </WithPopoverMenu>

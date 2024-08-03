@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactChild } from 'react';
+import React from 'react';
 import { render, screen, waitFor, within } from 'spec/helpers/testing-library';
 import userEvent from '@testing-library/user-event';
 import DatasourcePanel, {
@@ -38,7 +38,11 @@ import {
 jest.mock(
   'react-virtualized-auto-sizer',
   () =>
-    ({ children }: { children: (params: { height: number }) => ReactChild }) =>
+    ({
+      children,
+    }: {
+      children: (params: { height: number }) => React.ReactChild;
+    }) =>
       children({ height: 500 }),
 );
 

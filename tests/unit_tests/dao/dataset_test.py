@@ -18,7 +18,6 @@
 from sqlalchemy.orm.session import Session
 
 from superset.daos.dataset import DatasetDAO
-from superset.sql_parse import Table
 
 
 def test_validate_update_uniqueness(session: Session) -> None:
@@ -51,29 +50,35 @@ def test_validate_update_uniqueness(session: Session) -> None:
     db.session.add_all([database, dataset1, dataset2])
     db.session.flush()
 
+    # same table name, different schema
     assert (
         DatasetDAO.validate_update_uniqueness(
             database_id=database.id,
-            table=Table(dataset1.table_name, dataset1.schema),
+            schema=dataset1.schema,
             dataset_id=dataset1.id,
+            name=dataset1.table_name,
         )
         is True
     )
 
+    # duplicate schema and table name
     assert (
         DatasetDAO.validate_update_uniqueness(
             database_id=database.id,
-            table=Table(dataset1.table_name, dataset2.schema),
+            schema=dataset2.schema,
             dataset_id=dataset1.id,
+            name=dataset1.table_name,
         )
         is False
     )
 
+    # no schema
     assert (
         DatasetDAO.validate_update_uniqueness(
             database_id=database.id,
-            table=Table(dataset1.table_name),
+            schema=None,
             dataset_id=dataset1.id,
+            name=dataset1.table_name,
         )
         is True
     )

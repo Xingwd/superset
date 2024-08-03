@@ -21,7 +21,7 @@ from datetime import timedelta
 from typing import Any, Optional
 from unittest.mock import patch
 
-from flask import current_app  # noqa: F401
+from flask import current_app
 from freezegun import freeze_time
 
 from superset import security_manager
@@ -141,19 +141,13 @@ class TestEventLogger(unittest.TestCase):
             with logger(action="foo", engine="bar"):
                 pass
 
-        self.assertEquals(
-            logger.records,
-            [
-                {
-                    "records": [{"path": "/", "engine": "bar"}],
-                    "database_id": None,
-                    "user_id": 2,
-                    "duration": 15000,
-                    "curated_payload": {},
-                    "curated_form_data": {},
-                }
-            ],
-        )
+        assert logger.records == [
+            {
+                "records": [{"path": "/", "engine": "bar"}],
+                "user_id": 2,
+                "duration": 15000.0,
+            }
+        ]
 
     @patch("superset.utils.core.g", spec={})
     def test_context_manager_log_with_context(self, mock_g):
@@ -188,25 +182,19 @@ class TestEventLogger(unittest.TestCase):
                 payload_override={"engine": "sqlite"},
             )
 
-        self.assertEquals(
-            logger.records,
-            [
-                {
-                    "records": [
-                        {
-                            "path": "/",
-                            "object_ref": {"baz": "food"},
-                            "payload_override": {"engine": "sqlite"},
-                        }
-                    ],
-                    "database_id": None,
-                    "user_id": 2,
-                    "duration": 5558756000,
-                    "curated_payload": {},
-                    "curated_form_data": {},
-                }
-            ],
-        )
+        assert logger.records == [
+            {
+                "records": [
+                    {
+                        "path": "/",
+                        "object_ref": {"baz": "food"},
+                        "payload_override": {"engine": "sqlite"},
+                    }
+                ],
+                "user_id": 2,
+                "duration": 5558756000,
+            }
+        ]
 
     @patch("superset.utils.core.g", spec={})
     def test_log_with_context_user_null(self, mock_g):
@@ -241,4 +229,4 @@ class TestEventLogger(unittest.TestCase):
                 payload_override={"engine": "sqlite"},
             )
 
-        assert logger.records[0]["user_id"] == None  # noqa: E711
+        assert logger.records[0]["user_id"] == None

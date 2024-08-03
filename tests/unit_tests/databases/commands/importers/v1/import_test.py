@@ -17,17 +17,17 @@
 # pylint: disable=unused-argument, import-outside-toplevel, invalid-name
 
 import copy
+import json
 
 import pytest
-from pytest_mock import MockerFixture
+from pytest_mock import MockFixture
 from sqlalchemy.orm.session import Session
 
 from superset import db
 from superset.commands.exceptions import ImportFailedError
-from superset.utils import json
 
 
-def test_import_database(mocker: MockerFixture, session: Session) -> None:
+def test_import_database(mocker: MockFixture, session: Session) -> None:
     """
     Test importing a database.
     """
@@ -67,9 +67,7 @@ def test_import_database(mocker: MockerFixture, session: Session) -> None:
     assert database.allow_dml is False
 
 
-def test_import_database_sqlite_invalid(
-    mocker: MockerFixture, session: Session
-) -> None:
+def test_import_database_sqlite_invalid(mocker: MockFixture, session: Session) -> None:
     """
     Test importing a database.
     """
@@ -96,7 +94,7 @@ def test_import_database_sqlite_invalid(
 
 
 def test_import_database_managed_externally(
-    mocker: MockerFixture,
+    mocker: MockFixture,
     session: Session,
 ) -> None:
     """
@@ -122,7 +120,7 @@ def test_import_database_managed_externally(
 
 
 def test_import_database_without_permission(
-    mocker: MockerFixture,
+    mocker: MockFixture,
     session: Session,
 ) -> None:
     """
@@ -148,7 +146,7 @@ def test_import_database_without_permission(
     )
 
 
-def test_import_database_with_version(mocker: MockerFixture, session: Session) -> None:
+def test_import_database_with_version(mocker: MockFixture, session: Session) -> None:
     """
     Test importing a database with a version set.
     """

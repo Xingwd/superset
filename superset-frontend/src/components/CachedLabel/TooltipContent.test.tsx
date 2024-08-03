@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
 import moment from 'moment';
 import { TooltipContent } from './TooltipContent';

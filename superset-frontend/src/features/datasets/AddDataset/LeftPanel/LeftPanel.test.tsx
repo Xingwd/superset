@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import fetchMock from 'fetch-mock';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from 'spec/helpers/testing-library';
@@ -42,7 +43,6 @@ beforeEach(() => {
       allows_subquery: 'Allows Subquery',
       allows_virtual_table_explore: 'Allows Virtual Table Explore',
       disable_data_preview: 'Disables SQL Lab Data Preview',
-      disable_drill_to_detail: 'Disable Drill To Detail',
       backend: 'Backend',
       changed_on: 'Changed On',
       changed_on_delta_humanized: 'Changed On Delta Humanized',
@@ -65,7 +65,6 @@ beforeEach(() => {
       'allows_subquery',
       'allows_virtual_table_explore',
       'disable_data_preview',
-      'disable_drill_to_detail',
       'backend',
       'changed_on',
       'changed_on_delta_humanized',
@@ -100,7 +99,6 @@ beforeEach(() => {
         allows_subquery: true,
         allows_virtual_table_explore: true,
         disable_data_preview: false,
-        disable_drill_to_detail: false,
         backend: 'postgresql',
         changed_on: '2021-03-09T19:02:07.141095',
         changed_on_delta_humanized: 'a day ago',
@@ -122,7 +120,6 @@ beforeEach(() => {
         allows_subquery: true,
         allows_virtual_table_explore: true,
         disable_data_preview: false,
-        disable_drill_to_detail: false,
         backend: 'mysql',
         changed_on: '2021-03-09T19:02:07.141095',
         changed_on_delta_humanized: 'a day ago',

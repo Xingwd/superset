@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   css,
@@ -173,26 +173,22 @@ export const useExploreAdditionalActionsMenu = (
 
   const exportJson = useCallback(
     () =>
-      canDownloadCSV
-        ? exportChart({
-            formData: latestQueryFormData,
-            resultType: 'results',
-            resultFormat: 'json',
-          })
-        : null,
-    [canDownloadCSV, latestQueryFormData],
+      exportChart({
+        formData: latestQueryFormData,
+        resultType: 'results',
+        resultFormat: 'json',
+      }),
+    [latestQueryFormData],
   );
 
   const exportExcel = useCallback(
     () =>
-      canDownloadCSV
-        ? exportChart({
-            formData: latestQueryFormData,
-            resultType: 'results',
-            resultFormat: 'xlsx',
-          })
-        : null,
-    [canDownloadCSV, latestQueryFormData],
+      exportChart({
+        formData: latestQueryFormData,
+        resultType: 'results',
+        resultFormat: 'xlsx',
+      }),
+    [latestQueryFormData],
   );
 
   const copyLink = useCallback(async () => {
@@ -354,7 +350,6 @@ export const useExploreAdditionalActionsMenu = (
           <Menu.Item
             key={MENU_KEYS.EXPORT_TO_JSON}
             icon={<Icons.FileOutlined css={iconReset} />}
-            disabled={!canDownloadCSV}
           >
             {t('Export to .JSON')}
           </Menu.Item>
@@ -367,7 +362,6 @@ export const useExploreAdditionalActionsMenu = (
           <Menu.Item
             key={MENU_KEYS.EXPORT_TO_XLSX}
             icon={<Icons.FileOutlined css={iconReset} />}
-            disabled={!canDownloadCSV}
           >
             {t('Export to Excel')}
           </Menu.Item>

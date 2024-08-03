@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { isValidElement } from 'react';
+import React from 'react';
 
 import HighlightedSql from 'src/SqlLab/components/HighlightedSql';
 import { fireEvent, render } from 'spec/helpers/testing-library';
@@ -24,7 +24,7 @@ import { fireEvent, render } from 'spec/helpers/testing-library';
 const sql =
   "SELECT * FROM test WHERE something='fkldasjfklajdslfkjadlskfjkldasjfkladsjfkdjsa'";
 test('renders HighlightedSql component with sql prop', () => {
-  expect(isValidElement(<HighlightedSql sql={sql} />)).toBe(true);
+  expect(React.isValidElement(<HighlightedSql sql={sql} />)).toBe(true);
 });
 test('renders a ModalTrigger component', () => {
   const { getByTestId } = render(<HighlightedSql sql={sql} />);

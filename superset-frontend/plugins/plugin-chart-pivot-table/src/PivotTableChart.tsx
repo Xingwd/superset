@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import {
   AdhocMetric,
@@ -154,7 +154,6 @@ export default function PivotTableChart(props: PivotTableProps) {
     dateFormatters,
     onContextMenu,
     timeGrainSqla,
-    allowRenderHtml,
   } = props;
 
   const theme = useTheme();
@@ -556,7 +555,6 @@ export default function PivotTableChart(props: PivotTableProps) {
           subtotalOptions={subtotalOptions}
           namesMapping={verboseMap}
           onContextMenu={handleContextMenu}
-          allowRenderHtml={allowRenderHtml}
         />
       </PivotTableWrapper>
     </Styles>

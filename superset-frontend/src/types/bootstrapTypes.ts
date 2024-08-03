@@ -7,7 +7,6 @@ import {
   SequentialSchemeConfig,
 } from '@superset-ui/core';
 import { FormatLocaleDefinition } from 'd3-format';
-import { TimeLocaleDefinition } from 'd3-time-format';
 import { isPlainObject } from 'lodash';
 import { Languages } from 'src/features/home/LanguagePicker';
 import { FlashMessage } from '../components/FlashProvider';
@@ -119,7 +118,6 @@ export interface MenuObjectChildProps {
   icon?: string;
   index?: number;
   url?: string;
-  onClick?: () => void;
   isFrontendRoute?: boolean;
   perm?: string | boolean;
   view?: string;
@@ -153,7 +151,6 @@ export interface CommonBootstrapData {
   theme_overrides: JsonObject;
   menu_data: MenuData;
   d3_format: Partial<FormatLocaleDefinition>;
-  d3_time_format: Partial<TimeLocaleDefinition>;
 }
 
 export interface BootstrapData {

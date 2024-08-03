@@ -17,6 +17,7 @@
  * under the License.
  */
 import { Provider } from 'react-redux';
+import React from 'react';
 import { styledMount as mount } from 'spec/helpers/theming';
 import sinon from 'sinon';
 import { DndProvider } from 'react-dnd';

@@ -17,7 +17,13 @@
  * under the License.
  */
 
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   BaseFormData,
   Column,
@@ -151,7 +157,6 @@ export interface DrillByModalProps {
   drillByConfig: Required<ContextMenuFilters>['drillBy'];
   formData: BaseFormData & { [key: string]: any };
   onHideModal: () => void;
-  canDownload: boolean;
 }
 
 type DrillByConfigs = (ContextMenuFilters['drillBy'] & { column?: Column })[];
@@ -162,7 +167,6 @@ export default function DrillByModal({
   drillByConfig,
   formData,
   onHideModal,
-  canDownload,
 }: DrillByModalProps) {
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -202,7 +206,6 @@ export default function DrillByModal({
   const resultsTable = useResultsTableView(
     chartDataResult,
     formData.datasource,
-    canDownload,
   );
 
   const [currentFormData, setCurrentFormData] = useState(formData);

@@ -47,14 +47,17 @@ export const useNativeFilters = () => {
     filter => filter.requiredFirst,
   );
   const dataMask = useNativeFiltersDataMask();
-
-  const missingInitialFilters = requiredFirstFilter
-    .filter(({ id }) => dataMask[id]?.filterState?.value === undefined)
-    .map(({ name }) => name);
   const showDashboard =
     isInitialized ||
     !nativeFiltersEnabled ||
-    missingInitialFilters.length === 0;
+    !(
+      nativeFiltersEnabled &&
+      requiredFirstFilter.length &&
+      requiredFirstFilter.find(
+        ({ id }) => dataMask[id]?.filterState?.value === undefined,
+      )
+    );
+
   const toggleDashboardFiltersOpen = useCallback(
     (visible?: boolean) => {
       setDashboardFiltersOpen(visible ?? !dashboardFiltersOpen);
@@ -81,7 +84,6 @@ export const useNativeFilters = () => {
 
   return {
     showDashboard,
-    missingInitialFilters,
     dashboardFiltersOpen,
     toggleDashboardFiltersOpen,
     nativeFiltersEnabled,

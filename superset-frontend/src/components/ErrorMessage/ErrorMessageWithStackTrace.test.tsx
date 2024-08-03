@@ -17,11 +17,12 @@
  * under the License.
  */
 
-import { ErrorLevel, ErrorSource, ErrorTypeEnum } from '@superset-ui/core';
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
 import userEvent from '@testing-library/user-event';
 import ErrorMessageWithStackTrace from './ErrorMessageWithStackTrace';
 import BasicErrorAlert from './BasicErrorAlert';
+import { ErrorLevel, ErrorSource, ErrorTypeEnum } from './types';
 
 jest.mock(
   'src/components/Icons/Icon',

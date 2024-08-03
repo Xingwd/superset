@@ -16,15 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useMemo, ReactNode } from 'react';
+import React, { useCallback, useMemo, ReactNode } from 'react';
 import rison from 'rison';
+import { t, JsonResponse } from '@superset-ui/core';
+import { AsyncSelect } from 'src/components';
 import {
-  t,
-  JsonResponse,
   ClientErrorObject,
   getClientErrorObject,
-} from '@superset-ui/core';
-import { AsyncSelect } from 'src/components';
+} from 'src/utils/getClientErrorObject';
 import { cachedSupersetGet } from 'src/utils/cachedSupersetGet';
 import {
   Dataset,

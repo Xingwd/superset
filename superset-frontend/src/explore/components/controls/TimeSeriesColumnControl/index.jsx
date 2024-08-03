@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'src/components/Input';
 import Button from 'src/components/Button';
@@ -96,7 +96,7 @@ const ButtonBar = styled.div`
   justify-content: center;
 `;
 
-export default class TimeSeriesColumnControl extends Component {
+export default class TimeSeriesColumnControl extends React.Component {
   constructor(props) {
     super(props);
 

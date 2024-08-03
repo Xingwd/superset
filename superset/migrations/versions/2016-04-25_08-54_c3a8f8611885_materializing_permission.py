@@ -21,7 +21,6 @@ Revises: 4fa88fe24e94
 Create Date: 2016-04-25 08:54:04.303859
 
 """
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy import Column, ForeignKey, Integer, String

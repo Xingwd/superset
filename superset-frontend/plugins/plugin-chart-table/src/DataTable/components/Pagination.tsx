@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { CSSProperties, forwardRef, memo, Ref } from 'react';
+import React, { CSSProperties, forwardRef } from 'react';
 
 export interface PaginationProps {
   pageCount: number; // number of pages
@@ -71,7 +71,7 @@ export function generatePageItems(
   return items;
 }
 
-export default memo(
+export default React.memo(
   forwardRef(function Pagination(
     {
       style,
@@ -80,7 +80,7 @@ export default memo(
       maxPageItemCount = 9,
       onPageChange,
     }: PaginationProps,
-    ref: Ref<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>,
   ) {
     const pageItems = generatePageItems(
       pageCount,

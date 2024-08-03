@@ -16,13 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  useEffect,
-  useState,
-  FunctionComponent,
-  MouseEventHandler,
-} from 'react';
-
+import React, { useEffect, useState, FunctionComponent } from 'react';
 import moment, { Moment, MomentInput } from 'moment';
 import { t, styled } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
@@ -31,7 +25,7 @@ const REFRESH_INTERVAL = 60000; // every minute
 
 interface LastUpdatedProps {
   updatedAt: MomentInput;
-  update?: MouseEventHandler<HTMLSpanElement>;
+  update?: React.MouseEventHandler<HTMLSpanElement>;
 }
 moment.updateLocale('en', {
   calendar: {

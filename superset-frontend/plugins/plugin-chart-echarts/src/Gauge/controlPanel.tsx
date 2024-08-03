@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { t } from '@superset-ui/core';
 import {
   sharedControls,
@@ -53,7 +54,18 @@ const config: ControlPanelConfig = {
             },
           },
         ],
-        ['sort_by_metric'],
+        [
+          {
+            name: 'sort_by_metric',
+            config: {
+              type: 'CheckboxControl',
+              label: t('Sort by metric'),
+              description: t(
+                'Whether to sort results by the selected metric in descending order.',
+              ),
+            },
+          },
+        ],
       ],
     },
     {

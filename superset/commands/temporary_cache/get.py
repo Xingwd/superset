@@ -42,4 +42,5 @@ class GetTemporaryCacheCommand(BaseCommand, ABC):
         pass
 
     @abstractmethod
-    def get(self, cmd_params: CommandParameters) -> Optional[str]: ...
+    def get(self, cmd_params: CommandParameters) -> Optional[str]:
+        ...

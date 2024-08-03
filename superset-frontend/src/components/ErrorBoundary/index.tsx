@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
 import { t } from '@superset-ui/core';
 import ErrorMessageWithStackTrace from 'src/components/ErrorMessage/ErrorMessageWithStackTrace';
 
 export interface ErrorBoundaryProps {
-  children: ReactNode;
-  onError?: (error: Error, info: ErrorInfo) => void;
+  children: React.ReactNode;
+  onError?: (error: Error, info: React.ErrorInfo) => void;
   showMessage?: boolean;
 }
 
 interface ErrorBoundaryState {
   error: Error | null;
-  info: ErrorInfo | null;
+  info: React.ErrorInfo | null;
 }
 
-export default class ErrorBoundary extends Component<
+export default class ErrorBoundary extends React.Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {
@@ -44,7 +44,7 @@ export default class ErrorBoundary extends Component<
     this.state = { error: null, info: null };
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo): void {
+  componentDidCatch(error: Error, info: React.ErrorInfo): void {
     this.props.onError?.(error, info);
     this.setState({ error, info });
   }

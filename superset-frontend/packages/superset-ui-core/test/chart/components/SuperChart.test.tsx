@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import mockConsole, { RestoreConsole } from 'jest-mock-console';
 import { triggerResizeObserver } from 'resize-observer-polyfill';
 import ErrorBoundary from 'react-error-boundary';

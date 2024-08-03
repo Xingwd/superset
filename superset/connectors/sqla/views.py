@@ -15,21 +15,16 @@
 # specific language governing permissions and limitations
 # under the License.
 """Views used by the SqlAlchemy connector"""
-
 import logging
 import re
 
-from flask import flash, redirect
-from flask_appbuilder import CompactCRUDMixin, expose
+from flask import flash, Markup, redirect
+from flask_appbuilder import CompactCRUDMixin, expose, permission_name
 from flask_appbuilder.fields import QuerySelectField
 from flask_appbuilder.fieldwidgets import Select2Widget
 from flask_appbuilder.models.sqla.interface import SQLAInterface
-from flask_appbuilder.security.decorators import (
-    has_access,
-    permission_name,
-)
+from flask_appbuilder.security.decorators import has_access
 from flask_babel import lazy_gettext as _
-from markupsafe import Markup
 from wtforms.validators import DataRequired, Regexp
 
 from superset import db
@@ -41,7 +36,6 @@ from superset.views.base import (
     BaseSupersetView,
     DatasourceFilter,
     DeleteMixin,
-    DeprecateModelViewMixin,
     ListWidgetWithCheckboxes,
     SupersetModelView,
     YamlExportMixin,
@@ -64,7 +58,6 @@ class SelectDataRequired(DataRequired):  # pylint: disable=too-few-public-method
 
 
 class TableColumnInlineView(  # pylint: disable=too-many-ancestors
-    DeprecateModelViewMixin,
     CompactCRUDMixin,
     SupersetModelView,
 ):
@@ -201,7 +194,6 @@ class TableColumnInlineView(  # pylint: disable=too-many-ancestors
 
 
 class SqlMetricInlineView(  # pylint: disable=too-many-ancestors
-    DeprecateModelViewMixin,
     CompactCRUDMixin,
     SupersetModelView,
 ):
@@ -289,7 +281,7 @@ class RowLevelSecurityView(BaseSupersetView):
 
 
 class TableModelView(  # pylint: disable=too-many-ancestors
-    DeprecateModelViewMixin, SupersetModelView, DeleteMixin, YamlExportMixin
+    SupersetModelView, DeleteMixin, YamlExportMixin
 ):
     datamodel = SQLAInterface(models.SqlaTable)
     class_permission_name = "Dataset"

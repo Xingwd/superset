@@ -17,7 +17,7 @@
  * under the License.
  */
 import { t, styled } from '@superset-ui/core';
-import { useCallback, useEffect, useRef, useState, ReactNode } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Alert from 'src/components/Alert';
 import cx from 'classnames';
 import Button from 'src/components/Button';
@@ -217,14 +217,14 @@ export interface ListViewProps<T extends object = any> {
   filters?: Filters;
   bulkActions?: Array<{
     key: string;
-    name: ReactNode;
+    name: React.ReactNode;
     onSelect: (rows: any[]) => any;
     type?: 'primary' | 'secondary' | 'danger';
   }>;
   bulkSelectEnabled?: boolean;
   disableBulkSelect?: () => void;
-  renderBulkSelectCopy?: (selects: any[]) => ReactNode;
-  renderCard?: (row: T & { loading: boolean }) => ReactNode;
+  renderBulkSelectCopy?: (selects: any[]) => React.ReactNode;
+  renderCard?: (row: T & { loading: boolean }) => React.ReactNode;
   cardSortSelectOptions?: Array<CardSortSelectOption>;
   defaultViewMode?: ViewModeType;
   highlightRowId?: number;

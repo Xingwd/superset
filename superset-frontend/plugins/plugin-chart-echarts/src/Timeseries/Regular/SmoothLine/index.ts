@@ -70,6 +70,7 @@ export default class EchartsTimeseriesSmoothLineChartPlugin extends EchartsChart
           t('ECharts'),
           t('Predictive'),
           t('Advanced-Analytics'),
+          t('Aesthetic'),
           t('Time'),
           t('Line'),
           t('Transformable'),

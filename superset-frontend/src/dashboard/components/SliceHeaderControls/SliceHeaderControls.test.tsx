@@ -17,16 +17,12 @@
  * under the License.
  */
 
-import { KeyboardEvent, ReactElement } from 'react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
 import { FeatureFlag } from '@superset-ui/core';
 import mockState from 'spec/fixtures/mockState';
-import { Menu } from 'src/components/Menu';
-import SliceHeaderControls, {
-  SliceHeaderControlsProps,
-  handleDropdownNavigation,
-} from '.';
+import SliceHeaderControls, { SliceHeaderControlsProps } from '.';
 
 jest.mock('src/components/Dropdown', () => {
   const original = jest.requireActual('src/components/Dropdown');
@@ -198,7 +194,8 @@ test('Should "export to Excel"', async () => {
 });
 
 test('Export full CSV is under featureflag', async () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.AllowFullCsvExport]: false,
   };
   const props = createProps('table');
@@ -209,7 +206,8 @@ test('Export full CSV is under featureflag', async () => {
 });
 
 test('Should "export full CSV"', async () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.AllowFullCsvExport]: true,
   };
   const props = createProps('table');
@@ -222,7 +220,8 @@ test('Should "export full CSV"', async () => {
 });
 
 test('Should not show export full CSV if report is not table', async () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.AllowFullCsvExport]: true,
   };
   renderWrapper();
@@ -232,7 +231,8 @@ test('Should not show export full CSV if report is not table', async () => {
 });
 
 test('Export full Excel is under featureflag', async () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.AllowFullCsvExport]: false,
   };
   const props = createProps('table');
@@ -243,7 +243,8 @@ test('Export full Excel is under featureflag', async () => {
 });
 
 test('Should "export full Excel"', async () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.AllowFullCsvExport]: true,
   };
   const props = createProps('table');
@@ -256,7 +257,8 @@ test('Should "export full Excel"', async () => {
 });
 
 test('Should not show export full Excel if report is not table', async () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.AllowFullCsvExport]: true,
   };
   renderWrapper();
@@ -294,7 +296,8 @@ test('Should "Enter fullscreen"', () => {
 });
 
 test('Drill to detail modal is under featureflag', () => {
-  (global as any).featureFlags = {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.DrillToDetail]: false,
   };
   const props = createProps();
@@ -302,8 +305,9 @@ test('Drill to detail modal is under featureflag', () => {
   expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
 });
 
-test('Should show "Drill to detail" with `can_explore` & `can_samples` perms', () => {
-  (global as any).featureFlags = {
+test('Should show "Drill to detail"', () => {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.DrillToDetail]: true,
   };
   const props = {
@@ -317,44 +321,9 @@ test('Should show "Drill to detail" with `can_explore` & `can_samples` perms', (
   expect(screen.getByText('Drill to detail')).toBeInTheDocument();
 });
 
-test('Should show "Drill to detail" with `can_drill` & `can_samples` perms', () => {
-  (global as any).featureFlags = {
-    [FeatureFlag.DrillToDetail]: true,
-  };
-  const props = {
-    ...createProps(),
-    supersetCanExplore: false,
-  };
-  props.slice.slice_id = 18;
-  renderWrapper(props, {
-    Admin: [
-      ['can_samples', 'Datasource'],
-      ['can_drill', 'Dashboard'],
-    ],
-  });
-  expect(screen.getByText('Drill to detail')).toBeInTheDocument();
-});
-
-test('Should show "Drill to detail" with both `canexplore` + `can_drill` & `can_samples` perms', () => {
-  (global as any).featureFlags = {
-    [FeatureFlag.DrillToDetail]: true,
-  };
-  const props = {
-    ...createProps(),
-    supersetCanExplore: true,
-  };
-  props.slice.slice_id = 18;
-  renderWrapper(props, {
-    Admin: [
-      ['can_samples', 'Datasource'],
-      ['can_drill', 'Dashboard'],
-    ],
-  });
-  expect(screen.getByText('Drill to detail')).toBeInTheDocument();
-});
-
-test('Should not show "Drill to detail" with neither of required perms', () => {
-  (global as any).featureFlags = {
+test('Should not show "Drill to detail"', () => {
+  // @ts-ignore
+  global.featureFlags = {
     [FeatureFlag.DrillToDetail]: true,
   };
   const props = {
@@ -364,21 +333,6 @@ test('Should not show "Drill to detail" with neither of required perms', () => {
   props.slice.slice_id = 18;
   renderWrapper(props, {
     Admin: [['invalid_permission', 'Dashboard']],
-  });
-  expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
-});
-
-test('Should not show "Drill to detail" only `can_dril` perm', () => {
-  (global as any).featureFlags = {
-    [FeatureFlag.DrillToDetail]: true,
-  };
-  const props = {
-    ...createProps(),
-    supersetCanExplore: false,
-  };
-  props.slice.slice_id = 18;
-  renderWrapper(props, {
-    Admin: [['can_drill', 'Dashboard']],
   });
   expect(screen.queryByText('Drill to detail')).not.toBeInTheDocument();
 });
@@ -445,169 +399,4 @@ test('Should not show the "Edit chart" button', () => {
     ],
   });
   expect(screen.queryByText('Edit chart')).not.toBeInTheDocument();
-});
-
-describe('handleDropdownNavigation', () => {
-  const mockToggleDropdown = jest.fn();
-  const mockSetSelectedKeys = jest.fn();
-  const mockSetOpenKeys = jest.fn();
-
-  const menu = (
-    <Menu selectedKeys={['item1']}>
-      <Menu.Item key="item1">Item 1</Menu.Item>
-      <Menu.Item key="item2">Item 2</Menu.Item>
-      <Menu.Item key="item3">Item 3</Menu.Item>
-    </Menu>
-  );
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('should continue with system tab navigation if dropdown is closed and tab key is pressed', () => {
-    const event = {
-      key: 'Tab',
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      false,
-      <div />,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockToggleDropdown).not.toHaveBeenCalled();
-    expect(mockSetSelectedKeys).not.toHaveBeenCalled();
-  });
-
-  test(`should prevent default behavior and toggle dropdown if dropdown
-      is closed and action key is pressed`, () => {
-    const event = {
-      key: 'Enter',
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      false,
-      <div />,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockToggleDropdown).toHaveBeenCalled();
-    expect(mockSetSelectedKeys).not.toHaveBeenCalled();
-  });
-
-  test(`should trigger menu item click,
-      clear selected keys, close dropdown, and focus on menu trigger
-      if action key is pressed and menu item is selected`, () => {
-    const event = {
-      key: 'Enter',
-      preventDefault: jest.fn(),
-      currentTarget: { focus: jest.fn() },
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      true,
-      menu,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockToggleDropdown).toHaveBeenCalled();
-    expect(mockSetSelectedKeys).toHaveBeenCalledWith([]);
-    expect(event.currentTarget.focus).toHaveBeenCalled();
-  });
-
-  test('should select the next menu item if down arrow key is pressed', () => {
-    const event = {
-      key: 'ArrowDown',
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      true,
-      menu,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockSetSelectedKeys).toHaveBeenCalledWith(['item2']);
-  });
-
-  test('should select the previous menu item if up arrow key is pressed', () => {
-    const event = {
-      key: 'ArrowUp',
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      true,
-      menu,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockSetSelectedKeys).toHaveBeenCalledWith(['item1']);
-  });
-
-  test('should close dropdown menu if escape key is pressed', () => {
-    const event = {
-      key: 'Escape',
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      true,
-      <div />,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockToggleDropdown).toHaveBeenCalled();
-    expect(mockSetSelectedKeys).not.toHaveBeenCalled();
-  });
-
-  test('should do nothing if an unsupported key is pressed', () => {
-    const event = {
-      key: 'Shift',
-      preventDefault: jest.fn(),
-    } as unknown as KeyboardEvent<HTMLDivElement>;
-
-    handleDropdownNavigation(
-      event,
-      true,
-      <div />,
-      mockToggleDropdown,
-      mockSetSelectedKeys,
-      mockSetOpenKeys,
-    );
-    expect(mockToggleDropdown).not.toHaveBeenCalled();
-    expect(mockSetSelectedKeys).not.toHaveBeenCalled();
-  });
-
-  test('should find a child element with a key', () => {
-    const item = {
-      props: {
-        children: [
-          <div key="1">Child 1</div>,
-          <div key="2">Child 2</div>,
-          <div key="3">Child 3</div>,
-        ],
-      },
-    };
-
-    const childWithKey = item?.props?.children?.find(
-      (child: ReactElement) => child?.key,
-    );
-
-    expect(childWithKey).toBeDefined();
-  });
 });

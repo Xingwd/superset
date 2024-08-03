@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Dispatch } from 'react';
+import React from 'react';
 import { t } from '@superset-ui/core';
 import { PageHeaderWithActions } from 'src/components/PageHeaderWithActions';
 import Button from 'src/components/Button';
@@ -65,7 +65,7 @@ export default function Header({
   title = DEFAULT_TITLE,
   editing = false,
 }: {
-  setDataset: Dispatch<DSReducerActionType>;
+  setDataset: React.Dispatch<DSReducerActionType>;
   title?: string | null | undefined;
   schema?: string | null | undefined;
   editing?: boolean;

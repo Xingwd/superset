@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { useTheme, css } from '@superset-ui/core';
 import { Tooltip as BaseTooltip } from 'antd';
 import type { TooltipProps } from 'antd/lib/tooltip';

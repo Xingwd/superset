@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { JSONTree } from 'react-json-tree';
 import { css, styled, SupersetTheme, t } from '@superset-ui/core';
 

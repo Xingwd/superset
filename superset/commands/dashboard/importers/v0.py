@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import json
 import logging
 import time
 from copy import copy
@@ -31,12 +32,10 @@ from superset.exceptions import DashboardImportException
 from superset.migrations.shared.native_filters import migrate_dashboard
 from superset.models.dashboard import Dashboard
 from superset.models.slice import Slice
-from superset.utils import json
 from superset.utils.dashboard_filter_scopes_converter import (
     convert_filter_scopes,
     copy_filter_scopes,
 )
-from superset.utils.decorators import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +66,6 @@ def import_chart(
     datasource = SqlaTable.get_datasource_by_name(
         datasource_name=params["datasource_name"],
         database_name=params["database_name"],
-        catalog=params.get("catalog"),
         schema=params["schema"],
     )
     slc_to_import.datasource_id = datasource.id  # type: ignore
@@ -310,8 +308,10 @@ def import_dashboards(
         params = json.loads(table.params)
         dataset_id_mapping[params["remote_id"]] = new_dataset_id
 
+    db.session.commit()
     for dashboard in data["dashboards"]:
         import_dashboard(dashboard, dataset_id_mapping, import_time=import_time)
+    db.session.commit()
 
 
 class ImportDashboardsCommand(BaseCommand):
@@ -329,7 +329,6 @@ class ImportDashboardsCommand(BaseCommand):
         self.contents = contents
         self.database_id = database_id
 
-    @transaction()
     def run(self) -> None:
         self.validate()
 

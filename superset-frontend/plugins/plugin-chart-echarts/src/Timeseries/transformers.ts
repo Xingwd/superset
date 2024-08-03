@@ -62,7 +62,7 @@ import {
   formatAnnotationLabel,
   parseAnnotationOpacity,
 } from '../utils/annotation';
-import { getChartPadding, getTimeCompareStackId } from '../utils/series';
+import { getChartPadding } from '../utils/series';
 import {
   OpacityEnum,
   StackControlsValue,
@@ -166,7 +166,6 @@ export function transformSeries(
     isHorizontal?: boolean;
     lineStyle?: LineStyleOption;
     queryIndex?: number;
-    timeCompare?: string[];
   },
 ): SeriesOption | undefined {
   const { name } = series;
@@ -193,7 +192,6 @@ export function transformSeries(
     sliceId,
     isHorizontal = false,
     queryIndex = 0,
-    timeCompare = [],
   } = opts;
   const contexts = seriesContexts[name || ''] || [];
   const hasForecast =
@@ -223,9 +221,9 @@ export function transformSeries(
   } else if (stack && isObservation) {
     // the suffix of the observation series is '' (falsy), which disables
     // stacking. Therefore we need to set something that is truthy.
-    stackId = getTimeCompareStackId('obs', timeCompare, name);
+    stackId = 'obs';
   } else if (stack && isTrend) {
-    stackId = getTimeCompareStackId(forecastSeries.type, timeCompare, name);
+    stackId = forecastSeries.type;
   }
   if (stackId && stackIdSuffix) {
     stackId += stackIdSuffix;

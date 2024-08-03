@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { styledMount as mount } from 'spec/helpers/theming';
 import { TableTab } from 'src/views/CRUD/types';
 import EmptyState, { EmptyStateProps } from './EmptyState';

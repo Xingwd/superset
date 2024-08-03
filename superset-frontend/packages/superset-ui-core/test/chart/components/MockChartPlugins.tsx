@@ -18,6 +18,7 @@
  */
 
 /* eslint-disable max-classes-per-file */
+import React from 'react';
 import {
   QueryFormData,
   ChartMetadata,

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import Loading, { Props, PositionOption } from './index';
 
 export default {
@@ -64,7 +65,6 @@ InteractiveLoading.args = {
 InteractiveLoading.argTypes = {
   position: {
     name: 'position',
-    control: { type: 'select' },
-    options: POSITIONS,
+    control: { type: 'select', options: POSITIONS },
   },
 };

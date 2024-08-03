@@ -18,7 +18,7 @@
 from typing import Any
 
 from marshmallow import Schema
-from sqlalchemy.orm import Session  # noqa: F401
+from sqlalchemy.orm import Session
 
 from superset.commands.database.exceptions import DatabaseImportError
 from superset.commands.database.importers.v1.utils import import_database
@@ -30,6 +30,7 @@ from superset.datasets.schemas import ImportV1DatasetSchema
 
 
 class ImportDatabasesCommand(ImportModelsCommand):
+
     """Import databases"""
 
     dao = DatabaseDAO

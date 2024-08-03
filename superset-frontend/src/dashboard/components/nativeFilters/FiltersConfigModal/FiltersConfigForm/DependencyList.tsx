@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { styled, t } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import { Select } from 'src/components';
@@ -78,6 +78,7 @@ const RowPanel = styled.div`
 `;
 
 const Label = styled.div`
+  text-transform: uppercase;
   font-size: ${({ theme }) => theme.typography.sizes.s}px;
   color: ${({ theme }) => theme.colors.grayscale.base};
   margin-bottom: ${({ theme }) => theme.gridUnit}px;
@@ -170,7 +171,7 @@ const List = ({
         />
       ))}
       {availableFilters.length > rows.length && (
-        <AddFilter role="button" onClick={onAdd}>
+        <AddFilter onClick={onAdd}>
           <Icons.PlusSmall />
           {t('Add filter')}
         </AddFilter>

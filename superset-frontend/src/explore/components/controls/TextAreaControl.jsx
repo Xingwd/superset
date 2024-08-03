@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { TextArea } from 'src/components/Input';
 import { t, withTheme } from '@superset-ui/core';
@@ -69,7 +69,7 @@ const defaultProps = {
   textAreaStyles: {},
 };
 
-class TextAreaControl extends Component {
+class TextAreaControl extends React.Component {
   onControlChange(event) {
     const { value } = event.target;
     this.props.onChange(value);

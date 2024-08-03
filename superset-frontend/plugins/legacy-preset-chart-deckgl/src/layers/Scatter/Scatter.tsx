@@ -17,6 +17,7 @@
  * under the License.
  */
 import { ScatterplotLayer } from 'deck.gl/typed';
+import React from 'react';
 import {
   Datasource,
   getMetricLabel,

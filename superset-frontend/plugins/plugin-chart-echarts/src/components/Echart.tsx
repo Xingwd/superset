@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
+import React, {
   useRef,
   useEffect,
   useMemo,
@@ -24,9 +24,7 @@ import {
   useImperativeHandle,
   useLayoutEffect,
   useCallback,
-  Ref,
 } from 'react';
-
 import { styled } from '@superset-ui/core';
 import { ECharts, init } from 'echarts';
 import { EchartsHandler, EchartsProps, EchartsStylesProps } from '../types';
@@ -46,7 +44,7 @@ function Echart(
     selectedValues = {},
     refs,
   }: EchartsProps,
-  ref: Ref<EchartsHandler>,
+  ref: React.Ref<EchartsHandler>,
 ) {
   const divRef = useRef<HTMLDivElement>(null);
   if (refs) {

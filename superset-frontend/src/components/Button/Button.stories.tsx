@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import Button, { ButtonProps } from './index';
 
 type ButtonStyle = Pick<ButtonProps, 'buttonStyle'>;
@@ -117,13 +118,11 @@ InteractiveButton.args = {
 InteractiveButton.argTypes = {
   target: {
     name: TARGETS.label,
-    control: { type: 'select' },
-    options: Object.values(TARGETS.options),
+    control: { type: 'select', options: Object.values(TARGETS.options) },
   },
   href: {
     name: HREFS.label,
-    control: { type: 'select' },
-    options: Object.values(HREFS.options),
+    control: { type: 'select', options: Object.values(HREFS.options) },
   },
   onClick: { action: 'clicked' },
 };

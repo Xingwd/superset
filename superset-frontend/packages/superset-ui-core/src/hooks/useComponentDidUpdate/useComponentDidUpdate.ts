@@ -17,12 +17,9 @@
  * under the License.
  */
 
-import { DependencyList, EffectCallback, useEffect, useRef } from 'react';
+import { EffectCallback, useEffect, useRef } from 'react';
 
-export const useComponentDidUpdate = (
-  effect: EffectCallback,
-  deps?: DependencyList,
-) => {
+export const useComponentDidUpdate = (effect: EffectCallback) => {
   const isMountedRef = useRef(false);
   useEffect(() => {
     if (isMountedRef.current) {
@@ -30,6 +27,5 @@ export const useComponentDidUpdate = (
     } else {
       isMountedRef.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...(deps || [effect])]);
+  }, [effect]);
 };

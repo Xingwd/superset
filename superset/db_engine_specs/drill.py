@@ -100,11 +100,7 @@ class DrillEngineSpec(BaseEngineSpec):
 
     @classmethod
     def get_url_for_impersonation(
-        cls,
-        url: URL,
-        impersonate_user: bool,
-        username: str | None,
-        access_token: str | None,
+        cls, url: URL, impersonate_user: bool, username: str | None
     ) -> URL:
         """
         Return a modified URL with the username set.

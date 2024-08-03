@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { DatePickerProps, RangePickerProps } from 'antd/lib/date-picker';
 import { DatePicker, RangePicker } from '.';
 
@@ -40,14 +41,14 @@ const interactiveTypes = {
   picker: {
     control: {
       type: 'select',
+      options: ['', 'date', 'week', 'month', 'quarter', 'year'],
     },
-    options: ['', 'date', 'week', 'month', 'quarter', 'year'],
   },
   size: {
     control: {
       type: 'select',
+      options: ['large', 'middle', 'small'],
     },
-    options: ['large', 'middle', 'small'],
   },
 };
 

@@ -27,13 +27,14 @@ revision = "bddc498dd179"
 down_revision = "80a67c5192fa"
 
 
-from alembic import op  # noqa: E402
-from sqlalchemy import Column, Integer, Text  # noqa: E402
-from sqlalchemy.ext.declarative import declarative_base  # noqa: E402
+import json
 
-from superset import db  # noqa: E402
-from superset.utils import json  # noqa: E402
-from superset.utils.core import (  # noqa: E402
+from alembic import op
+from sqlalchemy import Column, Integer, Text
+from sqlalchemy.ext.declarative import declarative_base
+
+from superset import db
+from superset.utils.core import (
     convert_legacy_filters_into_adhoc,
     split_adhoc_filters_into_base_filters,
 )

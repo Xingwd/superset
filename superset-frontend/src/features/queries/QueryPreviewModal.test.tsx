@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { MouseEvent } from 'react';
+import React from 'react';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
@@ -98,7 +98,7 @@ describe('QueryPreviewModal', () => {
         .props();
 
       if (typeof props.onClick === 'function') {
-        props.onClick({} as MouseEvent);
+        props.onClick({} as React.MouseEvent);
       }
     });
 
@@ -130,7 +130,7 @@ describe('QueryPreviewModal', () => {
           .first()
           .props();
         if (typeof props.onClick === 'function') {
-          props.onClick({} as MouseEvent);
+          props.onClick({} as React.MouseEvent);
         }
       });
 
@@ -143,7 +143,7 @@ describe('QueryPreviewModal', () => {
       act(() => {
         const props = wrapper.find('[data-test="next-query"]').first().props();
         if (typeof props.onClick === 'function') {
-          props.onClick({} as MouseEvent);
+          props.onClick({} as React.MouseEvent);
         }
       });
 
@@ -173,7 +173,7 @@ describe('QueryPreviewModal', () => {
         .props();
 
       if (typeof props.onClick === 'function') {
-        props.onClick({} as MouseEvent);
+        props.onClick({} as React.MouseEvent);
       }
 
       expect(mockedProps.openInSqlLab).toHaveBeenCalled();

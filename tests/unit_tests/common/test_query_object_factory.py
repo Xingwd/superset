@@ -15,9 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 from typing import Any, Optional
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
-from pytest import fixture
+from pytest import fixture, mark
 
 from superset.common.query_object_factory import QueryObjectFactory
 from tests.common.query_context_generator import QueryContextGenerator

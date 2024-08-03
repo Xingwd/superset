@@ -18,7 +18,6 @@
  */
 import { useCallback, useMemo, useEffect, useRef } from 'react';
 import useEffectEvent from 'src/hooks/useEffectEvent';
-import { toQueryString } from 'src/utils/urlUtils';
 import { api, JsonResponse } from './queryApi';
 
 import { useSchemas } from './schemas';
@@ -51,7 +50,6 @@ export type Data = {
 
 export type FetchTablesQueryParams = {
   dbId?: string | number;
-  catalog?: string | null;
   schema?: string;
   forceRefresh?: boolean;
   onSuccess?: (data: Data, isRefetched: boolean) => void;
@@ -60,7 +58,6 @@ export type FetchTablesQueryParams = {
 
 export type FetchTableMetadataQueryParams = {
   dbId: string | number;
-  catalog?: string | null;
   schema: string;
   table: string;
 };
@@ -98,13 +95,12 @@ const tableApi = api.injectEndpoints({
   endpoints: builder => ({
     tables: builder.query<Data, FetchTablesQueryParams>({
       providesTags: ['Tables'],
-      query: ({ dbId, catalog, schema, forceRefresh }) => ({
+      query: ({ dbId, schema, forceRefresh }) => ({
         endpoint: `/api/v1/database/${dbId ?? 'undefined'}/tables/`,
         // TODO: Would be nice to add pagination in a follow-up. Needs endpoint changes.
         urlParams: {
           force: forceRefresh,
           schema_name: schema ? encodeURIComponent(schema) : '',
-          ...(catalog && { catalog_name: catalog }),
         },
         transformResponse: ({ json }: QueryResponse) => ({
           options: json.result,
@@ -117,12 +113,10 @@ const tableApi = api.injectEndpoints({
       }),
     }),
     tableMetadata: builder.query<TableMetaData, FetchTableMetadataQueryParams>({
-      query: ({ dbId, catalog, schema, table }) => ({
-        endpoint: `/api/v1/database/${dbId}/table_metadata/${toQueryString({
-          name: table,
-          catalog,
-          schema,
-        })}`,
+      query: ({ dbId, schema, table }) => ({
+        endpoint: `/api/v1/database/${dbId}/table/${encodeURIComponent(
+          table,
+        )}/${encodeURIComponent(schema)}/`,
         transformResponse: ({ json }: TableMetadataReponse) => json,
       }),
     }),
@@ -130,10 +124,10 @@ const tableApi = api.injectEndpoints({
       TableExtendedMetadata,
       FetchTableMetadataQueryParams
     >({
-      query: ({ dbId, catalog, schema, table }) => ({
-        endpoint: `/api/v1/database/${dbId}/table_metadata/extra/${toQueryString(
-          { name: table, catalog, schema },
-        )}`,
+      query: ({ dbId, schema, table }) => ({
+        endpoint: `/api/v1/database/${dbId}/table_extra/${encodeURIComponent(
+          table,
+        )}/${encodeURIComponent(schema)}/`,
         transformResponse: ({ json }: JsonResponse) => json,
       }),
     }),
@@ -150,23 +144,22 @@ export const {
 } = tableApi;
 
 export function useTables(options: Params) {
-  const { dbId, catalog, schema, onSuccess, onError } = options || {};
   const isMountedRef = useRef(false);
-  const { currentData: schemaOptions, isFetching } = useSchemas({
-    dbId,
-    catalog: catalog || undefined,
+  const { data: schemaOptions, isFetching } = useSchemas({
+    dbId: options.dbId,
   });
   const schemaOptionsMap = useMemo(
     () => new Set(schemaOptions?.map(({ value }) => value)),
     [schemaOptions],
   );
+  const { dbId, schema, onSuccess, onError } = options || {};
 
   const enabled = Boolean(
     dbId && schema && !isFetching && schemaOptionsMap.has(schema),
   );
 
   const result = useTablesQuery(
-    { dbId, catalog, schema, forceRefresh: false },
+    { dbId, schema, forceRefresh: false },
     {
       skip: !enabled,
     },
@@ -183,7 +176,7 @@ export function useTables(options: Params) {
 
   const refetch = useCallback(() => {
     if (enabled) {
-      trigger({ dbId, catalog, schema, forceRefresh: true }).then(
+      trigger({ dbId, schema, forceRefresh: true }).then(
         ({ isSuccess, isError, data, error }) => {
           if (isSuccess && data) {
             handleOnSuccess(data, true);
@@ -194,7 +187,7 @@ export function useTables(options: Params) {
         },
       );
     }
-  }, [dbId, catalog, schema, enabled, handleOnSuccess, handleOnError, trigger]);
+  }, [dbId, schema, enabled, handleOnSuccess, handleOnError, trigger]);
 
   useEffect(() => {
     if (isMountedRef.current) {
@@ -203,13 +196,13 @@ export function useTables(options: Params) {
         isSuccess,
         isError,
         isFetching,
-        currentData,
+        data,
         error,
         originalArgs,
       } = result;
       if (!originalArgs?.forceRefresh && requestId && !isFetching) {
-        if (isSuccess && currentData) {
-          handleOnSuccess(currentData, false);
+        if (isSuccess && data) {
+          handleOnSuccess(data, false);
         }
         if (isError) {
           handleOnError(error as Response);

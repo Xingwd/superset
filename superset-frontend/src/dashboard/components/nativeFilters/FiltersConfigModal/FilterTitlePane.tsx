@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useRef, FC } from 'react';
-
+import React, { useRef } from 'react';
 import { NativeFilterType, styled, t, useTheme } from '@superset-ui/core';
 import { AntdDropdown } from 'src/components';
 import { MainNav as Menu } from 'src/components/Menu';
@@ -58,7 +57,7 @@ const options = [
   { label: t('Divider'), type: NativeFilterType.Divider },
 ];
 
-const FilterTitlePane: FC<Props> = ({
+const FilterTitlePane: React.FC<Props> = ({
   getFilterTitle,
   onChange,
   onAdd,

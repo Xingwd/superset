@@ -109,7 +109,6 @@ export default function sqlLabReducer(state = {}, action) {
         remoteId: progenitor.remoteId,
         name: t('Copy of %s', progenitor.name),
         dbId: action.query.dbId ? action.query.dbId : null,
-        catalog: action.query.catalog ? action.query.catalog : null,
         schema: action.query.schema ? action.query.schema : null,
         autorun: true,
         sql: action.query.sql,
@@ -163,17 +162,8 @@ export default function sqlLabReducer(state = {}, action) {
           ...(action.queryEditor.id !== state.unsavedQueryEditor.id &&
             state.unsavedQueryEditor),
         },
-        destroyedQueryEditors: {
-          ...newState.destroyedQueryEditors,
-          [queryEditor.id]: Date.now(),
-        },
       };
       return newState;
-    },
-    [actions.CLEAR_DESTROYED_QUERY_EDITOR]() {
-      const destroyedQueryEditors = { ...state.destroyedQueryEditors };
-      delete destroyedQueryEditors[action.queryEditorId];
-      return { ...state, destroyedQueryEditors };
     },
     [actions.REMOVE_QUERY]() {
       const newQueries = { ...state.queries };
@@ -190,7 +180,6 @@ export default function sqlLabReducer(state = {}, action) {
         if (
           xt.dbId === at.dbId &&
           xt.queryEditorId === at.queryEditorId &&
-          xt.catalog === at.catalog &&
           xt.schema === at.schema &&
           xt.name === at.name
         ) {
@@ -451,10 +440,9 @@ export default function sqlLabReducer(state = {}, action) {
         // continue regardless of error
       }
       // replace localStorage query editor with the server backed one
-      return alterInArr(
-        state,
+      return addToArr(
+        removeFromArr(state, 'queryEditors', action.oldQueryEditor),
         'queryEditors',
-        action.oldQueryEditor,
         action.newQueryEditor,
       );
     },
@@ -478,9 +466,20 @@ export default function sqlLabReducer(state = {}, action) {
       );
     },
     [actions.MIGRATE_TAB_HISTORY]() {
-      const tabHistory = state.tabHistory.map(tabId =>
-        tabId === action.oldId ? action.newId : tabId,
+      try {
+        // remove migrated tab from localStorage tabHistory
+        const { sqlLab } = JSON.parse(localStorage.getItem('redux'));
+        sqlLab.tabHistory = sqlLab.tabHistory.filter(
+          tabId => tabId !== action.oldId,
+        );
+        localStorage.setItem('redux', JSON.stringify({ sqlLab }));
+      } catch (error) {
+        // continue regardless of error
+      }
+      const tabHistory = state.tabHistory.filter(
+        tabId => tabId !== action.oldId,
       );
+      tabHistory.push(action.newId);
       return { ...state, tabHistory };
     },
     [actions.MIGRATE_QUERY]() {
@@ -499,18 +498,6 @@ export default function sqlLabReducer(state = {}, action) {
           state,
           {
             dbId: action.dbId,
-          },
-          action.queryEditor.id,
-        ),
-      };
-    },
-    [actions.QUERY_EDITOR_SET_CATALOG]() {
-      return {
-        ...state,
-        ...alterUnsavedQueryEditorState(
-          state,
-          {
-            catalog: action.catalog,
           },
           action.queryEditor.id,
         ),
@@ -750,9 +737,6 @@ export default function sqlLabReducer(state = {}, action) {
     },
     [actions.SET_EDITOR_TAB_LAST_UPDATE]() {
       return { ...state, editorTabLastUpdatedAt: action.timestamp };
-    },
-    [actions.SET_LAST_UPDATED_ACTIVE_TAB]() {
-      return { ...state, lastUpdatedActiveTab: action.queryEditorId };
     },
   };
   if (action.type in actionHandlers) {

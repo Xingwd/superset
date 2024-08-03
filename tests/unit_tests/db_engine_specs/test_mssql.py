@@ -32,7 +32,7 @@ from tests.unit_tests.db_engine_specs.utils import (
     assert_column_spec,
     assert_convert_dttm,
 )
-from tests.unit_tests.fixtures.common import dttm  # noqa: F401
+from tests.unit_tests.fixtures.common import dttm
 
 
 @pytest.mark.parametrize(
@@ -124,7 +124,7 @@ def test_time_exp_mixd_case_col_1y() -> None:
 def test_convert_dttm(
     target_type: str,
     expected_result: Optional[str],
-    dttm: datetime,  # noqa: F811
+    dttm: datetime,
 ) -> None:
     from superset.db_engine_specs.mssql import MssqlEngineSpec as spec
 

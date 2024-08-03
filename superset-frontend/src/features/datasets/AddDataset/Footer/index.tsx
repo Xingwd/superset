@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from 'src/components/Button';
 import { t } from '@superset-ui/core';
@@ -89,7 +90,6 @@ function Footer({
     if (datasetObject) {
       const data = {
         database: datasetObject.db?.id,
-        catalog: datasetObject.catalog,
         schema: datasetObject.schema,
         table_name: datasetObject.table_name,
       };

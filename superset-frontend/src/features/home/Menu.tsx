@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled, css, useTheme, SupersetTheme } from '@superset-ui/core';
 import { debounce } from 'lodash';
 import { Global } from '@emotion/react';
@@ -306,15 +306,11 @@ export function Menu({
             arrowPointAtCenter
           >
             {isFrontendRoute(window.location.pathname) ? (
-              <GenericLink
-                className="navbar-brand"
-                to={brand.path}
-                tabIndex={-1}
-              >
+              <GenericLink className="navbar-brand" to={brand.path}>
                 <img src={brand.icon} alt={brand.alt} />
               </GenericLink>
             ) : (
-              <a className="navbar-brand" href={brand.path} tabIndex={-1}>
+              <a className="navbar-brand" href={brand.path}>
                 <img src={brand.icon} alt={brand.alt} />
               </a>
             )}

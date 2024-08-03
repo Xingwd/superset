@@ -17,7 +17,6 @@
 """
 Schemas for advanced data types
 """
-
 from marshmallow import fields, Schema
 
 advanced_data_type_convert_schema = {

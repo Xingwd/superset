@@ -94,10 +94,10 @@ class GitChangeLog:
             if not pull_request:
                 pull_request = github_repo.get_pull(pr_number)
                 self._github_prs[pr_number] = pull_request
-        except BadCredentialsException:
+        except BadCredentialsException as ex:
             print(
-                "Bad credentials to github provided"
-                " use access_token parameter or set GITHUB_TOKEN"
+                f"Bad credentials to github provided"
+                f" use access_token parameter or set GITHUB_TOKEN"
             )
             sys.exit(1)
 
@@ -167,8 +167,8 @@ class GitChangeLog:
     def _get_changelog_version_head(self) -> str:
         if not len(self._logs):
             print(
-                "No changes found between revisions. "
-                "Make sure your branch is up to date."
+                f"No changes found between revisions. "
+                f"Make sure your branch is up to date."
             )
             sys.exit(1)
         return f"### {self._version} ({self._logs[0].time})"

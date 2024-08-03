@@ -25,5 +25,3 @@ CHANGELOG/
 *.geojson
 *-topo.json
 storybook-static/
-
-/.nx/workspace-data

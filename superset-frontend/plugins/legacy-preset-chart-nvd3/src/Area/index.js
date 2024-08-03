@@ -42,6 +42,7 @@ const metadata = new ChartMetadata({
   name: t('Time-series Area Chart (legacy)'),
   supportedAnnotationTypes: [ANNOTATION_TYPES.INTERVAL, ANNOTATION_TYPES.EVENT],
   tags: [
+    t('Aesthetic'),
     t('Comparison'),
     t('Continuous'),
     t('Legacy'),
@@ -52,6 +53,7 @@ const metadata = new ChartMetadata({
     t('Time'),
     t('Trend'),
     t('nvd3'),
+    t('Deprecated'),
   ],
   thumbnail,
   useLegacyApi: true,

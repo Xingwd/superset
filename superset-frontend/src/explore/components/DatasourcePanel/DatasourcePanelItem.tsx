@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { CSSProperties, FC } from 'react';
-
+import React, { CSSProperties } from 'react';
 import { css, Metric, styled, t, useTheme } from '@superset-ui/core';
 
 import Icons from 'src/components/Icons';
@@ -146,7 +145,7 @@ const Box = styled.div`
   `}
 `;
 
-const DatasourcePanelItem: FC<Props> = ({ index, style, data }) => {
+const DatasourcePanelItem: React.FC<Props> = ({ index, style, data }) => {
   const {
     metricSlice: _metricSlice,
     columnSlice,

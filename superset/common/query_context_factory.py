@@ -44,7 +44,7 @@ class QueryContextFactory:  # pylint: disable=too-few-public-methods
     def __init__(self) -> None:
         self._query_object_factory = create_query_object_factory()
 
-    def create(  # pylint: disable=too-many-arguments
+    def create(
         self,
         *,
         datasource: DatasourceDict,

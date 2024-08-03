@@ -14,12 +14,13 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import json
 from collections.abc import Iterator
 from typing import Any
 from uuid import uuid3
 
 import pytest
-from sqlalchemy.orm import Session  # noqa: F401
+from sqlalchemy.orm import Session
 
 from superset import db
 from superset.explore.permalink.schemas import ExplorePermalinkSchema
@@ -27,17 +28,16 @@ from superset.key_value.models import KeyValueEntry
 from superset.key_value.types import KeyValueResource, MarshmallowKeyValueCodec
 from superset.key_value.utils import decode_permalink_id, encode_permalink_key
 from superset.models.slice import Slice
-from superset.utils import json
 from superset.utils.core import DatasourceType
 from tests.integration_tests.fixtures.world_bank_dashboard import (
-    load_world_bank_dashboard_with_slices,  # noqa: F401
-    load_world_bank_data,  # noqa: F401
+    load_world_bank_dashboard_with_slices,
+    load_world_bank_data,
 )
-from tests.integration_tests.test_app import app  # noqa: F401
+from tests.integration_tests.test_app import app
 
 
 @pytest.fixture
-def chart(app_context, load_world_bank_dashboard_with_slices) -> Slice:  # noqa: F811
+def chart(app_context, load_world_bank_dashboard_with_slices) -> Slice:
     chart = db.session.query(Slice).filter_by(slice_name="World's Population").one()
     return chart
 
@@ -70,7 +70,7 @@ def permalink_salt() -> Iterator[str]:
 def test_post(
     form_data: dict[str, Any], permalink_salt: str, test_client, login_as_admin
 ):
-    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})
     assert resp.status_code == 201
     data = json.loads(resp.data.decode("utf-8"))
     key = data["key"]
@@ -83,7 +83,7 @@ def test_post(
 
 def test_post_access_denied(form_data, test_client, login_as):
     login_as("gamma")
-    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})
     assert resp.status_code == 403
 
 
@@ -120,14 +120,14 @@ def test_get_missing_chart(
 
 
 def test_post_invalid_schema(test_client, login_as_admin) -> None:
-    resp = test_client.post(f"api/v1/explore/permalink", json={"abc": 123})  # noqa: F541
+    resp = test_client.post(f"api/v1/explore/permalink", json={"abc": 123})
     assert resp.status_code == 400
 
 
 def test_get(
     form_data: dict[str, Any], permalink_salt: str, test_client, login_as_admin
 ) -> None:
-    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})
     data = json.loads(resp.data.decode("utf-8"))
     key = data["key"]
     resp = test_client.get(f"api/v1/explore/permalink/{key}")

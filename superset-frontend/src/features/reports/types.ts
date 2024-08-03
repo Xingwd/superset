@@ -46,14 +46,7 @@ export interface ReportObject {
   name: string;
   owners: number[];
   recipients: [
-    {
-      recipient_config_json: {
-        target: string;
-        ccTarget: string;
-        bccTarget: string;
-      };
-      type: ReportRecipientType;
-    },
+    { recipient_config_json: { target: string }; type: ReportRecipientType },
   ];
   report_format: string;
   timezone: string;

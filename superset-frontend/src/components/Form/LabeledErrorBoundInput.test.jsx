@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { render, fireEvent, screen } from 'spec/helpers/testing-library';
 import LabeledErrorBoundInput from 'src/components/Form/LabeledErrorBoundInput';
 

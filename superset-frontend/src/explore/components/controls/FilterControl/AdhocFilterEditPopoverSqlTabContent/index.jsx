@@ -16,14 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Select } from 'src/components';
 import { styled, t } from '@superset-ui/core';
 import { SQLEditor } from 'src/components/AsyncAceEditor';
 import sqlKeywords from 'src/SqlLab/utils/sqlKeywords';
 
-import { getColumnKeywords } from 'src/explore/controlUtils/getColumnKeywords';
 import adhocMetricType from 'src/explore/components/controls/MetricControl/adhocMetricType';
 import columnType from 'src/explore/components/controls/FilterControl/columnType';
 import AdhocFilter from 'src/explore/components/controls/FilterControl/AdhocFilter';
@@ -49,7 +48,7 @@ const StyledSelect = styled(Select)`
   `}
 `;
 
-export default class AdhocFilterEditPopoverSqlTabContent extends Component {
+export default class AdhocFilterEditPopoverSqlTabContent extends React.Component {
   constructor(props) {
     super(props);
     this.onSqlExpressionChange = this.onSqlExpressionChange.bind(this);
@@ -92,7 +91,19 @@ export default class AdhocFilterEditPopoverSqlTabContent extends Component {
     const { adhocFilter, height, options } = this.props;
 
     const keywords = sqlKeywords.concat(
-      getColumnKeywords(options.filter(option => option.column_name)),
+      options
+        .map(option => {
+          if (option.column_name) {
+            return {
+              name: option.column_name,
+              value: option.column_name,
+              score: 50,
+              meta: 'option',
+            };
+          }
+          return null;
+        })
+        .filter(Boolean),
     );
     const selectOptions = Object.values(Clauses).map(clause => ({
       label: clause,

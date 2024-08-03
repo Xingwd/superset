@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import json
 import logging
 from datetime import datetime
 from io import BytesIO
@@ -25,6 +26,7 @@ from flask_appbuilder.api import expose, protect, rison, safe
 from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_babel import ngettext
 
+from superset import is_feature_enabled
 from superset.commands.importers.exceptions import (
     IncorrectFormatError,
     NoValidFilesFoundError,
@@ -45,22 +47,18 @@ from superset.queries.saved_queries.filters import (
     SavedQueryAllTextFilter,
     SavedQueryFavoriteFilter,
     SavedQueryFilter,
-    SavedQueryTagIdFilter,
-    SavedQueryTagNameFilter,
+    SavedQueryTagFilter,
 )
 from superset.queries.saved_queries.schemas import (
     get_delete_ids_schema,
     get_export_ids_schema,
     openapi_spec_methods_override,
 )
-from superset.utils import json
 from superset.views.base_api import (
     BaseSupersetModelRestApi,
-    RelatedFieldFilter,
     requires_form_data,
     statsd_metrics,
 )
-from superset.views.filters import BaseFilterRelatedUsers, FilterRelatedOwners
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +95,6 @@ class SavedQueryRestApi(BaseSupersetModelRestApi):
         "description",
         "id",
         "label",
-        "catalog",
         "schema",
         "sql",
         "sql_tables",
@@ -122,28 +119,23 @@ class SavedQueryRestApi(BaseSupersetModelRestApi):
         "label",
         "last_run_delta_humanized",
         "rows",
-        "catalog",
         "schema",
         "sql",
         "sql_tables",
-        "tags.id",
-        "tags.name",
-        "tags.type",
     ]
+    if is_feature_enabled("TAGGING_SYSTEM"):
+        list_columns += ["tags.id", "tags.name", "tags.type"]
     list_select_columns = list_columns + ["changed_by_fk", "changed_on"]
     add_columns = [
         "db_id",
         "description",
         "label",
-        "catalog",
         "schema",
         "sql",
         "template_parameters",
-        "extra_json",
     ]
     edit_columns = add_columns
     order_columns = [
-        "catalog",
         "schema",
         "label",
         "description",
@@ -156,21 +148,15 @@ class SavedQueryRestApi(BaseSupersetModelRestApi):
         "last_run_delta_humanized",
     ]
 
-    search_columns = [
-        "id",
-        "database",
-        "label",
-        "catalog",
-        "schema",
-        "created_by",
-        "changed_by",
-        "tags",
-    ]
+    search_columns = ["id", "database", "label", "schema", "created_by", "changed_by"]
+    if is_feature_enabled("TAGGING_SYSTEM"):
+        search_columns += ["tags"]
     search_filters = {
         "id": [SavedQueryFavoriteFilter],
         "label": [SavedQueryAllTextFilter],
-        "tags": [SavedQueryTagNameFilter, SavedQueryTagIdFilter],
     }
+    if is_feature_enabled("TAGGING_SYSTEM"):
+        search_filters["tags"] = [SavedQueryTagFilter]
 
     apispec_parameter_schemas = {
         "get_delete_ids_schema": get_delete_ids_schema,
@@ -181,14 +167,10 @@ class SavedQueryRestApi(BaseSupersetModelRestApi):
 
     related_field_filters = {
         "database": "database_name",
-        "changed_by": RelatedFieldFilter("first_name", FilterRelatedOwners),
     }
-    base_related_field_filters = {
-        "database": [["id", DatabaseFilter, lambda: []]],
-        "changed_by": [["id", BaseFilterRelatedUsers, lambda: []]],
-    }
+    base_related_field_filters = {"database": [["id", DatabaseFilter, lambda: []]]}
     allowed_rel_fields = {"database", "changed_by", "created_by"}
-    allowed_distinct_fields = {"catalog", "schema"}
+    allowed_distinct_fields = {"schema"}
 
     def pre_add(self, item: SavedQuery) -> None:
         item.user = g.user
@@ -294,7 +276,7 @@ class SavedQueryRestApi(BaseSupersetModelRestApi):
                     requested_ids
                 ).run():
                     with bundle.open(f"{root}/{file_name}", "w") as fp:
-                        fp.write(file_content().encode())
+                        fp.write(file_content.encode())
             except SavedQueryNotFoundError:
                 return self.response_404()
         buf.seek(0)

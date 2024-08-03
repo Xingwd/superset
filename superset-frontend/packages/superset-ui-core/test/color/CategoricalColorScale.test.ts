@@ -18,76 +18,50 @@
  */
 
 import { ScaleOrdinal } from 'd3-scale';
-import { CategoricalColorScale, FeatureFlag } from '@superset-ui/core';
+import {
+  CategoricalColorScale,
+  FeatureFlag,
+  getSharedLabelColor,
+} from '@superset-ui/core';
 
 describe('CategoricalColorScale', () => {
-  beforeEach(() => {
-    window.featureFlags = {};
-  });
-
   it('exists', () => {
     expect(CategoricalColorScale !== undefined).toBe(true);
   });
 
-  describe('new CategoricalColorScale(colors, forcedColors)', () => {
-    it('can create new scale when forcedColors is not given', () => {
+  describe('new CategoricalColorScale(colors, parentForcedColors)', () => {
+    it('can create new scale when parentForcedColors is not given', () => {
       const scale = new CategoricalColorScale(['blue', 'red', 'green']);
       expect(scale).toBeInstanceOf(CategoricalColorScale);
     });
-    it('can create new scale when forcedColors is given', () => {
-      const forcedColors = {};
+    it('can create new scale when parentForcedColors is given', () => {
+      const parentForcedColors = {};
       const scale = new CategoricalColorScale(
         ['blue', 'red', 'green'],
-        forcedColors,
+        parentForcedColors,
       );
       expect(scale).toBeInstanceOf(CategoricalColorScale);
-      expect(scale.forcedColors).toBe(forcedColors);
+      expect(scale.parentForcedColors).toBe(parentForcedColors);
     });
 
     it('can refer to colors based on their index', () => {
-      const forcedColors = { pig: 1, horse: 5 };
+      const parentForcedColors = { pig: 1, horse: 5 };
       const scale = new CategoricalColorScale(
         ['blue', 'red', 'green'],
-        forcedColors,
+        parentForcedColors,
       );
       expect(scale.getColor('pig')).toEqual('red');
-      expect(forcedColors.pig).toEqual('red');
+      expect(parentForcedColors.pig).toEqual('red');
 
       // can loop around the scale
       expect(scale.getColor('horse')).toEqual('green');
-      expect(forcedColors.horse).toEqual('green');
+      expect(parentForcedColors.horse).toEqual('green');
     });
   });
 
-  describe('.getColor(value, sliceId)', () => {
-    let scale: CategoricalColorScale;
-    let addSliceSpy: jest.SpyInstance<
-      void,
-      [label: string, color: string, sliceId: number, colorScheme?: string]
-    >;
-    let getNextAvailableColorSpy: jest.SpyInstance<
-      string,
-      [currentColor: string]
-    >;
-
-    beforeEach(() => {
-      scale = new CategoricalColorScale(['blue', 'red', 'green']);
-      // Spy on the addSlice method of labelsColorMapInstance
-      addSliceSpy = jest.spyOn(scale.labelsColorMapInstance, 'addSlice');
-      getNextAvailableColorSpy = jest
-        .spyOn(scale, 'getNextAvailableColor')
-        .mockImplementation(color => color);
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
+  describe('.getColor(value)', () => {
     it('returns same color for same value', () => {
-      const scale = new CategoricalColorScale(['blue', 'red', 'green'], {
-        pig: 'red',
-        horse: 'green',
-      });
+      const scale = new CategoricalColorScale(['blue', 'red', 'green']);
       const c1 = scale.getColor('pig');
       const c2 = scale.getColor('horse');
       const c3 = scale.getColor('pig');
@@ -108,6 +82,9 @@ describe('CategoricalColorScale', () => {
       expect(c3).not.toBe(c1);
     });
     it('recycles colors when number of items exceed available colors', () => {
+      window.featureFlags = {
+        [FeatureFlag.UseAnalagousColors]: false,
+      };
       const colorSet: { [key: string]: number } = {};
       const scale = new CategoricalColorScale(['blue', 'red', 'green']);
       const colors = [
@@ -141,70 +118,43 @@ describe('CategoricalColorScale', () => {
       scale.getColor('cow');
       scale.getColor('donkey');
       scale.getColor('goat');
-      expect(scale.range()).toHaveLength(9);
+      expect(scale.range()).toHaveLength(6);
     });
-    it('adds the color and value to chartLabelsColorMap and calls addSlice', () => {
-      const value = 'testValue';
-      const sliceId = 123;
-      const colorScheme = 'preset';
 
-      expect(scale.chartLabelsColorMap.has(value)).toBe(false);
-
-      scale.getColor(value, sliceId, colorScheme);
-
-      expect(scale.chartLabelsColorMap.has(value)).toBe(true);
-      expect(scale.chartLabelsColorMap.get(value)).toBeDefined();
-
-      expect(addSliceSpy).toHaveBeenCalledWith(
-        value,
-        expect.any(String),
-        sliceId,
-        colorScheme,
-      );
-
-      const expectedColor = scale.chartLabelsColorMap.get(value);
-      const returnedColor = scale.getColor(value, sliceId);
-      expect(returnedColor).toBe(expectedColor);
-    });
-    it('conditionally calls getNextAvailableColor', () => {
+    it('should remove shared color from range if avoid colors collision enabled', () => {
       window.featureFlags = {
         [FeatureFlag.AvoidColorsCollision]: true,
       };
-
-      scale.getColor('testValue1');
-      scale.getColor('testValue2');
-      scale.getColor('testValue1');
-      scale.getColor('testValue3');
-      scale.getColor('testValue4');
-
-      expect(getNextAvailableColorSpy).toHaveBeenCalledWith('blue');
-
-      getNextAvailableColorSpy.mockClear();
-
-      window.featureFlags = {
-        [FeatureFlag.AvoidColorsCollision]: false,
-      };
-
-      scale.getColor('testValue3');
-
-      expect(getNextAvailableColorSpy).not.toHaveBeenCalled();
+      const scale = new CategoricalColorScale(['blue', 'red', 'green']);
+      const color1 = scale.getColor('a', 1);
+      expect(scale.range()).toHaveLength(3);
+      const color2 = scale.getColor('a', 2);
+      expect(color1).toBe(color2);
+      scale.getColor('b', 2);
+      expect(scale.range()).toHaveLength(2);
+      scale.getColor('c', 2);
+      expect(scale.range()).toHaveLength(1);
     });
+    window.featureFlags = {
+      [FeatureFlag.AvoidColorsCollision]: false,
+    };
   });
-
   describe('.setColor(value, forcedColor)', () => {
     it('overrides default color', () => {
       const scale = new CategoricalColorScale(['blue', 'red', 'green']);
       scale.setColor('pig', 'pink');
       expect(scale.getColor('pig')).toBe('pink');
     });
-    it('does override forcedColors', () => {
+    it('does not override parentForcedColors', () => {
       const scale1 = new CategoricalColorScale(['blue', 'red', 'green']);
       scale1.setColor('pig', 'black');
-
-      const scale2 = new CategoricalColorScale(['blue', 'red', 'green']);
+      const scale2 = new CategoricalColorScale(
+        ['blue', 'red', 'green'],
+        scale1.forcedColors,
+      );
       scale2.setColor('pig', 'pink');
-      expect(scale2.getColor('pig')).toBe('pink');
       expect(scale1.getColor('pig')).toBe('black');
+      expect(scale2.getColor('pig')).toBe('black');
     });
     it('returns the scale', () => {
       const scale = new CategoricalColorScale(['blue', 'red', 'green']);
@@ -213,7 +163,7 @@ describe('CategoricalColorScale', () => {
     });
   });
   describe('.getColorMap()', () => {
-    it('returns correct mapping using least used color', () => {
+    it('returns correct mapping and parentForcedColors and forcedColors are specified', () => {
       const scale1 = new CategoricalColorScale(['blue', 'red', 'green']);
       scale1.setColor('cow', 'black');
       const scale2 = new CategoricalColorScale(
@@ -227,7 +177,7 @@ describe('CategoricalColorScale', () => {
       expect(scale2.getColorMap()).toEqual({
         cow: 'black',
         pig: 'pink',
-        horse: 'blue', // least used color
+        horse: 'green',
       });
     });
   });
@@ -280,114 +230,10 @@ describe('CategoricalColorScale', () => {
   });
 
   describe('a CategoricalColorScale instance is also a color function itself', () => {
-    it('scale(value) returns same color for same value', () => {
+    it('scale(value) returns color similar to calling scale.getColor(value)', () => {
       const scale = new CategoricalColorScale(['blue', 'red', 'green']);
-      expect(scale.getColor('pig')).toBe('blue');
-      expect(scale('pig')).toBe('blue');
-      expect(scale.getColor('cat')).toBe('red');
-      expect(scale('cat')).toBe('red');
-    });
-  });
-
-  describe('.getNextAvailableColor(currentColor)', () => {
-    it('returns the current color if it is the least used or equally used among colors', () => {
-      const scale = new CategoricalColorScale(['blue', 'red', 'green']);
-      scale.getColor('cat');
-      scale.getColor('dog');
-
-      // Since 'green' hasn't been used, it's considered the least used.
-      expect(scale.getNextAvailableColor('blue')).toBe('green');
-    });
-
-    it('handles cases where all colors are equally used and returns the current color', () => {
-      const scale = new CategoricalColorScale(['blue', 'red', 'green']);
-      scale.getColor('cat'); // blue
-      scale.getColor('dog'); // red
-      scale.getColor('fish'); // green
-      // All colors used once, so the function should return the current color
-      expect(scale.getNextAvailableColor('red')).toBe('red');
-    });
-
-    it('returns the least used color accurately even when some colors are used more frequently', () => {
-      const scale = new CategoricalColorScale([
-        'blue',
-        'red',
-        'green',
-        'yellow',
-      ]);
-      scale.getColor('cat'); // blue
-      scale.getColor('dog'); // red
-      scale.getColor('frog'); // green
-      scale.getColor('fish'); // yellow
-      scale.getColor('goat'); // blue
-      scale.getColor('horse'); // red
-      scale.getColor('pony'); // green
-
-      // Yellow is the least used color, so it should be returned.
-      expect(scale.getNextAvailableColor('blue')).toBe('yellow');
-    });
-  });
-
-  describe('.isColorUsed(color)', () => {
-    it('returns true if the color is already used, false otherwise', () => {
-      const scale = new CategoricalColorScale(['blue', 'red', 'green']);
-      // Initially, no color is used
-      expect(scale.isColorUsed('blue')).toBe(false);
-      expect(scale.isColorUsed('red')).toBe(false);
-      expect(scale.isColorUsed('green')).toBe(false);
-
-      scale.getColor('item1');
-
-      // Now, 'blue' is used, but 'red' and 'green' are not
-      expect(scale.isColorUsed('blue')).toBe(true);
-      expect(scale.isColorUsed('red')).toBe(false);
-      expect(scale.isColorUsed('green')).toBe(false);
-
-      // Simulate using the 'red' color
-      scale.getColor('item2'); // Assigns 'red' to 'item2'
-
-      // Now, 'blue' and 'red' are used
-      expect(scale.isColorUsed('blue')).toBe(true);
-      expect(scale.isColorUsed('red')).toBe(true);
-      expect(scale.isColorUsed('green')).toBe(false);
-    });
-  });
-
-  describe('.getColorUsageCount(color)', () => {
-    it('accurately counts the occurrences of a specific color', () => {
-      const scale = new CategoricalColorScale([
-        'blue',
-        'red',
-        'green',
-        'yellow',
-      ]);
-      // No colors are used initially
-      expect(scale.getColorUsageCount('blue')).toBe(0);
-      expect(scale.getColorUsageCount('red')).toBe(0);
-      expect(scale.getColorUsageCount('green')).toBe(0);
-      expect(scale.getColorUsageCount('yellow')).toBe(0);
-
-      // Simulate using colors
-      scale.getColor('item1');
-      scale.getColor('item2');
-      scale.getColor('item1');
-
-      // Check the counts after using the colors
-      expect(scale.getColorUsageCount('blue')).toBe(1);
-      expect(scale.getColorUsageCount('red')).toBe(1);
-      expect(scale.getColorUsageCount('green')).toBe(0);
-      expect(scale.getColorUsageCount('yellow')).toBe(0);
-
-      // Simulate using colors more
-      scale.getColor('item3');
-      scale.getColor('item4');
-      scale.getColor('item3');
-
-      // Final counts
-      expect(scale.getColorUsageCount('blue')).toBe(1);
-      expect(scale.getColorUsageCount('red')).toBe(1);
-      expect(scale.getColorUsageCount('green')).toBe(1);
-      expect(scale.getColorUsageCount('yellow')).toBe(1);
+      expect(scale.getColor('pig')).toBe(scale('pig'));
+      expect(scale.getColor('cat')).toBe(scale('cat'));
     });
   });
 
@@ -396,6 +242,52 @@ describe('CategoricalColorScale', () => {
       const scale: ScaleOrdinal<{ toString(): string }, string> =
         new CategoricalColorScale(['blue', 'red', 'green']);
       expect(scale('pig')).toBe('blue');
+    });
+  });
+
+  describe('.removeSharedLabelColorFromRange(colorMap, cleanedValue)', () => {
+    it('should remove shared color from range', () => {
+      const scale = new CategoricalColorScale(['blue', 'green', 'red']);
+      expect(scale.range()).toEqual(['blue', 'green', 'red']);
+
+      const sharedLabelColor = getSharedLabelColor();
+      sharedLabelColor.clear();
+      const colorMap = sharedLabelColor.getColorMap();
+      sharedLabelColor.addSlice('cow', 'blue', 1);
+      scale.removeSharedLabelColorFromRange(colorMap, 'pig');
+      expect(scale.range()).toEqual(['green', 'red']);
+      scale.removeSharedLabelColorFromRange(colorMap, 'cow');
+      expect(scale.range()).toEqual(['blue', 'green', 'red']);
+      sharedLabelColor.clear();
+    });
+
+    it('recycles colors when all colors are in sharedLabelColor', () => {
+      const scale = new CategoricalColorScale(['blue', 'green', 'red']);
+      expect(scale.range()).toEqual(['blue', 'green', 'red']);
+      const sharedLabelColor = getSharedLabelColor();
+      const colorMap = sharedLabelColor.getColorMap();
+      sharedLabelColor.addSlice('cow', 'blue', 1);
+      sharedLabelColor.addSlice('pig', 'red', 1);
+      sharedLabelColor.addSlice('horse', 'green', 1);
+      scale.removeSharedLabelColorFromRange(colorMap, 'goat');
+      expect(scale.range()).toEqual(['blue', 'green', 'red']);
+      sharedLabelColor.clear();
+    });
+
+    it('should remove parentForcedColors from range', () => {
+      const parentForcedColors = { house: 'blue', cow: 'red' };
+      const scale = new CategoricalColorScale(
+        ['blue', 'red', 'green'],
+        parentForcedColors,
+      );
+      const sharedLabelColor = getSharedLabelColor();
+      sharedLabelColor.clear();
+      const colorMap = sharedLabelColor.getColorMap();
+      scale.removeSharedLabelColorFromRange(colorMap, 'pig');
+      expect(scale.range()).toEqual(['green']);
+      scale.removeSharedLabelColorFromRange(colorMap, 'cow');
+      expect(scale.range()).toEqual(['red', 'green']);
+      sharedLabelColor.clear();
     });
   });
 });

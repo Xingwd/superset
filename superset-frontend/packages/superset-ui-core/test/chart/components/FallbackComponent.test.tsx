@@ -17,44 +17,43 @@
  * under the License.
  */
 
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { FallbackProps } from 'react-error-boundary';
-import { ThemeProvider, supersetTheme } from '../../../src/style';
-
+import React from 'react';
+import { shallow } from 'enzyme';
 import FallbackComponent from '../../../src/chart/components/FallbackComponent';
 
-const renderWithTheme = (props: FallbackProps) =>
-  render(
-    <ThemeProvider theme={supersetTheme}>
-      <FallbackComponent {...props} />
-    </ThemeProvider>,
-  );
+describe('FallbackComponent', () => {
+  const ERROR = new Error('CaffeineOverLoadException');
+  const STACK_TRACE = 'Error at line 1: x.drink(coffee)';
 
-const ERROR = new Error('CaffeineOverLoadException');
-const STACK_TRACE = 'Error at line 1: x.drink(coffee)';
-
-test('renders error and stack trace', () => {
-  const { getByText } = renderWithTheme({
-    componentStack: STACK_TRACE,
-    error: ERROR,
+  it('renders error and stack trace', () => {
+    const wrapper = shallow(
+      <FallbackComponent componentStack={STACK_TRACE} error={ERROR} />,
+    );
+    const messages = wrapper.find('code');
+    expect(messages).toHaveLength(2);
+    expect(messages.at(0).text()).toEqual('Error: CaffeineOverLoadException');
+    expect(messages.at(1).text()).toEqual('Error at line 1: x.drink(coffee)');
   });
-  expect(getByText('Error: CaffeineOverLoadException')).toBeInTheDocument();
-  expect(getByText('Error at line 1: x.drink(coffee)')).toBeInTheDocument();
-});
 
-test('renders error only', () => {
-  const { getByText } = renderWithTheme({ error: ERROR });
-  expect(getByText('Error: CaffeineOverLoadException')).toBeInTheDocument();
-});
+  it('renders error only', () => {
+    const wrapper = shallow(<FallbackComponent error={ERROR} />);
+    const messages = wrapper.find('code');
+    expect(messages).toHaveLength(1);
+    expect(messages.at(0).text()).toEqual('Error: CaffeineOverLoadException');
+  });
 
-test('renders stacktrace only', () => {
-  const { getByText } = renderWithTheme({ componentStack: STACK_TRACE });
-  expect(getByText('Unknown Error')).toBeInTheDocument();
-  expect(getByText('Error at line 1: x.drink(coffee)')).toBeInTheDocument();
-});
+  it('renders stacktrace only', () => {
+    const wrapper = shallow(<FallbackComponent componentStack={STACK_TRACE} />);
+    const messages = wrapper.find('code');
+    expect(messages).toHaveLength(2);
+    expect(messages.at(0).text()).toEqual('Unknown Error');
+    expect(messages.at(1).text()).toEqual('Error at line 1: x.drink(coffee)');
+  });
 
-test('renders when nothing is given', () => {
-  const { getByText } = renderWithTheme({});
-  expect(getByText('Unknown Error')).toBeInTheDocument();
+  it('renders when nothing is given', () => {
+    const wrapper = shallow(<FallbackComponent />);
+    const messages = wrapper.find('code');
+    expect(messages).toHaveLength(1);
+    expect(messages.at(0).text()).toEqual('Unknown Error');
+  });
 });

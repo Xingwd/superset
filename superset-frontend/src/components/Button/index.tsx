@@ -16,14 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  Children,
-  ReactElement,
-  ReactNode,
-  Fragment,
-  MouseEventHandler,
-} from 'react';
-
+import React, { Children, ReactElement, ReactNode } from 'react';
 import { mix } from 'polished';
 import cx from 'classnames';
 import { AntdButton } from 'src/components';
@@ -32,7 +25,7 @@ import { Tooltip } from 'src/components/Tooltip';
 import { ButtonProps as AntdButtonProps } from 'antd/lib/button';
 import { TooltipProps } from 'antd/lib/tooltip';
 
-export type OnClickHandler = MouseEventHandler<HTMLElement>;
+export type OnClickHandler = React.MouseEventHandler<HTMLElement>;
 
 export type ButtonStyle =
   | 'primary'
@@ -142,7 +135,7 @@ export default function Button(props: ButtonProps) {
   const element = children as ReactElement;
 
   let renderedChildren = [];
-  if (element && element.type === Fragment) {
+  if (element && element.type === React.Fragment) {
     renderedChildren = Children.toArray(element.props.children);
   } else {
     renderedChildren = Children.toArray(children);
@@ -170,6 +163,7 @@ export default function Button(props: ButtonProps) {
         fontSize: typography.sizes.s,
         fontWeight: typography.weights.bold,
         height,
+        textTransform: 'uppercase',
         padding: `0px ${padding}px`,
         transition: `all ${transitionTiming}s`,
         minWidth: cta ? theme.gridUnit * 36 : undefined,

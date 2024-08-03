@@ -18,7 +18,7 @@
  */
 /* eslint-env browser */
 import moment from 'moment';
-import { PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   styled,
@@ -26,6 +26,7 @@ import {
   isFeatureEnabled,
   FeatureFlag,
   t,
+  getSharedLabelColor,
   getExtensionsRegistry,
 } from '@superset-ui/core';
 import { Global } from '@emotion/react';
@@ -45,7 +46,6 @@ import PublishedStatus from 'src/dashboard/components/PublishedStatus';
 import UndoRedoKeyListeners from 'src/dashboard/components/UndoRedoKeyListeners';
 import PropertiesModal from 'src/dashboard/components/PropertiesModal';
 import { chartPropShape } from 'src/dashboard/util/propShapes';
-import getOwnerName from 'src/utils/getOwnerName';
 import {
   UNDO_LIMIT,
   SAVE_TYPE_OVERWRITE,
@@ -55,7 +55,6 @@ import setPeriodicRunner, {
   stopPeriodicRender,
 } from 'src/dashboard/util/setPeriodicRunner';
 import { PageHeaderWithActions } from 'src/components/PageHeaderWithActions';
-import MetadataBar, { MetadataType } from 'src/components/MetadataBar';
 import DashboardEmbedModal from '../EmbeddedModal';
 import OverwriteConfirm from '../OverwriteConfirm';
 
@@ -170,7 +169,7 @@ const discardBtnStyle = theme => css`
   height: ${theme.gridUnit * 8}px;
 `;
 
-class Header extends PureComponent {
+class Header extends React.PureComponent {
   static discardChanges() {
     const url = new URL(window.location.href);
 
@@ -373,10 +372,13 @@ class Header extends PureComponent {
       ? currentRefreshFrequency
       : dashboardInfo.metadata?.refresh_frequency;
 
-    const currentColorNamespace =
-      dashboardInfo?.metadata?.color_namespace || colorNamespace;
     const currentColorScheme =
       dashboardInfo?.metadata?.color_scheme || colorScheme;
+    const currentColorNamespace =
+      dashboardInfo?.metadata?.color_namespace || colorNamespace;
+    const currentSharedLabelColors = Object.fromEntries(
+      getSharedLabelColor().getColorMap(),
+    );
 
     const data = {
       certified_by: dashboardInfo.certified_by,
@@ -393,6 +395,7 @@ class Header extends PureComponent {
         color_scheme: currentColorScheme,
         positions,
         refresh_frequency: refreshFrequency,
+        shared_label_colors: currentSharedLabelColors,
       },
     };
 
@@ -430,27 +433,6 @@ class Header extends PureComponent {
 
   hideEmbedModal = () => {
     this.setState({ showingEmbedModal: false });
-  };
-
-  getMetadataItems = () => {
-    const { dashboardInfo } = this.props;
-    return [
-      {
-        type: MetadataType.LastModified,
-        value: dashboardInfo.changed_on_delta_humanized,
-        modifiedBy:
-          getOwnerName(dashboardInfo.changed_by) || t('Not available'),
-      },
-      {
-        type: MetadataType.Owner,
-        createdBy: getOwnerName(dashboardInfo.created_by) || t('Not available'),
-        owners:
-          dashboardInfo.owners.length > 0
-            ? dashboardInfo.owners.map(getOwnerName)
-            : t('None'),
-        createdOn: dashboardInfo.created_on_delta_humanized,
-      },
-    ];
   };
 
   render() {
@@ -553,12 +535,6 @@ class Header extends PureComponent {
                 visible={!editMode}
               />
             ),
-            !editMode && (
-              <MetadataBar
-                items={this.getMetadataItems()}
-                tooltipPlacement="bottom"
-              />
-            ),
           ]}
           rightPanelAdditionalItems={
             <div className="button-container">
@@ -577,7 +553,6 @@ class Header extends PureComponent {
                           <StyledUndoRedoButton
                             type="text"
                             disabled={undoLength < 1}
-                            onClick={undoLength && onUndo}
                           >
                             <Icons.Undo
                               css={[
@@ -585,6 +560,7 @@ class Header extends PureComponent {
                                 this.state.emphasizeUndo && undoRedoEmphasized,
                                 undoLength < 1 && undoRedoDisabled,
                               ]}
+                              onClick={undoLength && onUndo}
                               data-test="undo-action"
                               iconSize="xl"
                             />
@@ -597,7 +573,6 @@ class Header extends PureComponent {
                           <StyledUndoRedoButton
                             type="text"
                             disabled={redoLength < 1}
-                            onClick={redoLength && onRedo}
                           >
                             <Icons.Redo
                               css={[
@@ -605,6 +580,7 @@ class Header extends PureComponent {
                                 this.state.emphasizeRedo && undoRedoEmphasized,
                                 redoLength < 1 && undoRedoDisabled,
                               ]}
+                              onClick={redoLength && onRedo}
                               data-test="redo-action"
                               iconSize="xl"
                             />

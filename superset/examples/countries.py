@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 """This module contains data related to countries and is used for geo mapping"""
-
 # pylint: disable=too-many-lines
 from typing import Any, Optional
 

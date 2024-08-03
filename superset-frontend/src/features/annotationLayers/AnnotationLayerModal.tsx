@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { FunctionComponent, useState, useEffect, ChangeEvent } from 'react';
-
+import React, { FunctionComponent, useState, useEffect } from 'react';
 import { styled, t } from '@superset-ui/core';
 import { useSingleViewResource } from 'src/views/CRUD/hooks';
 
@@ -158,7 +157,9 @@ const AnnotationLayerModal: FunctionComponent<AnnotationLayerModalProps> = ({
   };
 
   const onTextChange = (
-    event: ChangeEvent<HTMLTextAreaElement> | ChangeEvent<HTMLInputElement>,
+    event:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { target } = event;
     const data = {

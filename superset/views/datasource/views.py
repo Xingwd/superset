@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import json
 from collections import Counter
 from typing import Any
 
@@ -36,14 +37,13 @@ from superset.connectors.sqla.utils import get_physical_table_metadata
 from superset.daos.datasource import DatasourceDAO
 from superset.exceptions import SupersetException, SupersetSecurityException
 from superset.models.core import Database
-from superset.sql_parse import Table
 from superset.superset_typing import FlaskResponse
-from superset.utils import json
 from superset.utils.core import DatasourceType
 from superset.views.base import (
     api,
     BaseSupersetView,
     deprecated,
+    handle_api_exception,
     json_error_response,
 )
 from superset.views.datasource.schemas import (
@@ -54,7 +54,6 @@ from superset.views.datasource.schemas import (
     SamplesRequestSchema,
 )
 from superset.views.datasource.utils import get_samples
-from superset.views.error_handling import handle_api_exception
 from superset.views.utils import sanitize_datasource_data
 
 
@@ -116,7 +115,7 @@ class Datasource(BaseSupersetView):
             )
         orm_datasource.update_from_object(datasource_dict)
         data = orm_datasource.data
-        db.session.commit()  # pylint: disable=consider-using-transaction
+        db.session.commit()
 
         return self.json_response(sanitize_datasource_data(data))
 
@@ -165,7 +164,6 @@ class Datasource(BaseSupersetView):
 
         datasource = SqlaTable.get_datasource_by_name(
             database_name=params["database_name"],
-            catalog=params.get("catalog_name"),
             schema=params["schema_name"],
             datasource_name=params["table_name"],
         )
@@ -182,7 +180,8 @@ class Datasource(BaseSupersetView):
                 )
                 external_metadata = get_physical_table_metadata(
                     database=database,
-                    table=Table(params["table_name"], params["schema_name"]),
+                    table_name=params["table_name"],
+                    schema_name=params["schema_name"],
                     normalize_columns=params.get("normalize_columns") or False,
                 )
         except (NoResultFound, NoSuchTableError) as ex:

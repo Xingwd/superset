@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import { PureComponent } from 'react';
+import React from 'react';
 import { formatNumber } from '@superset-ui/core';
 
-class NumberFormatValidator extends PureComponent {
+class NumberFormatValidator extends React.PureComponent {
   state: { formatString: string; testValues: (number | null | undefined)[] } = {
     formatString: '.3~s',
     testValues: [

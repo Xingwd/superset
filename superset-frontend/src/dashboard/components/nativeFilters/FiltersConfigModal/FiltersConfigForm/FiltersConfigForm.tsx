@@ -37,19 +37,15 @@ import {
   styled,
   SupersetApiError,
   t,
-  ClientErrorObject,
-  getClientErrorObject,
 } from '@superset-ui/core';
 import { isEqual } from 'lodash';
-import {
+import React, {
   forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
   useState,
-  RefObject,
-  memo,
 } from 'react';
 import rison from 'rison';
 import { PluginFilterSelectCustomizeProps } from 'src/filters/components/Select/types';
@@ -77,6 +73,10 @@ import {
 import DateFilterControl from 'src/explore/components/controls/DateFilterControl';
 import AdhocFilterControl from 'src/explore/components/controls/FilterControl/AdhocFilterControl';
 import { waitForAsyncData } from 'src/middleware/asyncEvent';
+import {
+  ClientErrorObject,
+  getClientErrorObject,
+} from 'src/utils/getClientErrorObject';
 import { SingleValueType } from 'src/filters/components/Range/SingleValueType';
 import {
   getFormData,
@@ -104,8 +104,6 @@ import {
 } from './utils';
 import { FILTER_SUPPORTED_TYPES, INPUT_WIDTH } from './constants';
 import DependencyList from './DependencyList';
-
-const FORM_ITEM_WIDTH = 260;
 
 const TabPane = styled(Tabs.TabPane)`
   padding: ${({ theme }) => theme.gridUnit * 4}px 0px;
@@ -138,8 +136,8 @@ const controlsOrder: ControlKey[] = [
   'inverseSelection',
 ];
 
-export const StyledFormItem = styled(FormItem)<{ expanded: boolean }>`
-  width: ${({ expanded }) => (expanded ? '49%' : `${FORM_ITEM_WIDTH}px`)};
+export const StyledFormItem = styled(FormItem)`
+  width: 49%;
   margin-bottom: ${({ theme }) => theme.gridUnit * 4}px;
 
   & .ant-form-item-label {
@@ -151,10 +149,10 @@ export const StyledFormItem = styled(FormItem)<{ expanded: boolean }>`
   }
 `;
 
-export const StyledRowFormItem = styled(FormItem)<{ expanded: boolean }>`
+export const StyledRowFormItem = styled(FormItem)`
   margin-bottom: 0;
   padding-bottom: 0;
-  min-width: ${({ expanded }) => (expanded ? '50%' : `${FORM_ITEM_WIDTH}px`)};
+  min-width: 50%;
 
   & .ant-form-item-label {
     padding-bottom: 0;
@@ -169,8 +167,8 @@ export const StyledRowFormItem = styled(FormItem)<{ expanded: boolean }>`
   }
 `;
 
-export const StyledRowSubFormItem = styled(FormItem)<{ expanded: boolean }>`
-  min-width: ${({ expanded }) => (expanded ? '50%' : `${FORM_ITEM_WIDTH}px`)};
+export const StyledRowSubFormItem = styled(FormItem)`
+  min-width: 50%;
 
   & .ant-form-item-label {
     padding-bottom: 0;
@@ -196,6 +194,7 @@ export const StyledRowSubFormItem = styled(FormItem)<{ expanded: boolean }>`
 export const StyledLabel = styled.span`
   color: ${({ theme }) => theme.colors.grayscale.base};
   font-size: ${({ theme }) => theme.typography.sizes.s}px;
+  text-transform: uppercase;
 `;
 
 const CleanFormItem = styled(FormItem)`
@@ -265,9 +264,9 @@ const StyledAsterisk = styled.span`
   }
 `;
 
-const FilterTypeInfo = styled.div<{ expanded: boolean }>`
-  ${({ theme, expanded }) => `
-    width: ${expanded ? '49%' : `${FORM_ITEM_WIDTH}px`};
+const FilterTypeInfo = styled.div`
+  ${({ theme }) => `
+    width: 49%;
     font-size: ${theme.typography.sizes.s}px;
     color: ${theme.colors.grayscale.light1};
     margin:
@@ -301,7 +300,6 @@ export const FilterPanels = {
 };
 
 export interface FiltersConfigFormProps {
-  expanded: boolean;
   filterId: string;
   filterToEdit?: Filter;
   removedFilters: Record<string, FilterRemoval>;
@@ -336,7 +334,6 @@ const FILTER_TYPE_NAME_MAPPING = {
  */
 const FiltersConfigForm = (
   {
-    expanded,
     filterId,
     filterToEdit,
     removedFilters,
@@ -350,7 +347,7 @@ const FiltersConfigForm = (
     getDependencySuggestion,
     isActive,
   }: FiltersConfigFormProps,
-  ref: RefObject<any>,
+  ref: React.RefObject<any>,
 ) => {
   const isRemoved = !!removedFilters[filterId];
   const [error, setError] = useState<ClientErrorObject>();
@@ -379,7 +376,7 @@ const FiltersConfigForm = (
   const nativeFilterVizTypes = Object.entries(nativeFilterItems)
     // @ts-ignore
     .filter(([, { value }]) => value.behaviors?.includes(Behavior.NativeFilter))
-    .map(([key]) => key as keyof typeof FILTER_SUPPORTED_TYPES);
+    .map(([key]) => key);
 
   const loadedDatasets = useSelector<RootState, DatasourcesState>(
     ({ datasources }) => datasources,
@@ -414,7 +411,6 @@ const FiltersConfigForm = (
 
   const { controlItems = {}, mainControlItems = {} } = formFilter
     ? getControlItemsMap({
-        expanded,
         datasetId,
         disabled: false,
         forceUpdate,
@@ -764,7 +760,6 @@ const FiltersConfigForm = (
 
   const timeColumn = (
     <StyledRowFormItem
-      expanded={expanded}
       name={['filters', filterId, 'granularity_sqla']}
       label={
         <>
@@ -812,7 +807,6 @@ const FiltersConfigForm = (
       >
         <StyledContainer>
           <StyledFormItem
-            expanded={expanded}
             name={['filters', filterId, 'type']}
             hidden
             initialValue={NativeFilterType.NativeFilter}
@@ -820,7 +814,6 @@ const FiltersConfigForm = (
             <Input />
           </StyledFormItem>
           <StyledFormItem
-            expanded={expanded}
             name={['filters', filterId, 'name']}
             label={<StyledLabel>{t('Filter name')}</StyledLabel>}
             initialValue={filterToEdit?.name}
@@ -829,7 +822,6 @@ const FiltersConfigForm = (
             <Input {...getFiltersConfigModalTestId('name-input')} />
           </StyledFormItem>
           <StyledFormItem
-            expanded={expanded}
             name={['filters', filterId, 'filterType']}
             rules={[{ required: !isRemoved, message: t('Name is required') }]}
             initialValue={filterToEdit?.filterType || 'filter_select'}
@@ -875,7 +867,7 @@ const FiltersConfigForm = (
           </StyledFormItem>
         </StyledContainer>
         {formFilter?.filterType === 'filter_time' && (
-          <FilterTypeInfo expanded={expanded}>
+          <FilterTypeInfo>
             {t(`Dashboard time range filters apply to temporal columns defined in
           the filter section of each chart. Add temporal columns to the chart
           filters to have this dashboard filter impact those charts.`)}
@@ -885,7 +877,6 @@ const FiltersConfigForm = (
           <StyledRowContainer>
             {showDataset ? (
               <StyledFormItem
-                expanded={expanded}
                 name={['filters', filterId, 'dataset']}
                 label={<StyledLabel>{t('Dataset')}</StyledLabel>}
                 initialValue={
@@ -924,10 +915,7 @@ const FiltersConfigForm = (
                 />
               </StyledFormItem>
             ) : (
-              <StyledFormItem
-                expanded={expanded}
-                label={<StyledLabel>{t('Dataset')}</StyledLabel>}
-              >
+              <StyledFormItem label={<StyledLabel>{t('Dataset')}</StyledLabel>}>
                 <Loading position="inline-centered" />
               </StyledFormItem>
             )}
@@ -953,7 +941,6 @@ const FiltersConfigForm = (
             >
               {canDependOnOtherFilters && hasAvailableFilters && (
                 <StyledRowFormItem
-                  expanded={expanded}
                   name={['filters', filterId, 'dependencies']}
                   initialValue={dependencies}
                 >
@@ -994,7 +981,6 @@ const FiltersConfigForm = (
                     }}
                   >
                     <StyledRowSubFormItem
-                      expanded={expanded}
                       name={['filters', filterId, 'adhoc_filters']}
                       css={{ width: INPUT_WIDTH }}
                       initialValue={filterToEdit?.adhoc_filters}
@@ -1030,7 +1016,6 @@ const FiltersConfigForm = (
                     </StyledRowSubFormItem>
                     {showTimeRangePicker && (
                       <StyledRowFormItem
-                        expanded={expanded}
                         name={['filters', filterId, 'time_range']}
                         label={<StyledLabel>{t('Time range')}</StyledLabel>}
                         initialValue={
@@ -1072,7 +1057,6 @@ const FiltersConfigForm = (
                     }}
                   >
                     <StyledRowFormItem
-                      expanded={expanded}
                       name={[
                         'filters',
                         filterId,
@@ -1093,7 +1077,6 @@ const FiltersConfigForm = (
                     </StyledRowFormItem>
                     {hasMetrics && (
                       <StyledRowSubFormItem
-                        expanded={expanded}
                         name={['filters', filterId, 'sortMetric']}
                         initialValue={filterToEdit?.sortMetric}
                         label={
@@ -1143,7 +1126,6 @@ const FiltersConfigForm = (
                     }}
                   >
                     <StyledRowFormItem
-                      expanded={expanded}
                       name={[
                         'filters',
                         filterId,
@@ -1182,7 +1164,6 @@ const FiltersConfigForm = (
             key={`${filterId}-${FilterPanels.settings.key}`}
           >
             <StyledFormItem
-              expanded={expanded}
               name={['filters', filterId, 'description']}
               initialValue={filterToEdit?.description}
               label={<StyledLabel>{t('Description')}</StyledLabel>}
@@ -1213,7 +1194,6 @@ const FiltersConfigForm = (
               >
                 {!isRemoved && (
                   <StyledRowSubFormItem
-                    expanded={expanded}
                     name={['filters', filterId, 'defaultDataMask']}
                     initialValue={initialDefaultValue}
                     data-test="default-input"
@@ -1334,7 +1314,7 @@ const FiltersConfigForm = (
   );
 };
 
-export default memo(
+export default React.memo(
   forwardRef<typeof FiltersConfigForm, FiltersConfigFormProps>(
     FiltersConfigForm,
   ),

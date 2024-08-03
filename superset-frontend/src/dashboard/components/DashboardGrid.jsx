@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { PureComponent, Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { addAlpha, css, styled, t } from '@superset-ui/core';
@@ -118,7 +118,7 @@ const GridColumnGuide = styled.div`
   `};
 `;
 
-class DashboardGrid extends PureComponent {
+class DashboardGrid extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -298,7 +298,7 @@ class DashboardGrid extends PureComponent {
               </Droppable>
             )}
             {gridComponent?.children?.map((id, index) => (
-              <Fragment key={id}>
+              <React.Fragment key={id}>
                 <DashboardComponent
                   id={id}
                   parentId={gridComponent.id}
@@ -327,7 +327,7 @@ class DashboardGrid extends PureComponent {
                     {renderDraggableContent}
                   </Droppable>
                 )}
-              </Fragment>
+              </React.Fragment>
             ))}
             {isResizing &&
               Array(GRID_COLUMN_COUNT)

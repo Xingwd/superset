@@ -16,9 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useState } from 'react';
+import React from 'react';
 import { styled, SupersetTheme, t, useTheme } from '@superset-ui/core';
-import { ColorSchemeEnum } from '@superset-ui/plugin-chart-table';
 import {
   Comparator,
   MultipleValueComparators,
@@ -124,24 +123,21 @@ const shouldFormItemUpdate = (
   isOperatorMultiValue(prevValues.operator) !==
     isOperatorMultiValue(currentValues.operator);
 
-const renderOperator = ({ showOnlyNone }: { showOnlyNone?: boolean } = {}) => (
+const operatorField = (
   <FormItem
     name="operator"
     label={t('Operator')}
     rules={rulesRequired}
     initialValue={operatorOptions[0].value}
   >
-    <Select
-      ariaLabel={t('Operator')}
-      options={showOnlyNone ? [operatorOptions[0]] : operatorOptions}
-    />
+    <Select ariaLabel={t('Operator')} options={operatorOptions} />
   </FormItem>
 );
 
 const renderOperatorFields = ({ getFieldValue }: GetFieldValue) =>
   isOperatorNone(getFieldValue('operator')) ? (
     <Row gutter={12}>
-      <Col span={6}>{renderOperator()}</Col>
+      <Col span={6}>{operatorField}</Col>
     </Row>
   ) : isOperatorMultiValue(getFieldValue('operator')) ? (
     <Row gutter={12}>
@@ -157,7 +153,7 @@ const renderOperatorFields = ({ getFieldValue }: GetFieldValue) =>
           <FullWidthInputNumber />
         </FormItem>
       </Col>
-      <Col span={6}>{renderOperator()}</Col>
+      <Col span={6}>{operatorField}</Col>
       <Col span={9}>
         <FormItem
           name="targetValueRight"
@@ -173,7 +169,7 @@ const renderOperatorFields = ({ getFieldValue }: GetFieldValue) =>
     </Row>
   ) : (
     <Row gutter={12}>
-      <Col span={6}>{renderOperator()}</Col>
+      <Col span={6}>{operatorField}</Col>
       <Col span={18}>
         <FormItem
           name="targetValue"
@@ -190,26 +186,13 @@ export const FormattingPopoverContent = ({
   config,
   onChange,
   columns = [],
-  extraColorChoices = [],
 }: {
   config?: ConditionalFormattingConfig;
   onChange: (config: ConditionalFormattingConfig) => void;
   columns: { label: string; value: string }[];
-  extraColorChoices?: { label: string; value: string }[];
 }) => {
   const theme = useTheme();
   const colorScheme = colorSchemeOptions(theme);
-  const [showOperatorFields, setShowOperatorFields] = useState(
-    config === undefined ||
-      (config?.colorScheme !== ColorSchemeEnum.Green &&
-        config?.colorScheme !== ColorSchemeEnum.Red),
-  );
-  const handleChange = (event: any) => {
-    setShowOperatorFields(
-      !(event === ColorSchemeEnum.Green || event === ColorSchemeEnum.Red),
-    );
-  };
-
   return (
     <Form
       onFinish={onChange}
@@ -235,22 +218,12 @@ export const FormattingPopoverContent = ({
             rules={rulesRequired}
             initialValue={colorScheme[0].value}
           >
-            <Select
-              onChange={event => handleChange(event)}
-              ariaLabel={t('Color scheme')}
-              options={[...colorScheme, ...extraColorChoices]}
-            />
+            <Select ariaLabel={t('Color scheme')} options={colorScheme} />
           </FormItem>
         </Col>
       </Row>
       <FormItem noStyle shouldUpdate={shouldFormItemUpdate}>
-        {showOperatorFields ? (
-          renderOperatorFields
-        ) : (
-          <Row gutter={12}>
-            <Col span={6}>{renderOperator({ showOnlyNone: true })}</Col>
-          </Row>
-        )}
+        {renderOperatorFields}
       </FormItem>
       <FormItem>
         <JustifyEnd>

@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 import gzip
+import json
 import logging
 import re
 from typing import Any
@@ -31,8 +32,6 @@ from superset.commands.dataset.exceptions import DatasetForbiddenDataURI
 from superset.commands.exceptions import ImportFailedError
 from superset.connectors.sqla.models import SqlaTable
 from superset.models.core import Database
-from superset.sql_parse import Table
-from superset.utils import json
 from superset.utils.core import get_user
 
 logger = logging.getLogger(__name__)
@@ -165,9 +164,7 @@ def import_dataset(
         db.session.flush()
 
     try:
-        table_exists = dataset.database.has_table(
-            Table(dataset.table_name, dataset.schema),
-        )
+        table_exists = dataset.database.has_table_by_name(dataset.table_name)
     except Exception:  # pylint: disable=broad-except
         # MySQL doesn't play nice with GSheets table names
         logger.warning(
@@ -178,7 +175,7 @@ def import_dataset(
     if data_uri and (not table_exists or force_data):
         load_data(data_uri, dataset, dataset.database)
 
-    if (user := get_user()) and user not in dataset.owners:
+    if user := get_user():
         dataset.owners.append(user)
 
     return dataset
@@ -220,10 +217,7 @@ def load_data(data_uri: str, dataset: SqlaTable, database: Database) -> None:
         )
     else:
         logger.warning("Loading data outside the import transaction")
-        with database.get_sqla_engine(
-            catalog=dataset.catalog,
-            schema=dataset.schema,
-        ) as engine:
+        with database.get_sqla_engine_with_context() as engine:
             df.to_sql(
                 dataset.table_name,
                 con=engine,

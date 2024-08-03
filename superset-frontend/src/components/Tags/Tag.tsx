@@ -19,19 +19,17 @@
 
 import { styled } from '@superset-ui/core';
 import TagType from 'src/types/TagType';
-import { Tag as AntdTag } from 'antd-v5';
-import { useMemo } from 'react';
+import AntdTag from 'antd/lib/tag';
+import React, { useMemo } from 'react';
 import { Tooltip } from 'src/components/Tooltip';
-import { CloseOutlined } from '@ant-design/icons';
 
 const StyledTag = styled(AntdTag)`
   ${({ theme }) => `
   margin-top: ${theme.gridUnit}px;
   margin-bottom: ${theme.gridUnit}px;
+  font-size: ${theme.typography.sizes.s}px;
   `};
 `;
-
-export const CustomCloseIcon = <CloseOutlined role="button" />;
 
 const MAX_DISPLAY_CHAR = 20;
 
@@ -49,8 +47,6 @@ const Tag = ({
 
   const handleClose = () => (index ? onDelete?.(index) : null);
 
-  const whatRole = onClick ? (!id ? 'button' : 'link') : undefined;
-
   const tagElem = (
     <>
       {editable ? (
@@ -60,14 +56,13 @@ const Tag = ({
             closable={editable}
             onClose={handleClose}
             color="blue"
-            closeIcon={editable ? CustomCloseIcon : undefined}
           >
             {tagDisplay}
           </StyledTag>
         </Tooltip>
       ) : (
         <Tooltip title={toolTipTitle} key={toolTipTitle}>
-          <StyledTag data-test="tag" key={id} onClick={onClick} role={whatRole}>
+          <StyledTag data-test="tag" role="link" key={id} onClick={onClick}>
             {id ? (
               <a
                 href={`/superset/all_entities/?id=${id}`}

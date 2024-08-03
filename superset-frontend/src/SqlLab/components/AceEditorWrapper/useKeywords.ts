@@ -18,7 +18,7 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch, shallowEqual, useStore } from 'react-redux';
-import { getExtensionsRegistry, t } from '@superset-ui/core';
+import { t } from '@superset-ui/core';
 
 import { Editor } from 'src/components/AsyncAceEditor';
 import sqlKeywords from 'src/SqlLab/utils/sqlKeywords';
@@ -42,7 +42,6 @@ import { SqlLabRootState } from 'src/SqlLab/types';
 type Params = {
   queryEditorId: string | number;
   dbId?: string | number;
-  catalog?: string | null;
   schema?: string;
 };
 
@@ -56,46 +55,32 @@ const getHelperText = (value: string) =>
     docText: value,
   };
 
-const extensionsRegistry = getExtensionsRegistry();
-
 export function useKeywords(
-  { queryEditorId, dbId, catalog, schema }: Params,
+  { queryEditorId, dbId, schema }: Params,
   skip = false,
 ) {
-  const useCustomKeywords = extensionsRegistry.get(
-    'sqleditor.extension.customAutocomplete',
-  );
-
-  const customKeywords = useCustomKeywords?.({
-    queryEditorId: String(queryEditorId),
-    dbId,
-    catalog,
-    schema,
-  });
   const dispatch = useDispatch();
   const hasFetchedKeywords = useRef(false);
   // skipFetch is used to prevent re-evaluating memoized keywords
   // due to updated api results by skip flag
   const skipFetch = hasFetchedKeywords && skip;
-  const { currentData: schemaOptions } = useSchemasQueryState(
+  const { data: schemaOptions } = useSchemasQueryState(
     {
       dbId,
-      catalog: catalog || undefined,
       forceRefresh: false,
     },
     { skip: skipFetch || !dbId },
   );
-  const { currentData: tableData } = useTablesQueryState(
+  const { data: tableData } = useTablesQueryState(
     {
       dbId,
-      catalog,
       schema,
       forceRefresh: false,
     },
     { skip: skipFetch || !dbId || !schema },
   );
 
-  const { currentData: functionNames, isError } = useDatabaseFunctionsQuery(
+  const { data: functionNames, isError } = useDatabaseFunctionsQuery(
     { dbId },
     { skip: skipFetch || !dbId },
   );
@@ -129,7 +114,6 @@ export function useKeywords(
           dbId && schema
             ? {
                 dbId,
-                catalog,
                 schema,
                 table,
               }
@@ -142,13 +126,11 @@ export function useKeywords(
         });
     });
     return [...columns];
-  }, [dbId, catalog, schema, apiState, tablesForColumnMetadata]);
+  }, [dbId, schema, apiState, tablesForColumnMetadata]);
 
   const insertMatch = useEffectEvent((editor: Editor, data: any) => {
     if (data.meta === 'table') {
-      dispatch(
-        addTable({ id: queryEditorId, dbId }, data.value, catalog, schema),
-      );
+      dispatch(addTable({ id: queryEditorId, dbId }, data.value, schema));
     }
 
     let { caption } = data;
@@ -225,15 +207,8 @@ export function useKeywords(
         .concat(schemaKeywords)
         .concat(tableKeywords)
         .concat(functionKeywords)
-        .concat(sqlKeywords)
-        .concat(customKeywords ?? []),
-    [
-      schemaKeywords,
-      tableKeywords,
-      columnKeywords,
-      functionKeywords,
-      customKeywords,
-    ],
+        .concat(sqlKeywords),
+    [schemaKeywords, tableKeywords, columnKeywords, functionKeywords],
   );
 
   hasFetchedKeywords.current = !skip;

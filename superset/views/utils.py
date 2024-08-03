@@ -22,6 +22,7 @@ from typing import Any, Callable, DefaultDict, Optional, Union
 
 import msgpack
 import pyarrow as pa
+import simplejson as json
 from flask import flash, g, has_request_context, redirect, request
 from flask_appbuilder.security.sqla import models as ab_models
 from flask_appbuilder.security.sqla.models import User
@@ -46,7 +47,6 @@ from superset.models.dashboard import Dashboard
 from superset.models.slice import Slice
 from superset.models.sql_lab import Query
 from superset.superset_typing import FormData
-from superset.utils import json
 from superset.utils.core import DatasourceType
 from superset.utils.decorators import stats_timing
 from superset.viz import BaseViz
@@ -108,7 +108,7 @@ def get_permissions(
 
     data_permissions = defaultdict(set)
     roles_permissions = security_manager.get_user_roles_permissions(user)
-    for _, permissions in roles_permissions.items():  # noqa: F402
+    for _, permissions in roles_permissions.items():
         for permission in permissions:
             if permission[0] in ("datasource_access", "database_access"):
                 data_permissions[permission[0]].add(permission[1])
@@ -151,12 +151,10 @@ def get_form_data(
     form_data: dict[str, Any] = initial_form_data or {}
 
     if has_request_context():
-        json_data = request.get_json(cache=True) if request.is_json else {}
-
         # chart data API requests are JSON
-        first_query = (
-            json_data["queries"][0]
-            if "queries" in json_data and json_data["queries"]
+        request_json_data = (
+            request.json["queries"][0]
+            if request.is_json and "queries" in request.json
             else None
         )
 
@@ -164,8 +162,8 @@ def get_form_data(
 
         request_form_data = request.form.get("form_data")
         request_args_data = request.args.get("form_data")
-        if first_query:
-            form_data.update(first_query)
+        if request_json_data:
+            form_data.update(request_json_data)
         if request_form_data:
             parsed_form_data = loads_request_json(request_form_data)
             # some chart data api requests are form_data

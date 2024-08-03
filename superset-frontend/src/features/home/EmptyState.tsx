@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from 'src/components/Button';
 import { Empty } from 'src/components';

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import moment from 'moment';
 import Timer, { TimerProps } from './index';
 
@@ -45,16 +46,16 @@ InteractiveTimer.argTypes = {
   status: {
     control: {
       type: 'select',
+      options: [
+        'success',
+        'warning',
+        'danger',
+        'info',
+        'default',
+        'primary',
+        'secondary',
+      ],
     },
-    options: [
-      'success',
-      'warning',
-      'danger',
-      'info',
-      'default',
-      'primary',
-      'secondary',
-    ],
   },
 };
 

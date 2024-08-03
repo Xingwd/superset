@@ -16,16 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  FC,
-  memo,
+import React, {
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-
 import {
   ChartDataResponseResult,
   Behavior,
@@ -38,8 +35,6 @@ import {
   styled,
   SuperChart,
   t,
-  ClientErrorObject,
-  getClientErrorObject,
 } from '@superset-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEqual, isEqualWith } from 'lodash';
@@ -48,6 +43,10 @@ import Loading from 'src/components/Loading';
 import BasicErrorAlert from 'src/components/ErrorMessage/BasicErrorAlert';
 import ErrorMessageWithStackTrace from 'src/components/ErrorMessage/ErrorMessageWithStackTrace';
 import { waitForAsyncData } from 'src/middleware/asyncEvent';
+import {
+  ClientErrorObject,
+  getClientErrorObject,
+} from 'src/utils/getClientErrorObject';
 import { FilterBarOrientation, RootState } from 'src/dashboard/types';
 import {
   onFiltersRefreshSuccess,
@@ -86,7 +85,7 @@ const useShouldFilterRefresh = () => {
   return !isDashboardRefreshing && isFilterRefreshing;
 };
 
-const FilterValue: FC<FilterControlProps> = ({
+const FilterValue: React.FC<FilterControlProps> = ({
   dataMaskSelected,
   filter,
   onFilterSelectionChange,
@@ -344,4 +343,4 @@ const FilterValue: FC<FilterControlProps> = ({
     </StyledDiv>
   );
 };
-export default memo(FilterValue);
+export default React.memo(FilterValue);

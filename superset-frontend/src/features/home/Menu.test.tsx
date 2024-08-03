@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import * as reactRedux from 'react-redux';
 import fetchMock from 'fetch-mock';
 import { render, screen } from 'spec/helpers/testing-library';
@@ -42,19 +43,19 @@ const dropdownItems = [
       {
         label: 'Upload a CSV',
         name: 'Upload a CSV',
-        url: '#',
+        url: '/csvtodatabaseview/form',
         perm: true,
       },
       {
         label: 'Upload a Columnar File',
         name: 'Upload a Columnar file',
-        url: '#',
+        url: '/columnartodatabaseview/form',
         perm: true,
       },
       {
         label: 'Upload Excel',
         name: 'Upload Excel',
-        url: '#',
+        url: '/exceltodatabaseview/form',
         perm: true,
       },
     ],

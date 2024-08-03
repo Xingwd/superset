@@ -81,11 +81,9 @@ describe('useTables hook', () => {
   test('returns api response mapping json options', async () => {
     const expectDbId = 'db1';
     const expectedSchema = 'schema1';
-    const catalogApiRoute = `glob:*/api/v1/database/${expectDbId}/catalogs/*`;
     const schemaApiRoute = `glob:*/api/v1/database/${expectDbId}/schemas/*`;
     const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
     fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(catalogApiRoute, { count: 0, result: [] });
     fetchMock.get(schemaApiRoute, {
       result: fakeSchemaApiResult,
     });
@@ -132,11 +130,9 @@ describe('useTables hook', () => {
   test('skips the deprecated schema option', async () => {
     const expectDbId = 'db1';
     const unexpectedSchema = 'invalid schema';
-    const catalogApiRoute = `glob:*/api/v1/database/${expectDbId}/catalogs/*`;
     const schemaApiRoute = `glob:*/api/v1/database/${expectDbId}/schemas/*`;
     const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
     fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(catalogApiRoute, { count: 0, result: [] });
     fetchMock.get(schemaApiRoute, {
       result: fakeSchemaApiResult,
     });
@@ -170,10 +166,6 @@ describe('useTables hook', () => {
     const expectedSchema = 'schema2';
     const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
     fetchMock.get(tableApiRoute, fakeHasMoreApiResult);
-    fetchMock.get(`glob:*/api/v1/database/${expectDbId}/catalogs/*`, {
-      count: 0,
-      result: [],
-    });
     fetchMock.get(`glob:*/api/v1/database/${expectDbId}/schemas/*`, {
       result: fakeSchemaApiResult,
     });
@@ -199,10 +191,6 @@ describe('useTables hook', () => {
     const expectedSchema = 'schema1';
     const tableApiRoute = `glob:*/api/v1/database/${expectDbId}/tables/?q=*`;
     fetchMock.get(tableApiRoute, fakeApiResult);
-    fetchMock.get(`glob:*/api/v1/database/${expectDbId}/catalogs/*`, {
-      count: 0,
-      result: [],
-    });
     fetchMock.get(`glob:*/api/v1/database/${expectDbId}/schemas/*`, {
       result: fakeSchemaApiResult,
     });
@@ -232,10 +220,6 @@ describe('useTables hook', () => {
     fetchMock.get(tableApiRoute, url =>
       url.includes(expectedSchema) ? fakeApiResult : fakeHasMoreApiResult,
     );
-    fetchMock.get(`glob:*/api/v1/database/${expectDbId}/catalogs/*`, {
-      count: 0,
-      result: [],
-    });
     fetchMock.get(`glob:*/api/v1/database/${expectDbId}/schemas/*`, {
       result: fakeSchemaApiResult,
     });

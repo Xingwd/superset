@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import { PureComponent } from 'react';
+import React from 'react';
 import { formatTime } from '@superset-ui/core';
 
-class TimeFormatValidator extends PureComponent {
+class TimeFormatValidator extends React.PureComponent {
   state: {
     formatString: string;
     testValues: (Date | number | null | undefined)[];

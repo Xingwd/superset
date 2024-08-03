@@ -16,8 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Fragment, useState, useEffect, FC, PureComponent } from 'react';
-
+import React, { Fragment, useState, useEffect } from 'react';
 import rison from 'rison';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -46,7 +45,6 @@ import {
 } from 'src/types/bootstrapTypes';
 import { RootState } from 'src/dashboard/types';
 import DatabaseModal from 'src/features/databases/DatabaseModal';
-import UploadDataModal from 'src/features/databases/UploadDataModel';
 import { uploadUserPerms } from 'src/views/CRUD/utils';
 import TelemetryPixel from 'src/components/TelemetryPixel';
 import LanguagePicker from './LanguagePicker';
@@ -145,11 +143,6 @@ const RightMenu = ({
     HAS_GSHEETS_INSTALLED,
   } = useSelector<any, ExtensionConfigs>(state => state.common.conf);
   const [showDatabaseModal, setShowDatabaseModal] = useState<boolean>(false);
-  const [showCSVUploadModal, setShowCSVUploadModal] = useState<boolean>(false);
-  const [showExcelUploadModal, setShowExcelUploadModal] =
-    useState<boolean>(false);
-  const [showColumnarUploadModal, setShowColumnarUploadModal] =
-    useState<boolean>(false);
   const [engine, setEngine] = useState<string>('');
   const canSql = findPermission('can_sqllab', 'Superset', roles);
   const canDashboard = findPermission('can_write', 'Dashboard', roles);
@@ -195,20 +188,23 @@ const RightMenu = ({
         },
         {
           label: t('Upload CSV to database'),
-          name: GlobalMenuDataOptions.CSVUpload,
+          name: 'Upload a CSV',
+          url: '/csvtodatabaseview/form',
           perm: canUploadCSV && showUploads,
           disable: isAdmin && !allowUploads,
         },
         {
-          label: t('Upload Excel to database'),
-          name: GlobalMenuDataOptions.ExcelUpload,
-          perm: canUploadExcel && showUploads,
+          label: t('Upload columnar file to database'),
+          name: 'Upload a Columnar file',
+          url: '/columnartodatabaseview/form',
+          perm: canUploadColumnar && showUploads,
           disable: isAdmin && !allowUploads,
         },
         {
-          label: t('Upload Columnar file to database'),
-          name: GlobalMenuDataOptions.ColumnarUpload,
-          perm: canUploadColumnar && showUploads,
+          label: t('Upload Excel file to database'),
+          name: 'Upload Excel',
+          url: '/exceltodatabaseview/form',
+          perm: canUploadExcel && showUploads,
           disable: isAdmin && !allowUploads,
         },
       ],
@@ -293,12 +289,6 @@ const RightMenu = ({
     } else if (itemChose.key === GlobalMenuDataOptions.GoogleSheets) {
       setShowDatabaseModal(true);
       setEngine('Google Sheets');
-    } else if (itemChose.key === GlobalMenuDataOptions.CSVUpload) {
-      setShowCSVUploadModal(true);
-    } else if (itemChose.key === GlobalMenuDataOptions.ExcelUpload) {
-      setShowExcelUploadModal(true);
-    } else if (itemChose.key === GlobalMenuDataOptions.ColumnarUpload) {
-      setShowColumnarUploadModal(true);
     }
   };
 
@@ -348,10 +338,6 @@ const RightMenu = ({
 
   const handleDatabaseAdd = () => setQuery({ databaseAdded: true });
 
-  const handleLogout = () => {
-    localStorage.removeItem('redux');
-  };
-
   const theme = useTheme();
 
   return (
@@ -362,30 +348,6 @@ const RightMenu = ({
           show={showDatabaseModal}
           dbEngine={engine}
           onDatabaseAdd={handleDatabaseAdd}
-        />
-      )}
-      {canUploadCSV && (
-        <UploadDataModal
-          onHide={() => setShowCSVUploadModal(false)}
-          show={showCSVUploadModal}
-          allowedExtensions={CSV_EXTENSIONS}
-          type="csv"
-        />
-      )}
-      {canUploadExcel && (
-        <UploadDataModal
-          onHide={() => setShowExcelUploadModal(false)}
-          show={showExcelUploadModal}
-          allowedExtensions={EXCEL_EXTENSIONS}
-          type="excel"
-        />
-      )}
-      {canUploadColumnar && (
-        <UploadDataModal
-          onHide={() => setShowColumnarUploadModal(false)}
-          show={showColumnarUploadModal}
-          allowedExtensions={COLUMNAR_EXTENSIONS}
-          type="columnar"
         />
       )}
       {environmentTag?.text && (
@@ -516,7 +478,7 @@ const RightMenu = ({
                   <a href={navbarRight.user_info_url}>{t('Info')}</a>
                 </Menu.Item>
               )}
-              <Menu.Item key="logout" onClick={handleLogout}>
+              <Menu.Item key="logout">
                 <a href={navbarRight.user_logout_url}>{t('Logout')}</a>
               </Menu.Item>
             </Menu.ItemGroup>,
@@ -605,7 +567,7 @@ const RightMenu = ({
   );
 };
 
-const RightMenuWithQueryWrapper: FC<RightMenuProps> = props => {
+const RightMenuWithQueryWrapper: React.FC<RightMenuProps> = props => {
   const [, setQuery] = useQueryParams({
     databaseAdded: BooleanParam,
     datasetAdded: BooleanParam,
@@ -619,7 +581,7 @@ const RightMenuWithQueryWrapper: FC<RightMenuProps> = props => {
 // Superset still has multiple entry points, and not all of them have
 // the same setup, and critically, not all of them have the QueryParamProvider.
 // This wrapper ensures the RightMenu renders regardless of the provider being present.
-class RightMenuErrorWrapper extends PureComponent<RightMenuProps> {
+class RightMenuErrorWrapper extends React.PureComponent<RightMenuProps> {
   state = {
     hasError: false,
   };
@@ -639,7 +601,7 @@ class RightMenuErrorWrapper extends PureComponent<RightMenuProps> {
   }
 }
 
-const RightMenuWrapper: FC<RightMenuProps> = props => (
+const RightMenuWrapper: React.FC<RightMenuProps> = props => (
   <RightMenuErrorWrapper {...props}>
     <RightMenuWithQueryWrapper {...props} />
   </RightMenuErrorWrapper>

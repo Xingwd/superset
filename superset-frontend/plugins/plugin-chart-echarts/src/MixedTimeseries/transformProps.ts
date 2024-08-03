@@ -35,12 +35,10 @@ import {
   isIntervalAnnotationLayer,
   isPhysicalColumn,
   isTimeseriesAnnotationLayer,
-  NumberFormats,
   QueryFormData,
   QueryFormMetric,
   TimeseriesChartDataResponseResult,
   TimeseriesDataRecord,
-  tooltipHtml,
   ValueFormatter,
 } from '@superset-ui/core';
 import { getOriginalSeries } from '@superset-ui/chart-controls';
@@ -91,7 +89,6 @@ import {
 import { TIMEGRAIN_TO_TIMESTAMP, TIMESERIES_CONSTANTS } from '../constants';
 import { getDefaultTooltip } from '../utils/tooltip';
 import {
-  getPercentFormatter,
   getTooltipTimeFormatter,
   getXAxisFormatter,
   getYAxisFormatter,
@@ -234,7 +231,6 @@ export default function transformProps(
   const xAxisDataType = dataTypes?.[xAxisLabel] ?? dataTypes?.[xAxisOrig];
   const xAxisType = getAxisType(stack, xAxisForceCategorical, xAxisDataType);
   const series: SeriesOption[] = [];
-  const percentFormatter = getPercentFormatter(NumberFormats.PERCENT_2_POINT);
   const formatter = contributionMode
     ? getNumberFormatter(',.0%')
     : currencyFormat?.symbol
@@ -587,23 +583,11 @@ export default function transformProps(
           forecastValue.sort((a, b) => b.data[1] - a.data[1]);
         }
 
-        const rows: string[][] = [];
+        const rows: Array<string> = [`${tooltipFormatter(xValue)}`];
         const forecastValues =
           extractForecastValuesFromTooltipParams(forecastValue);
 
-        const isForecast = Object.values(forecastValues).some(
-          value =>
-            value.forecastTrend || value.forecastLower || value.forecastUpper,
-        );
-
-        const total = Object.values(forecastValues).reduce(
-          (acc, value) =>
-            value.observation !== undefined ? acc + value.observation : acc,
-          0,
-        );
-        const showTotal = richTooltip && !isForecast;
-        const keys = Object.keys(forecastValues);
-        keys.forEach(key => {
+        Object.keys(forecastValues).forEach(key => {
           const value = forecastValues[key];
           // if there are no dimensions, key is a verbose name of a metric,
           // otherwise it is a comma separated string where the first part is metric name
@@ -629,30 +613,18 @@ export default function transformProps(
             formatterKey,
             !!contributionMode,
           );
-          const row = formatForecastTooltipSeries({
+          const content = formatForecastTooltipSeries({
             ...value,
             seriesName: key,
             formatter: primarySeries.has(key)
               ? tooltipFormatter
               : tooltipFormatterSecondary,
           });
-          if (showTotal && value.observation !== undefined) {
-            row.push(percentFormatter.format(value.observation / (total || 1)));
-          }
-          rows.push(row);
+          const contentStyle =
+            key === focusedSeries ? 'font-weight: 700' : 'opacity: 0.7';
+          rows.push(`<span style="${contentStyle}">${content}</span>`);
         });
-        if (showTotal) {
-          rows.push([
-            'Total',
-            formatter.format(total),
-            percentFormatter.format(1),
-          ]);
-        }
-        return tooltipHtml(
-          rows,
-          tooltipFormatter(xValue),
-          keys.findIndex(key => key === focusedSeries),
-        );
+        return rows.join('<br />');
       },
     },
     legend: {

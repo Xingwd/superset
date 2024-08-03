@@ -51,18 +51,12 @@ def set_form_data(form_data: dict[str, Any]) -> None:
 
 
 def _create_query_context_from_form(form_data: dict[str, Any]) -> QueryContext:
-    """
-    Create the query context from the form data.
-
-    :param form_data: The task form data
-    :returns: The query context
-    :raises ValidationError: If the request is incorrect
-    """
-
     try:
         return ChartDataQueryContextSchema().load(form_data)
     except KeyError as ex:
         raise ValidationError("Request is incorrect") from ex
+    except ValidationError as error:
+        raise error
 
 
 def _load_user_from_job_metadata(job_metadata: dict[str, Any]) -> User:
@@ -102,7 +96,7 @@ def load_chart_data_into_cache(
             )
         except SoftTimeLimitExceeded as ex:
             logger.warning("A timeout occurred while loading chart data, error: %s", ex)
-            raise
+            raise ex
         except Exception as ex:
             # TODO: QueryContext should support SIP-40 style errors
             error = str(ex.message if hasattr(ex, "message") else ex)
@@ -110,7 +104,7 @@ def load_chart_data_into_cache(
             async_query_manager.update_job(
                 job_metadata, async_query_manager.STATUS_ERROR, errors=errors
             )
-            raise
+            raise ex
 
 
 @celery_app.task(name="load_explore_json_into_cache", soft_time_limit=query_timeout)
@@ -168,7 +162,7 @@ def load_explore_json_into_cache(  # pylint: disable=too-many-locals
             logger.warning(
                 "A timeout occurred while loading explore json, error: %s", ex
             )
-            raise
+            raise ex
         except Exception as ex:
             if isinstance(ex, SupersetVizException):
                 errors = ex.errors
@@ -179,4 +173,4 @@ def load_explore_json_into_cache(  # pylint: disable=too-many-locals
             async_query_manager.update_job(
                 job_metadata, async_query_manager.STATUS_ERROR, errors=errors
             )
-            raise
+            raise ex

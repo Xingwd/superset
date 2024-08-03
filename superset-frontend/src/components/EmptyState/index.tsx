@@ -17,11 +17,7 @@
  * under the License.
  */
 
-import {
-  ReactNode,
-  SyntheticEvent,
-  MouseEventHandler as ReactMouseEventHandler,
-} from 'react';
+import React, { ReactNode, SyntheticEvent } from 'react';
 import { styled, css, SupersetTheme, t } from '@superset-ui/core';
 import { Empty } from 'src/components';
 import Button from 'src/components/Button';
@@ -40,7 +36,7 @@ export interface EmptyStateSmallProps {
 
 export interface EmptyStateProps extends EmptyStateSmallProps {
   buttonText?: ReactNode;
-  buttonAction?: ReactMouseEventHandler<HTMLElement>;
+  buttonAction?: React.MouseEventHandler<HTMLElement>;
   className?: string;
 }
 

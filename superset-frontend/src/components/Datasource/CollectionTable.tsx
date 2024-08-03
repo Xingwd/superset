@@ -16,14 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
-  ReactNode,
-  DetailedHTMLProps,
-  TdHTMLAttributes,
-  PureComponent,
-} from 'react';
-
-import { nanoid } from 'nanoid';
+import React, { ReactNode } from 'react';
+import shortid from 'shortid';
 
 import { InfoTooltipWithTrigger } from '@superset-ui/chart-controls';
 import { t, styled } from '@superset-ui/core';
@@ -47,8 +41,8 @@ interface CRUDCollectionProps {
     val: unknown,
     label: string,
     record: any,
-  ) => DetailedHTMLProps<
-    TdHTMLAttributes<HTMLTableCellElement>,
+  ) => React.DetailedHTMLProps<
+    React.TdHTMLAttributes<HTMLTableCellElement>,
     HTMLTableCellElement
   >)[];
   itemRenderers?: ((
@@ -86,7 +80,7 @@ function createCollectionArray(collection: object) {
 function createKeyedCollection(arr: Array<object>) {
   const collectionArray = arr.map((o: any) => ({
     ...o,
-    id: o.id || nanoid(),
+    id: o.id || shortid.generate(),
   }));
 
   const collection = {};
@@ -155,7 +149,7 @@ const StyledButtonWrapper = styled.span`
   `}
 `;
 
-export default class CRUDCollection extends PureComponent<
+export default class CRUDCollection extends React.PureComponent<
   CRUDCollectionProps,
   CRUDCollectionState
 > {
@@ -209,7 +203,7 @@ export default class CRUDCollection extends PureComponent<
     if (this.props.itemGenerator) {
       let newItem = this.props.itemGenerator();
       if (!newItem.id) {
-        newItem = { ...newItem, id: nanoid() };
+        newItem = { ...newItem, id: shortid.generate() };
       }
       this.changeCollection(this.state.collection, newItem);
     }

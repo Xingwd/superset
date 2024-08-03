@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 import pytest
-from pytest_mock import MockerFixture
+from pytest_mock import MockFixture
 from sqlalchemy.orm.session import Session
 
 from superset import db
@@ -28,7 +28,7 @@ def session_with_data(session: Session):
     from superset.models.core import Database
     from superset.models.dashboard import Dashboard
     from superset.models.slice import Slice
-    from superset.models.sql_lab import SavedQuery
+    from superset.models.sql_lab import Query, SavedQuery
     from superset.tags.models import Tag
 
     engine = session.get_bind()
@@ -48,7 +48,7 @@ def session_with_data(session: Session):
         TableColumn(column_name="a", type="INTEGER"),
     ]
 
-    SqlaTable(  # noqa: F841
+    sqla_table = SqlaTable(
         table_name="my_sqla_table",
         columns=columns,
         metrics=[],
@@ -63,7 +63,7 @@ def session_with_data(session: Session):
         published=True,
     )
 
-    SavedQuery(  # noqa: F841
+    saved_query = SavedQuery(
         label="test_query", database=database, sql="select * from foo"
     )
 
@@ -76,7 +76,7 @@ def session_with_data(session: Session):
     yield session
 
 
-def test_update_command_success(session_with_data: Session, mocker: MockerFixture):
+def test_update_command_success(session_with_data: Session, mocker: MockFixture):
     from superset.commands.tag.update import UpdateTagCommand
     from superset.daos.tag import TagDAO
     from superset.models.dashboard import Dashboard
@@ -95,7 +95,7 @@ def test_update_command_success(session_with_data: Session, mocker: MockerFixtur
     ]
 
     tag_to_update = TagDAO.find_by_name("test_name")
-    UpdateTagCommand(  # noqa: F841
+    changed_model = UpdateTagCommand(
         tag_to_update.id,
         {
             "name": "new_name",
@@ -111,7 +111,7 @@ def test_update_command_success(session_with_data: Session, mocker: MockerFixtur
 
 
 def test_update_command_success_duplicates(
-    session_with_data: Session, mocker: MockerFixture
+    session_with_data: Session, mocker: MockFixture
 ):
     from superset.commands.tag.create import CreateCustomTagWithRelationshipsCommand
     from superset.commands.tag.update import UpdateTagCommand
@@ -161,7 +161,7 @@ def test_update_command_success_duplicates(
 
 
 def test_update_command_failed_validation(
-    session_with_data: Session, mocker: MockerFixture
+    session_with_data: Session, mocker: MockFixture
 ):
     from superset.commands.tag.create import CreateCustomTagWithRelationshipsCommand
     from superset.commands.tag.exceptions import TagInvalidError

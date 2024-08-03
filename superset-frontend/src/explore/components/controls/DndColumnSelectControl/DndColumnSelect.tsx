@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   AdhocColumn,
   tn,
@@ -37,7 +37,6 @@ import { DndControlProps } from './types';
 export type DndColumnSelectProps = DndControlProps<QueryFormColumn> & {
   options: ColumnMeta[];
   isTemporal?: boolean;
-  disabledTabs?: Set<string>;
 };
 
 function DndColumnSelect(props: DndColumnSelectProps) {
@@ -51,7 +50,6 @@ function DndColumnSelect(props: DndColumnSelectProps) {
     name,
     label,
     isTemporal,
-    disabledTabs,
   } = props;
   const [newColumnPopoverVisible, setNewColumnPopoverVisible] = useState(false);
 
@@ -123,7 +121,6 @@ function DndColumnSelect(props: DndColumnSelectProps) {
             }}
             editedColumn={column}
             isTemporal={isTemporal}
-            disabledTabs={disabledTabs}
           >
             <OptionWrapper
               key={idx}
@@ -207,7 +204,6 @@ function DndColumnSelect(props: DndColumnSelectProps) {
         closePopover={closePopover}
         visible={newColumnPopoverVisible}
         isTemporal={isTemporal}
-        disabledTabs={disabledTabs}
       >
         <div />
       </ColumnSelectPopoverTrigger>

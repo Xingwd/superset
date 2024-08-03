@@ -18,11 +18,11 @@
  */
 /* eslint global-require: 0 */
 import $ from 'jquery';
+import { SupersetClient } from '@superset-ui/core';
 import {
-  SupersetClient,
   getClientErrorObject,
   ClientErrorObject,
-} from '@superset-ui/core';
+} from 'src/utils/getClientErrorObject';
 import setupErrorMessages from 'src/setup/setupErrorMessages';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   BinaryQueryObjectFilterClause,
   Column,

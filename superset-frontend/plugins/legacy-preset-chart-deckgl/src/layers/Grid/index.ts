@@ -32,7 +32,7 @@ const metadata = new ChartMetadata({
   thumbnail,
   exampleGallery: [{ url: example }],
   useLegacyApi: true,
-  tags: [t('deckGL'), t('3D'), t('Comparison')],
+  tags: [t('deckGL'), t('3D'), t('Comparison'), t('Experimental')],
 });
 
 export default class GridChartPlugin extends ChartPlugin {

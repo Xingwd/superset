@@ -21,7 +21,6 @@ from sqlalchemy.engine.reflection import Inspector
 
 from superset.constants import TimeGrain
 from superset.db_engine_specs.base import BaseEngineSpec, LimitMethod
-from superset.sql_parse import Table
 
 logger = logging.getLogger(__name__)
 
@@ -65,9 +64,7 @@ class Db2EngineSpec(BaseEngineSpec):
 
     @classmethod
     def get_table_comment(
-        cls,
-        inspector: Inspector,
-        table: Table,
+        cls, inspector: Inspector, table_name: str, schema: Union[str, None]
     ) -> Optional[str]:
         """
         Get comment of table from a given schema
@@ -75,12 +72,13 @@ class Db2EngineSpec(BaseEngineSpec):
         Ibm Db2 return comments as tuples, so we need to get the first element
 
         :param inspector: SqlAlchemy Inspector instance
-        :param table: Table instance
+        :param table_name: Table name
+        :param schema: Schema name. If omitted, uses default schema for database
         :return: comment of table
         """
         comment = None
         try:
-            table_comment = inspector.get_table_comment(table.table, table.schema)
+            table_comment = inspector.get_table_comment(table_name, schema)
             comment = table_comment.get("text")
             return comment[0]
         except IndexError:

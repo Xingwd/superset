@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { styled, useTheme, t } from '@superset-ui/core';
 import { AntdDropdown } from 'src/components';

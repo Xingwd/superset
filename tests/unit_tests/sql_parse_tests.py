@@ -39,12 +39,8 @@ from superset.sql_parse import (
     has_table_query,
     insert_rls_as_subquery,
     insert_rls_in_predicate,
-    KustoKQLStatement,
     ParsedQuery,
     sanitize_clause,
-    split_kql,
-    SQLScript,
-    SQLStatement,
     strip_comments_from_sql,
     Table,
 )
@@ -119,8 +115,9 @@ def test_extract_tables_subselect() -> None:
     """
     Test that tables inside subselects are parsed correctly.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT sub.*
 FROM (
     SELECT *
@@ -129,10 +126,13 @@ FROM (
     ) sub, s2.t2
 WHERE sub.resolution = 'NONE'
 """
-    ) == {Table("t1", "s1"), Table("t2", "s2")}
+        )
+        == {Table("t1", "s1"), Table("t2", "s2")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT sub.*
 FROM (
     SELECT *
@@ -141,10 +141,13 @@ FROM (
 ) sub
 WHERE sub.resolution = 'NONE'
 """
-    ) == {Table("t1", "s1")}
+        )
+        == {Table("t1", "s1")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT * FROM t1
 WHERE s11 > ANY (
     SELECT COUNT(*) /* no hint */ FROM t2
@@ -156,7 +159,9 @@ WHERE s11 > ANY (
     )
 )
 """
-    ) == {Table("t1"), Table("t2"), Table("t3"), Table("t4")}
+        )
+        == {Table("t1"), Table("t2"), Table("t3"), Table("t4")}
+    )
 
 
 def test_extract_tables_select_in_expression() -> None:
@@ -227,24 +232,30 @@ def test_extract_tables_select_array() -> None:
     """
     Test that queries selecting arrays work as expected.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT ARRAY[1, 2, 3] AS my_array
 FROM t1 LIMIT 10
 """
-    ) == {Table("t1")}
+        )
+        == {Table("t1")}
+    )
 
 
 def test_extract_tables_select_if() -> None:
     """
     Test that queries with an ``IF`` work as expected.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT IF(CARDINALITY(my_array) >= 3, my_array[3], NULL)
 FROM t1 LIMIT 10
 """
-    ) == {Table("t1")}
+        )
+        == {Table("t1")}
+    )
 
 
 def test_extract_tables_with_catalog() -> None:
@@ -312,29 +323,38 @@ def test_extract_tables_where_subquery() -> None:
     """
     Test that tables in a ``WHERE`` subquery are parsed correctly.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT name
 FROM t1
 WHERE regionkey = (SELECT max(regionkey) FROM t2)
 """
-    ) == {Table("t1"), Table("t2")}
+        )
+        == {Table("t1"), Table("t2")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT name
 FROM t1
 WHERE regionkey IN (SELECT regionkey FROM t2)
 """
-    ) == {Table("t1"), Table("t2")}
+        )
+        == {Table("t1"), Table("t2")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT name
 FROM t1
 WHERE EXISTS (SELECT 1 FROM t2 WHERE t1.regionkey = t2.regionkey);
 """
-    ) == {Table("t1"), Table("t2")}
+        )
+        == {Table("t1"), Table("t2")}
+    )
 
 
 def test_extract_tables_describe() -> None:
@@ -348,12 +368,15 @@ def test_extract_tables_show_partitions() -> None:
     """
     Test ``SHOW PARTITIONS``.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SHOW PARTITIONS FROM orders
 WHERE ds >= '2013-01-01' ORDER BY ds DESC
 """
-    ) == {Table("orders")}
+        )
+        == {Table("orders")}
+    )
 
 
 def test_extract_tables_join() -> None:
@@ -365,8 +388,9 @@ def test_extract_tables_join() -> None:
         Table("t2"),
     }
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT a.date, b.name
 FROM left_table a
 JOIN (
@@ -377,10 +401,13 @@ JOIN (
 ) b
 ON a.date = b.date
 """
-    ) == {Table("left_table"), Table("right_table")}
+        )
+        == {Table("left_table"), Table("right_table")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT a.date, b.name
 FROM left_table a
 LEFT INNER JOIN (
@@ -391,10 +418,13 @@ LEFT INNER JOIN (
 ) b
 ON a.date = b.date
 """
-    ) == {Table("left_table"), Table("right_table")}
+        )
+        == {Table("left_table"), Table("right_table")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT a.date, b.name
 FROM left_table a
 RIGHT OUTER JOIN (
@@ -405,10 +435,13 @@ RIGHT OUTER JOIN (
 ) b
 ON a.date = b.date
 """
-    ) == {Table("left_table"), Table("right_table")}
+        )
+        == {Table("left_table"), Table("right_table")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT a.date, b.name
 FROM left_table a
 FULL OUTER JOIN (
@@ -419,15 +452,18 @@ FULL OUTER JOIN (
 ) b
 ON a.date = b.date
 """
-    ) == {Table("left_table"), Table("right_table")}
+        )
+        == {Table("left_table"), Table("right_table")}
+    )
 
 
 def test_extract_tables_semi_join() -> None:
     """
     Test ``LEFT SEMI JOIN``.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT a.date, b.name
 FROM left_table a
 LEFT SEMI JOIN (
@@ -438,15 +474,18 @@ LEFT SEMI JOIN (
 ) b
 ON a.data = b.date
 """
-    ) == {Table("left_table"), Table("right_table")}
+        )
+        == {Table("left_table"), Table("right_table")}
+    )
 
 
 def test_extract_tables_combinations() -> None:
     """
     Test a complex case with nested queries.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT * FROM t1
 WHERE s11 > ANY (
     SELECT * FROM t1 UNION ALL SELECT * FROM (
@@ -460,10 +499,13 @@ WHERE s11 > ANY (
     )
 )
 """
-    ) == {Table("t1"), Table("t3"), Table("t4"), Table("t6")}
+        )
+        == {Table("t1"), Table("t3"), Table("t4"), Table("t6")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT * FROM (
     SELECT * FROM (
         SELECT * FROM (
@@ -472,45 +514,56 @@ SELECT * FROM (
     ) AS S2
 ) AS S3
 """
-    ) == {Table("EmployeeS")}
+        )
+        == {Table("EmployeeS")}
+    )
 
 
 def test_extract_tables_with() -> None:
     """
     Test ``WITH``.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 WITH
     x AS (SELECT a FROM t1),
     y AS (SELECT a AS b FROM t2),
     z AS (SELECT b AS c FROM t3)
 SELECT c FROM z
 """
-    ) == {Table("t1"), Table("t2"), Table("t3")}
+        )
+        == {Table("t1"), Table("t2"), Table("t3")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 WITH
     x AS (SELECT a FROM t1),
     y AS (SELECT a AS b FROM x),
     z AS (SELECT b AS c FROM y)
 SELECT c FROM z
 """
-    ) == {Table("t1")}
+        )
+        == {Table("t1")}
+    )
 
 
 def test_extract_tables_reusing_aliases() -> None:
     """
     Test that the parser follows aliases.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 with q1 as ( select key from q2 where key = '5'),
 q2 as ( select key from src where key = '5')
 select * from (select key from q1) a
 """
-    ) == {Table("src")}
+        )
+        == {Table("src")}
+    )
 
     # weird query with circular dependency
     assert (
@@ -547,8 +600,9 @@ def test_extract_tables_complex() -> None:
     """
     Test a few complex queries.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT sum(m_examples) AS "sum__m_example"
 FROM (
     SELECT
@@ -569,23 +623,29 @@ FROM (
 ORDER BY "sum__m_example" DESC
 LIMIT 10;
 """
-    ) == {
-        Table("my_l_table"),
-        Table("my_b_table"),
-        Table("my_t_table"),
-        Table("inner_table"),
-    }
+        )
+        == {
+            Table("my_l_table"),
+            Table("my_b_table"),
+            Table("my_t_table"),
+            Table("inner_table"),
+        }
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT *
 FROM table_a AS a, table_b AS b, table_c as c
 WHERE a.id = b.id and b.id = c.id
 """
-    ) == {Table("table_a"), Table("table_b"), Table("table_c")}
+        )
+        == {Table("table_a"), Table("table_b"), Table("table_c")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT somecol AS somecol
 FROM (
     WITH bla AS (
@@ -629,51 +689,63 @@ FROM (
     LIMIT 50000
 )
 """
-    ) == {Table("a"), Table("b"), Table("c"), Table("d"), Table("e"), Table("f")}
+        )
+        == {Table("a"), Table("b"), Table("c"), Table("d"), Table("e"), Table("f")}
+    )
 
 
 def test_extract_tables_mixed_from_clause() -> None:
     """
     Test that the parser handles a ``FROM`` clause with table and subselect.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 SELECT *
 FROM table_a AS a, (select * from table_b) AS b, table_c as c
 WHERE a.id = b.id and b.id = c.id
 """
-    ) == {Table("table_a"), Table("table_b"), Table("table_c")}
+        )
+        == {Table("table_a"), Table("table_b"), Table("table_c")}
+    )
 
 
 def test_extract_tables_nested_select() -> None:
     """
     Test that the parser handles selects inside functions.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 select (extractvalue(1,concat(0x7e,(select GROUP_CONCAT(TABLE_NAME)
 from INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_SCHEMA like "%bi%"),0x7e)));
 """,
-        "mysql",
-    ) == {Table("COLUMNS", "INFORMATION_SCHEMA")}
+            "mysql",
+        )
+        == {Table("COLUMNS", "INFORMATION_SCHEMA")}
+    )
 
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 select (extractvalue(1,concat(0x7e,(select GROUP_CONCAT(COLUMN_NAME)
 from INFORMATION_SCHEMA.COLUMNS
 WHERE TABLE_NAME="bi_achievement_daily"),0x7e)));
 """,
-        "mysql",
-    ) == {Table("COLUMNS", "INFORMATION_SCHEMA")}
+            "mysql",
+        )
+        == {Table("COLUMNS", "INFORMATION_SCHEMA")}
+    )
 
 
 def test_extract_tables_complex_cte_with_prefix() -> None:
     """
     Test that the parser handles CTEs with prefixes.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 WITH CTE__test (SalesPersonID, SalesOrderID, SalesYear)
 AS (
     SELECT SalesPersonID, SalesOrderID, YEAR(OrderDate) AS SalesYear
@@ -685,21 +757,26 @@ FROM CTE__test
 GROUP BY SalesYear, SalesPersonID
 ORDER BY SalesPersonID, SalesYear;
 """
-    ) == {Table("SalesOrderHeader")}
+        )
+        == {Table("SalesOrderHeader")}
+    )
 
 
 def test_extract_tables_identifier_list_with_keyword_as_alias() -> None:
     """
     Test that aliases that are keywords are parsed correctly.
     """
-    assert extract_tables(
-        """
+    assert (
+        extract_tables(
+            """
 WITH
     f AS (SELECT * FROM foo),
     match AS (SELECT * FROM f)
 SELECT * FROM match
 """
-    ) == {Table("foo")}
+        )
+        == {Table("foo")}
+    )
 
 
 def test_update() -> None:
@@ -1834,49 +1911,6 @@ SELECT * FROM t"""
     assert ParsedQuery("USE foo; SELECT * FROM bar").is_select()
 
 
-def test_sqlquery() -> None:
-    """
-    Test the `SQLScript` class.
-    """
-    script = SQLScript("SELECT 1; SELECT 2;", "sqlite")
-
-    assert len(script.statements) == 2
-    assert script.format() == "SELECT\n  1;\nSELECT\n  2"
-    assert script.statements[0].format() == "SELECT\n  1"
-
-    script = SQLScript("SET a=1; SET a=2; SELECT 3;", "sqlite")
-    assert script.get_settings() == {"a": "2"}
-
-    query = SQLScript(
-        """set querytrace;
-Events | take 100""",
-        "kustokql",
-    )
-    assert query.get_settings() == {"querytrace": True}
-
-
-def test_sqlstatement() -> None:
-    """
-    Test the `SQLStatement` class.
-    """
-    statement = SQLStatement(
-        "SELECT * FROM table1 UNION ALL SELECT * FROM table2",
-        "sqlite",
-    )
-
-    assert statement.tables == {
-        Table(table="table1", schema=None, catalog=None),
-        Table(table="table2", schema=None, catalog=None),
-    }
-    assert (
-        statement.format()
-        == "SELECT\n  *\nFROM table1\nUNION ALL\nSELECT\n  *\nFROM table2"
-    )
-
-    statement = SQLStatement("SET a=1", "sqlite")
-    assert statement.get_settings() == {"a": "1"}
-
-
 @pytest.mark.parametrize(
     "engine",
     [
@@ -1924,137 +1958,3 @@ def test_extract_tables_from_jinja_sql(
         )
         == expected
     )
-
-
-def test_kustokqlstatement_split_query() -> None:
-    """
-    Test the `KustoKQLStatement` split method.
-    """
-    statements = KustoKQLStatement.split_query(
-        """
-let totalPagesPerDay = PageViews
-| summarize by Page, Day = startofday(Timestamp)
-| summarize count() by Day;
-let materializedScope = PageViews
-| summarize by Page, Day = startofday(Timestamp);
-let cachedResult = materialize(materializedScope);
-cachedResult
-| project Page, Day1 = Day
-| join kind = inner
-(
-    cachedResult
-    | project Page, Day2 = Day
-)
-on Page
-| where Day2 > Day1
-| summarize count() by Day1, Day2
-| join kind = inner
-    totalPagesPerDay
-on $left.Day1 == $right.Day
-| project Day1, Day2, Percentage = count_*100.0/count_1
-        """,
-        "kustokql",
-    )
-    assert len(statements) == 4
-
-
-def test_kustokqlstatement_with_program() -> None:
-    """
-    Test the `KustoKQLStatement` split method when the KQL has a program.
-    """
-    statements = KustoKQLStatement.split_query(
-        """
-print program = ```
-  public class Program {
-    public static void Main() {
-      System.Console.WriteLine("Hello!");
-    }
-  }```
-        """,
-        "kustokql",
-    )
-    assert len(statements) == 1
-
-
-def test_kustokqlstatement_with_set() -> None:
-    """
-    Test the `KustoKQLStatement` split method when the KQL has a set command.
-    """
-    statements = KustoKQLStatement.split_query(
-        """
-set querytrace;
-Events | take 100
-        """,
-        "kustokql",
-    )
-    assert len(statements) == 2
-    assert statements[0].format() == "set querytrace"
-    assert statements[1].format() == "Events | take 100"
-
-
-@pytest.mark.parametrize(
-    "kql,statements",
-    [
-        ('print banner=strcat("Hello", ", ", "World!")', 1),
-        (r"print 'O\'Malley\'s'", 1),
-        (r"print 'O\'Mal;ley\'s'", 1),
-        ("print ```foo;\nbar;\nbaz;```\n", 1),
-    ],
-)
-def test_kustokql_statement_split_special(kql: str, statements: int) -> None:
-    assert len(KustoKQLStatement.split_query(kql, "kustokql")) == statements
-
-
-def test_split_kql() -> None:
-    """
-    Test the `split_kql` function.
-    """
-    kql = """
-let totalPagesPerDay = PageViews
-| summarize by Page, Day = startofday(Timestamp)
-| summarize count() by Day;
-let materializedScope = PageViews
-| summarize by Page, Day = startofday(Timestamp);
-let cachedResult = materialize(materializedScope);
-cachedResult
-| project Page, Day1 = Day
-| join kind = inner
-(
-    cachedResult
-    | project Page, Day2 = Day
-)
-on Page
-| where Day2 > Day1
-| summarize count() by Day1, Day2
-| join kind = inner
-    totalPagesPerDay
-on $left.Day1 == $right.Day
-| project Day1, Day2, Percentage = count_*100.0/count_1
-    """
-    assert split_kql(kql) == [
-        """
-let totalPagesPerDay = PageViews
-| summarize by Page, Day = startofday(Timestamp)
-| summarize count() by Day""",
-        """
-let materializedScope = PageViews
-| summarize by Page, Day = startofday(Timestamp)""",
-        """
-let cachedResult = materialize(materializedScope)""",
-        """
-cachedResult
-| project Page, Day1 = Day
-| join kind = inner
-(
-    cachedResult
-    | project Page, Day2 = Day
-)
-on Page
-| where Day2 > Day1
-| summarize count() by Day1, Day2
-| join kind = inner
-    totalPagesPerDay
-on $left.Day1 == $right.Day
-| project Day1, Day2, Percentage = count_*100.0/count_1
-    """,
-    ]

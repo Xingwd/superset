@@ -16,25 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { forwardRef, useEffect, ComponentType } from 'react';
-
-import type {
+import React, { forwardRef, useEffect } from 'react';
+import {
   Editor as OrigEditor,
   IEditSession,
   Position,
   TextMode as OrigTextMode,
 } from 'brace';
-import type AceEditor from 'react-ace';
-import type { IAceEditorProps } from 'react-ace';
-
+import AceEditor, { IAceEditorProps } from 'react-ace';
+import { config } from 'ace-builds';
+import { acequire } from 'ace-builds/src-noconflict/ace';
 import AsyncEsmComponent, {
   PlaceholderProps,
 } from 'src/components/AsyncEsmComponent';
 import useEffectEvent from 'src/hooks/useEffectEvent';
-import { useTheme, css } from '@superset-ui/core';
-import { Global } from '@emotion/react';
+import cssWorkerUrl from 'ace-builds/src-noconflict/worker-css';
 
-export { getTooltipHTML } from './Tooltip';
+config.setModuleUrl('ace/mode/css_worker', cssWorkerUrl);
 
 export interface AceCompleterKeywordData {
   name: string;
@@ -94,7 +92,7 @@ export type AsyncAceEditorOptions = {
   defaultTheme?: AceEditorTheme;
   defaultTabSize?: number;
   fontFamily?: string;
-  placeholder?: ComponentType<
+  placeholder?: React.ComponentType<
     PlaceholderProps & Partial<IAceEditorProps>
   > | null;
 };
@@ -113,26 +111,7 @@ export default function AsyncAceEditor(
   }: AsyncAceEditorOptions = {},
 ) {
   return AsyncEsmComponent(async () => {
-    const reactAcePromise = import('react-ace');
-    const aceBuildsConfigPromise = import('ace-builds');
-    const cssWorkerUrlPromise = import(
-      'ace-builds/src-min-noconflict/worker-css'
-    );
-    const acequirePromise = import('ace-builds/src-min-noconflict/ace');
-
-    const [
-      { default: ReactAceEditor },
-      { config },
-      { default: cssWorkerUrl },
-      { acequire },
-    ] = await Promise.all([
-      reactAcePromise,
-      aceBuildsConfigPromise,
-      cssWorkerUrlPromise,
-      acequirePromise,
-    ]);
-
-    config.setModuleUrl('ace/mode/css_worker', cssWorkerUrl);
+    const { default: ReactAceEditor } = await import('react-ace');
 
     await Promise.all(aceModules.map(x => aceModuleLoaders[x]()));
 
@@ -155,7 +134,6 @@ export default function AsyncAceEditor(
         },
         ref,
       ) {
-        const supersetTheme = useTheme();
         const langTools = acequire('ace/ext/language_tools');
         const setCompleters = useEffectEvent(
           (keywords: AceCompleterKeyword[]) => {
@@ -188,66 +166,15 @@ export default function AsyncAceEditor(
         }, [keywords, setCompleters]);
 
         return (
-          <>
-            <Global
-              styles={css`
-                .ace_tooltip {
-                  margin-left: ${supersetTheme.gridUnit * 2}px;
-                  padding: 0px;
-                  border: 1px solid ${supersetTheme.colors.grayscale.light1};
-                }
-
-                & .tooltip-detail {
-                  background-color: ${supersetTheme.colors.grayscale.light5};
-                  white-space: pre-wrap;
-                  word-break: break-all;
-                  min-width: ${supersetTheme.gridUnit * 50}px;
-                  max-width: ${supersetTheme.gridUnit * 100}px;
-                  & .tooltip-detail-head {
-                    background-color: ${supersetTheme.colors.grayscale.light4};
-                    color: ${supersetTheme.colors.grayscale.dark1};
-                    display: flex;
-                    column-gap: ${supersetTheme.gridUnit}px;
-                    align-items: baseline;
-                    justify-content: space-between;
-                  }
-                  & .tooltip-detail-title {
-                    display: flex;
-                    column-gap: ${supersetTheme.gridUnit}px;
-                  }
-                  & .tooltip-detail-body {
-                    word-break: break-word;
-                  }
-                  & .tooltip-detail-head,
-                  & .tooltip-detail-body {
-                    padding: ${supersetTheme.gridUnit}px
-                      ${supersetTheme.gridUnit * 2}px;
-                  }
-                  & .tooltip-detail-footer {
-                    border-top: 1px ${supersetTheme.colors.grayscale.light2}
-                      solid;
-                    padding: 0 ${supersetTheme.gridUnit * 2}px;
-                    color: ${supersetTheme.colors.grayscale.dark1};
-                    font-size: ${supersetTheme.typography.sizes.xs}px;
-                  }
-                  & .tooltip-detail-meta {
-                    & > .ant-tag {
-                      margin-right: 0px;
-                    }
-                  }
-                }
-              `}
-            />
-            <ReactAceEditor
-              ref={ref}
-              mode={mode}
-              theme={theme}
-              tabSize={tabSize}
-              defaultValue={defaultValue}
-              setOptions={{ fontFamily }}
-              {...props}
-            />
-          </>
+          <ReactAceEditor
+            ref={ref}
+            mode={mode}
+            theme={theme}
+            tabSize={tabSize}
+            defaultValue={defaultValue}
+            setOptions={{ fontFamily }}
+            {...props}
+          />
         );
       },
     );

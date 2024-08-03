@@ -17,7 +17,7 @@
 import hashlib
 from typing import Any, Callable, Optional
 
-from superset.utils import json
+import simplejson as json
 
 
 def md5_sha_from_str(val: str) -> str:
@@ -29,8 +29,6 @@ def md5_sha_from_dict(
     ignore_nan: bool = False,
     default: Optional[Callable[[Any], Any]] = None,
 ) -> str:
-    json_data = json.dumps(
-        obj, sort_keys=True, ignore_nan=ignore_nan, default=default, allow_nan=True
-    )
+    json_data = json.dumps(obj, sort_keys=True, ignore_nan=ignore_nan, default=default)
 
     return md5_sha_from_str(json_data)

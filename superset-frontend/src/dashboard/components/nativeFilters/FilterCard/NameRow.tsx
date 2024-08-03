@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { css, SupersetTheme, useTheme, useTruncation } from '@superset-ui/core';
 import Icons from 'src/components/Icons';

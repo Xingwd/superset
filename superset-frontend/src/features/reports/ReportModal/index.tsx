@@ -16,17 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
+import React, {
   useState,
   useEffect,
   useReducer,
   useCallback,
   useMemo,
-  ChangeEvent,
 } from 'react';
-
-import { t, SupersetTheme, getClientErrorObject } from '@superset-ui/core';
+import { t, SupersetTheme } from '@superset-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
+import { getClientErrorObject } from 'src/utils/getClientErrorObject';
 import {
   addReport,
   editReport,
@@ -73,8 +72,6 @@ interface ReportProps {
   show: boolean;
   userId: number;
   userEmail: string;
-  ccEmail: string;
-  bccEmail: string;
   chart?: ChartState;
   chartName?: string;
   dashboardId?: number;
@@ -111,8 +108,6 @@ function ReportModal({
   chart,
   userId,
   userEmail,
-  ccEmail,
-  bccEmail,
   creationMethod,
   dashboardName,
   chartName,
@@ -188,11 +183,7 @@ function ReportModal({
       owners: [userId],
       recipients: [
         {
-          recipient_config_json: {
-            target: userEmail,
-            ccTarget: ccEmail,
-            bccTarget: bccEmail,
-          },
+          recipient_config_json: { target: userEmail },
           type: 'Email',
         },
       ],
@@ -284,7 +275,7 @@ function ReportModal({
           name="custom_width"
           value={currentReport?.custom_width || ''}
           placeholder={t('Input custom width in pixels')}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setCurrentReport({
               custom_width: parseInt(event.target.value, 10) || null,
             });
@@ -340,7 +331,9 @@ function ReportModal({
           <h4 css={(theme: SupersetTheme) => SectionHeaderStyle(theme)}>
             {t('Schedule')}
           </h4>
-          <p>{t('The report will be sent to your email at')}</p>
+          <p>
+            {t('A screenshot of the dashboard will be sent to your email at')}
+          </p>
         </StyledScheduleTitle>
 
         <StyledCronPicker

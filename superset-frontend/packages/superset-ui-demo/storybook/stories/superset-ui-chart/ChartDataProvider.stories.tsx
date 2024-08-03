@@ -17,6 +17,8 @@
  * under the License.
  */
 
+import React from 'react';
+
 import {
   SuperChart,
   ChartDataProvider,

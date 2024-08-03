@@ -51,20 +51,6 @@ export const headerStyles = (theme: SupersetTheme) => css`
   }
 `;
 
-// adds enough margin and padding so that the focus outline styles will fit
-export const chartHeaderStyles = (theme: SupersetTheme) => css`
-  .header-title a {
-    margin: ${theme.gridUnit / 2}px;
-    padding: ${theme.gridUnit / 2}px;
-  }
-  .header-controls {
-    &,
-    &:hover {
-      margin-top: ${theme.gridUnit}px;
-    }
-  }
-`;
-
 export const filterCardPopoverStyle = (theme: SupersetTheme) => css`
   .filter-card-popover {
     width: 240px;
@@ -109,33 +95,5 @@ export const chartContextMenuStyles = (theme: SupersetTheme) => css`
   .ant-dropdown-menu-submenu.chart-context-submenu {
     max-width: ${theme.gridUnit * 60}px;
     min-width: ${theme.gridUnit * 40}px;
-  }
-`;
-
-export const focusStyle = (theme: SupersetTheme) => css`
-  a,
-  .ant-tabs-tabpane,
-  .ant-tabs-tab-btn,
-  .superset-button,
-  .superset-button.ant-dropdown-trigger,
-  .header-controls span {
-    &:focus-visible {
-      box-shadow: 0 0 0 2px ${theme.colors.primary.dark1};
-      border-radius: ${theme.gridUnit / 2}px;
-      outline: none;
-      text-decoration: none;
-    }
-    &:not(
-        .superset-button,
-        .ant-menu-item,
-        a,
-        .fave-unfave-icon,
-        .ant-tabs-tabpane,
-        .header-controls span
-      ) {
-      &:focus-visible {
-        padding: ${theme.gridUnit / 2}px;
-      }
-    }
   }
 `;

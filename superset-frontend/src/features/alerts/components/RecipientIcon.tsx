@@ -17,10 +17,10 @@
  * under the License.
  */
 import { SupersetTheme, css } from '@superset-ui/core';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { Tooltip } from 'src/components/Tooltip';
 import Icons from 'src/components/Icons';
-import { NotificationMethodOption } from '../types';
+import { RecipientIconName } from '../types';
 
 const StyledIcon = (theme: SupersetTheme) => css`
   color: ${theme.colors.grayscale.light1};
@@ -33,17 +33,13 @@ export default function RecipientIcon({ type }: { type: string }) {
     label: '',
   };
   switch (type) {
-    case NotificationMethodOption.Email:
+    case RecipientIconName.Email:
       recipientIconConfig.icon = <Icons.Email css={StyledIcon} />;
-      recipientIconConfig.label = NotificationMethodOption.Email;
+      recipientIconConfig.label = RecipientIconName.Email;
       break;
-    case NotificationMethodOption.Slack:
+    case RecipientIconName.Slack:
       recipientIconConfig.icon = <Icons.Slack css={StyledIcon} />;
-      recipientIconConfig.label = NotificationMethodOption.Slack;
-      break;
-    case NotificationMethodOption.SlackV2:
-      recipientIconConfig.icon = <Icons.Slack css={StyledIcon} />;
-      recipientIconConfig.label = NotificationMethodOption.Slack;
+      recipientIconConfig.label = RecipientIconName.Slack;
       break;
     default:
       recipientIconConfig.icon = null;

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { render, screen, waitFor } from 'spec/helpers/testing-library';
 import type { ColumnsType } from 'antd/es/table';
 import { Table, TableSize } from './index';

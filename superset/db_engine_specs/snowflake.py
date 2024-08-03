@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import json
 import logging
 import re
 from datetime import datetime
@@ -38,7 +39,6 @@ from superset.db_engine_specs.base import BaseEngineSpec, BasicPropertiesType
 from superset.db_engine_specs.postgres import PostgresBaseEngineSpec
 from superset.errors import ErrorLevel, SupersetError, SupersetErrorType
 from superset.models.sql_lab import Query
-from superset.utils import json
 
 if TYPE_CHECKING:
     from superset.models.core import Database
@@ -85,7 +85,7 @@ class SnowflakeEngineSpec(PostgresBaseEngineSpec):
     sqlalchemy_uri_placeholder = "snowflake://"
 
     supports_dynamic_schema = True
-    supports_catalog = supports_dynamic_catalog = True
+    supports_catalog = True
 
     _time_grain_expressions = {
         None: "{col}",
@@ -144,19 +144,12 @@ class SnowflakeEngineSpec(PostgresBaseEngineSpec):
         catalog: Optional[str] = None,
         schema: Optional[str] = None,
     ) -> tuple[URL, dict[str, Any]]:
-        if "/" in uri.database:
-            current_catalog, current_schema = uri.database.split("/", 1)
-        else:
-            current_catalog, current_schema = uri.database, None
-
-        adjusted_database = "/".join(
-            [
-                catalog or current_catalog,
-                schema or current_schema or "",
-            ]
-        ).rstrip("/")
-
-        uri = uri.set(database=adjusted_database)
+        database = uri.database
+        if "/" in database:
+            database = database.split("/")[0]
+        if schema:
+            schema = parse.quote(schema, safe="")
+            uri = uri.set(database=f"{database}/{schema}")
 
         return uri, connect_args
 
@@ -177,29 +170,22 @@ class SnowflakeEngineSpec(PostgresBaseEngineSpec):
         return parse.unquote(database.split("/")[1])
 
     @classmethod
-    def get_default_catalog(cls, database: "Database") -> Optional[str]:
-        """
-        Return the default catalog.
-        """
-        return database.url_object.database.split("/")[0]
-
-    @classmethod
     def get_catalog_names(
         cls,
         database: "Database",
         inspector: Inspector,
-    ) -> set[str]:
+    ) -> list[str]:
         """
         Return all catalogs.
 
         In Snowflake, a catalog is called a "database".
         """
-        return {
+        return sorted(
             catalog
             for (catalog,) in inspector.bind.execute(
                 "SELECT DATABASE_NAME from information_schema.databases"
             )
-        }
+        )
 
     @classmethod
     def epoch_to_dttm(cls) -> str:
@@ -368,7 +354,7 @@ class SnowflakeEngineSpec(PostgresBaseEngineSpec):
             encrypted_extra = json.loads(database.encrypted_extra)
         except json.JSONDecodeError as ex:
             logger.error(ex, exc_info=True)
-            raise
+            raise ex
         auth_method = encrypted_extra.get("auth_method", None)
         auth_params = encrypted_extra.get("auth_params", {})
         if not auth_method:

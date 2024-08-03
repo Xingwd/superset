@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { List } from 'src/components';
-import { nanoid } from 'nanoid';
+import shortid from 'shortid';
 import { t, withTheme } from '@superset-ui/core';
 import {
   SortableContainer,
@@ -57,7 +57,7 @@ const defaultProps = {
   description: null,
   onChange: () => {},
   placeholder: t('Empty collection'),
-  itemGenerator: () => ({ key: nanoid(11) }),
+  itemGenerator: () => ({ key: shortid.generate() }),
   keyAccessor: o => o.key,
   value: [],
   addTooltip: t('Add an item'),
@@ -73,7 +73,7 @@ const SortableDragger = SortableHandle(() => (
   />
 ));
 
-class CollectionControl extends Component {
+class CollectionControl extends React.Component {
   constructor(props) {
     super(props);
     this.onAdd = this.onAdd.bind(this);

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -119,7 +120,7 @@ describe('DashboardList', () => {
     .mockImplementation(feature => feature === 'LISTVIEWS_DEFAULT_CARD_VIEW');
 
   afterAll(() => {
-    isFeatureEnabledMock.mockRestore();
+    isFeatureEnabledMock.restore();
   });
 
   beforeEach(() => {
@@ -161,7 +162,7 @@ describe('DashboardList', () => {
     const callsD = fetchMock.calls(/dashboard\/\?q/);
     expect(callsD).toHaveLength(1);
     expect(callsD[0][0]).toMatchInlineSnapshot(
-      `"http://localhost/api/v1/dashboard/?q=(order_column:changed_on_delta_humanized,order_direction:desc,page:0,page_size:25,select_columns:!(id,dashboard_title,published,url,slug,changed_by,changed_on_delta_humanized,owners.id,owners.first_name,owners.last_name,owners,tags.id,tags.name,tags.type,status,certified_by,certification_details,changed_on))"`,
+      `"http://localhost/api/v1/dashboard/?q=(order_column:changed_on_delta_humanized,order_direction:desc,page:0,page_size:25)"`,
     );
   });
 
@@ -282,7 +283,7 @@ describe('DashboardList - anonymous view', () => {
 
   afterAll(() => {
     cleanup();
-    fetchMock.reset();
+    fetch.resetMocks();
   });
 
   it('does not render the Favorite Star column in list view for anonymous user', async () => {

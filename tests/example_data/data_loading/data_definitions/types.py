@@ -46,7 +46,8 @@ class Table:
 
 class TableMetaDataFactory(ABC):
     @abstractmethod
-    def make(self) -> TableMetaData: ...
+    def make(self) -> TableMetaData:
+        ...
 
     def make_table(self, data: Iterable[dict[Any, Any]]) -> Table:
         metadata = self.make()

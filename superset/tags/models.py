@@ -14,14 +14,13 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-# pylint: disable=consider-using-transaction
 from __future__ import annotations
 
 import enum
 from typing import TYPE_CHECKING
 
+from flask import escape
 from flask_appbuilder import Model
-from markupsafe import escape
 from sqlalchemy import (
     Column,
     Enum,
@@ -88,6 +87,7 @@ class ObjectType(enum.Enum):
 
 
 class Tag(Model, AuditMixinNullable):
+
     """A tag attached to an object (query, chart, dashboard, or dataset)."""
 
     __tablename__ = "tag"
@@ -106,6 +106,7 @@ class Tag(Model, AuditMixinNullable):
 
 
 class TaggedObject(Model, AuditMixinNullable):
+
     """An association between an object and a tag."""
 
     __tablename__ = "tagged_object"
@@ -131,9 +132,7 @@ class TaggedObject(Model, AuditMixinNullable):
 
 
 def get_tag(
-    name: str,
-    session: orm.Session,  # pylint: disable=disallowed-name
-    type_: TagType,
+    name: str, session: orm.Session, type_: TagType  # pylint: disable=disallowed-name
 ) -> Tag:
     tag_name = name.strip()
     tag = session.query(Tag).filter_by(name=tag_name, type=type_).one_or_none()

@@ -18,6 +18,8 @@ import logging
 from typing import Any, cast, Optional
 from urllib import parse
 
+import simplejson as json
+import sqlparse
 from flask import request, Response
 from flask_appbuilder import permission_name
 from flask_appbuilder.api import expose, protect, rison, safe
@@ -36,7 +38,6 @@ from superset.extensions import event_logger
 from superset.jinja_context import get_template_processor
 from superset.models.sql_lab import Query
 from superset.sql_lab import get_sql_results
-from superset.sql_parse import SQLScript
 from superset.sqllab.command_status import SqlJsonExecutionStatus
 from superset.sqllab.exceptions import (
     QueryIsForbiddenToAccessException,
@@ -61,7 +62,7 @@ from superset.sqllab.sqllab_execution_context import SqlJsonExecutionContext
 from superset.sqllab.utils import bootstrap_sqllab_data
 from superset.sqllab.validators import CanAccessQueryValidatorImpl
 from superset.superset_typing import FlaskResponse
-from superset.utils import core as utils, json
+from superset.utils import core as utils
 from superset.views.base import CsvResponse, generate_download_headers, json_success
 from superset.views.base_api import BaseSupersetApi, requires_json, statsd_metrics
 
@@ -133,7 +134,7 @@ class SqlLabRestApi(BaseSupersetApi):
         return json_success(
             json.dumps(
                 {"result": result},
-                default=json.json_iso_dttm_ser,
+                default=utils.json_iso_dttm_ser,
                 ignore_nan=True,
             ),
             200,
@@ -229,7 +230,7 @@ class SqlLabRestApi(BaseSupersetApi):
         """
         try:
             model = self.format_model_schema.load(request.json)
-            result = SQLScript(model["sql"], model.get("engine")).format()
+            result = sqlparse.format(model["sql"], reindent=True, keyword_case="upper")
             return self.response(200, result=result)
         except ValidationError as error:
             return self.response_400(message=error.messages)
@@ -344,7 +345,7 @@ class SqlLabRestApi(BaseSupersetApi):
         # unserializeable types at times
         payload = json.dumps(
             result,
-            default=json.pessimistic_json_iso_dttm_ser,
+            default=utils.pessimistic_json_iso_dttm_ser,
             ignore_nan=True,
         )
         return json_success(payload, 200)

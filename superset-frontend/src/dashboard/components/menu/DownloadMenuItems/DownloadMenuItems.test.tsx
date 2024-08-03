@@ -16,21 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
 import DownloadMenuItems from '.';
 
 const createProps = () => ({
+  addDangerToast: jest.fn(),
   pdfMenuItemTitle: 'Export to PDF',
   imageMenuItemTitle: 'Download as Image',
   dashboardTitle: 'Test Dashboard',
   logEvent: jest.fn(),
-  dashboardId: '123',
 });
 
 const renderComponent = () => {
-  render(<DownloadMenuItems {...createProps()} />, {
-    useRedux: true,
-  });
+  render(<DownloadMenuItems {...createProps()} />);
 };
 
 test('Should render menu items', () => {

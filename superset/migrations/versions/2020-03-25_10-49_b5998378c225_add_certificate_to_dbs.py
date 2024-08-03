@@ -27,13 +27,13 @@ revision = "b5998378c225"
 down_revision = "72428d1ea401"
 
 
-import sqlalchemy as sa  # noqa: E402
-from alembic import op  # noqa: E402
+import sqlalchemy as sa
+from alembic import op
 
 
 def upgrade():
     kwargs: dict[str, str] = {}
-    bind = op.get_bind()  # noqa: F841
+    bind = op.get_bind()
     op.add_column(
         "dbs",
         sa.Column("server_cert", sa.LargeBinary(), nullable=True, **kwargs),

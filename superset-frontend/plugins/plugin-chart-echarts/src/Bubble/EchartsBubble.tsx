@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { BubbleChartTransformedProps } from './types';
 import Echart from '../components/Echart';
 

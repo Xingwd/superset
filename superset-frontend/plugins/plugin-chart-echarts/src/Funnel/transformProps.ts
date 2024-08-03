@@ -24,7 +24,6 @@ import {
   getNumberFormatter,
   getValueFormatter,
   NumberFormats,
-  tooltipHtml,
   ValueFormatter,
 } from '@superset-ui/core';
 import { CallbackDataParams } from 'echarts/types/src/util/types';
@@ -51,17 +50,19 @@ import { Refs } from '../types';
 
 const percentFormatter = getNumberFormatter(NumberFormats.PERCENT_2_POINT);
 
-export function parseParams({
+export function formatFunnelLabel({
   params,
+  labelType,
   numberFormatter,
   percentCalculationType = PercentCalcType.FirstStep,
   sanitizeName = false,
 }: {
   params: Pick<CallbackDataParams, 'name' | 'value' | 'percent' | 'data'>;
+  labelType: EchartsFunnelLabelTypeType;
   numberFormatter: ValueFormatter;
   percentCalculationType?: PercentCalcType;
   sanitizeName?: boolean;
-}) {
+}): string {
   const { name: rawName = '', value, percent: totalPercent, data } = params;
   const name = sanitizeName ? sanitizeHtml(rawName) : rawName;
   const formattedValue = numberFormatter(value as number);
@@ -79,7 +80,25 @@ export function parseParams({
     percent = firstStepPercent ?? 0;
   }
   const formattedPercent = percentFormatter(percent);
-  return [name, formattedValue, formattedPercent];
+
+  switch (labelType) {
+    case EchartsFunnelLabelTypeType.Key:
+      return name;
+    case EchartsFunnelLabelTypeType.Value:
+      return formattedValue;
+    case EchartsFunnelLabelTypeType.Percent:
+      return formattedPercent;
+    case EchartsFunnelLabelTypeType.KeyValue:
+      return `${name}: ${formattedValue}`;
+    case EchartsFunnelLabelTypeType.KeyValuePercent:
+      return `${name}: ${formattedValue} (${formattedPercent})`;
+    case EchartsFunnelLabelTypeType.KeyPercent:
+      return `${name}: ${formattedPercent}`;
+    case EchartsFunnelLabelTypeType.ValuePercent:
+      return `${formattedValue} (${formattedPercent})`;
+    default:
+      return name;
+  }
 }
 
 export default function transformProps(
@@ -174,7 +193,7 @@ export default function transformProps(
       value,
       name,
       itemStyle: {
-        color: colorFn(name, sliceId, colorScheme),
+        color: colorFn(name, sliceId),
         opacity: isFiltered
           ? OpacityEnum.SemiTransparent
           : OpacityEnum.NonTransparent,
@@ -197,31 +216,13 @@ export default function transformProps(
     {},
   );
 
-  const formatter = (params: CallbackDataParams) => {
-    const [name, formattedValue, formattedPercent] = parseParams({
+  const formatter = (params: CallbackDataParams) =>
+    formatFunnelLabel({
       params,
       numberFormatter,
+      labelType,
       percentCalculationType,
     });
-    switch (labelType) {
-      case EchartsFunnelLabelTypeType.Key:
-        return name;
-      case EchartsFunnelLabelTypeType.Value:
-        return formattedValue;
-      case EchartsFunnelLabelTypeType.Percent:
-        return formattedPercent;
-      case EchartsFunnelLabelTypeType.KeyValue:
-        return `${name}: ${formattedValue}`;
-      case EchartsFunnelLabelTypeType.KeyValuePercent:
-        return `${name}: ${formattedValue} (${formattedPercent})`;
-      case EchartsFunnelLabelTypeType.KeyPercent:
-        return `${name}: ${formattedPercent}`;
-      case EchartsFunnelLabelTypeType.ValuePercent:
-        return `${formattedValue} (${formattedPercent})`;
-      default:
-        return name;
-    }
-  };
 
   const defaultLabel = {
     formatter,
@@ -265,26 +266,13 @@ export default function transformProps(
       ...getDefaultTooltip(refs),
       show: !inContextMenu && showTooltipLabels,
       trigger: 'item',
-      formatter: (params: any) => {
-        const [name, formattedValue, formattedPercent] = parseParams({
+      formatter: (params: any) =>
+        formatFunnelLabel({
           params,
           numberFormatter,
+          labelType: tooltipLabelType,
           percentCalculationType,
-        });
-        const row = [];
-        const enumName = EchartsFunnelLabelTypeType[tooltipLabelType];
-        const title = enumName.includes('Key') ? name : undefined;
-        if (enumName.includes('Value') || enumName.includes('Percent')) {
-          row.push(metricLabel);
-        }
-        if (enumName.includes('Value')) {
-          row.push(formattedValue);
-        }
-        if (enumName.includes('Percent')) {
-          row.push(formattedPercent);
-        }
-        return tooltipHtml([row], title);
-      },
+        }),
     },
     legend: {
       ...getLegendProps(legendType, legendOrientation, showLegend, theme),

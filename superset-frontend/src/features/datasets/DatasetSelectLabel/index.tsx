@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { Tooltip } from 'src/components/Tooltip';
 import { styled, t } from '@superset-ui/core';
 

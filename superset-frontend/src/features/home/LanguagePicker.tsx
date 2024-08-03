@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { MainNav as Menu } from 'src/components/Menu';
 import { styled } from '@superset-ui/core';
 import Icons from 'src/components/Icons';

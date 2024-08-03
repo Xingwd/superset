@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { Provider } from 'react-redux';
 import { styledMount as mount } from 'spec/helpers/theming';
 import sinon from 'sinon';

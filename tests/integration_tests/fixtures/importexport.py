@@ -494,7 +494,6 @@ dataset_config: dict[str, Any] = {
     "offset": 66,
     "cache_timeout": 55,
     "schema": "",
-    "catalog": "default",
     "sql": "",
     "params": None,
     "template_params": {},

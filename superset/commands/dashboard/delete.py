@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
-from functools import partial
 from typing import Optional
 
 from flask_babel import lazy_gettext as _
@@ -29,10 +28,10 @@ from superset.commands.dashboard.exceptions import (
     DashboardNotFoundError,
 )
 from superset.daos.dashboard import DashboardDAO
+from superset.daos.exceptions import DAODeleteFailedError
 from superset.daos.report import ReportScheduleDAO
 from superset.exceptions import SupersetSecurityException
 from superset.models.dashboard import Dashboard
-from superset.utils.decorators import on_error, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +41,15 @@ class DeleteDashboardCommand(BaseCommand):
         self._model_ids = model_ids
         self._models: Optional[list[Dashboard]] = None
 
-    @transaction(on_error=partial(on_error, reraise=DashboardDeleteFailedError))
     def run(self) -> None:
         self.validate()
         assert self._models
-        DashboardDAO.delete(self._models)
+
+        try:
+            DashboardDAO.delete(self._models)
+        except DAODeleteFailedError as ex:
+            logger.exception(ex.exception)
+            raise DashboardDeleteFailedError() from ex
 
     def validate(self) -> None:
         # Validate/populate model exists

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { t, styled, useTheme } from '@superset-ui/core';
 import Icons from 'src/components/Icons';
 import Alert from 'src/components/Alert';

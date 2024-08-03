@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useMemo, useState, useEffect, useRef, RefObject } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   css,
   GenericDataType,
@@ -96,20 +96,9 @@ export const CopyToClipboardButton = ({
 
 export const FilterInput = ({
   onChangeHandler,
-  shouldFocus = false,
 }: {
   onChangeHandler(filterText: string): void;
-  shouldFocus?: boolean;
 }) => {
-  const inputRef: RefObject<any> = useRef(null);
-
-  useEffect(() => {
-    // Focus the input element when the component mounts
-    if (inputRef.current && shouldFocus) {
-      inputRef.current.focus();
-    }
-  }, []);
-
   const theme = useTheme();
   const debouncedChangeHandler = debounce(onChangeHandler, SLOW_DEBOUNCE);
   return (
@@ -124,7 +113,6 @@ export const FilterInput = ({
         width: 200px;
         margin-right: ${theme.gridUnit * 2}px;
       `}
-      ref={inputRef}
     />
   );
 };
@@ -160,6 +148,7 @@ const FormatPickerLabel = styled.span`
   font-size: ${({ theme }) => theme.typography.sizes.s}px;
   color: ${({ theme }) => theme.colors.grayscale.base};
   margin-bottom: ${({ theme }) => theme.gridUnit * 2}px;
+  text-transform: uppercase;
 `;
 
 const DataTableTemporalHeaderCell = ({

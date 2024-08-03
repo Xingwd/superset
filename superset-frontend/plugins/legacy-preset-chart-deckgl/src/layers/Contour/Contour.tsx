@@ -17,6 +17,7 @@
  * under the License.
  */
 import { ContourLayer } from 'deck.gl';
+import React from 'react';
 import { t } from '@superset-ui/core';
 import { commonLayerProps } from '../common';
 import sandboxedEval from '../../utils/sandbox';

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import URI from 'urijs';
@@ -164,8 +165,8 @@ test('should disable new tab when offline', () => {
   });
   expect(queryAllByLabelText('Add tab').length).toEqual(0);
 });
-test('should have an empty state when query editors is empty', async () => {
-  const { getByText, getByRole } = setup(undefined, {
+test('should have an empty state when query editors is empty', () => {
+  const { getByText } = setup(undefined, {
     ...initialState,
     sqlLab: {
       ...initialState.sqlLab,
@@ -173,12 +174,5 @@ test('should have an empty state when query editors is empty', async () => {
       tabHistory: [],
     },
   });
-
-  // Clear the new tab applied in componentDidMount and check the state of the empty tab
-  const removeTabButton = getByRole('button', { name: 'remove' });
-  fireEvent.click(removeTabButton);
-
-  await waitFor(() =>
-    expect(getByText('Add a new tab to create SQL Query')).toBeInTheDocument(),
-  );
+  expect(getByText('Add a new tab to create SQL Query')).toBeInTheDocument();
 });

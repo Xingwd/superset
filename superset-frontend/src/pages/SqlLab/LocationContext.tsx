@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { createContext, useContext, FC, ReactNode } from 'react';
-
+import React, { createContext, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export type LocationState = {
@@ -30,7 +29,11 @@ const { Provider } = locationContext;
 
 const EMPTY_STATE: LocationState = {};
 
-export const LocationProvider: FC = ({ children }: { children: ReactNode }) => {
+export const LocationProvider: React.FC = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const location = useLocation<LocationState>();
   return <Provider value={location.state || EMPTY_STATE}>{children}</Provider>;
 };

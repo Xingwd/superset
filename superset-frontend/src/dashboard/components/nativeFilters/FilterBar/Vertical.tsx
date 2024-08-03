@@ -19,15 +19,13 @@
 
 /* eslint-disable no-param-reassign */
 import { throttle } from 'lodash';
-import {
-  memo,
+import React, {
   useEffect,
   useState,
   useCallback,
   useMemo,
   useRef,
   createContext,
-  FC,
 } from 'react';
 import cx from 'classnames';
 import { FeatureFlag, isFeatureEnabled, styled, t } from '@superset-ui/core';
@@ -119,7 +117,7 @@ const FilterControlsWrapper = styled.div`
 `;
 
 export const FilterBarScrollContext = createContext(false);
-const VerticalFilterBar: FC<VerticalBarProps> = ({
+const VerticalFilterBar: React.FC<VerticalBarProps> = ({
   actions,
   canEdit,
   dataMaskSelected,
@@ -209,7 +207,6 @@ const VerticalFilterBar: FC<VerticalBarProps> = ({
           {...getFilterBarTestId('collapsable')}
           className={cx({ open: !filtersOpen })}
           onClick={openFiltersBar}
-          role="button"
           offset={offset}
         >
           <StyledCollapseIcon
@@ -241,4 +238,4 @@ const VerticalFilterBar: FC<VerticalBarProps> = ({
     </FilterBarScrollContext.Provider>
   );
 };
-export default memo(VerticalFilterBar);
+export default React.memo(VerticalFilterBar);

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import rison from 'rison';
 import { t, SupersetClient } from '@superset-ui/core';
 import { Link, useHistory } from 'react-router-dom';

@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
-from functools import partial
 from typing import Optional
 
 from superset.commands.base import BaseCommand
@@ -23,9 +22,9 @@ from superset.commands.query.exceptions import (
     SavedQueryDeleteFailedError,
     SavedQueryNotFoundError,
 )
+from superset.daos.exceptions import DAODeleteFailedError
 from superset.daos.query import SavedQueryDAO
 from superset.models.dashboard import Dashboard
-from superset.utils.decorators import on_error, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +34,15 @@ class DeleteSavedQueryCommand(BaseCommand):
         self._model_ids = model_ids
         self._models: Optional[list[Dashboard]] = None
 
-    @transaction(on_error=partial(on_error, reraise=SavedQueryDeleteFailedError))
     def run(self) -> None:
         self.validate()
         assert self._models
-        SavedQueryDAO.delete(self._models)
+
+        try:
+            SavedQueryDAO.delete(self._models)
+        except DAODeleteFailedError as ex:
+            logger.exception(ex.exception)
+            raise SavedQueryDeleteFailedError() from ex
 
     def validate(self) -> None:
         # Validate/populate model exists

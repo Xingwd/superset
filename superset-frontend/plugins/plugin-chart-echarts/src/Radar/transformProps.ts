@@ -165,7 +165,7 @@ export default function transformProps(
       value: metricLabels.map(metricLabel => datum[metricLabel]),
       name: joinedName,
       itemStyle: {
-        color: colorFn(joinedName, sliceId, colorScheme),
+        color: colorFn(joinedName, sliceId),
         opacity: isFiltered
           ? OpacityEnum.Transparent
           : OpacityEnum.NonTransparent,

@@ -34,7 +34,7 @@ const metadata = new ChartMetadata({
     { url: example2 },
     { url: example3 },
   ],
-  name: t('Histogram (legacy)'),
+  name: t('Histogram'),
   tags: [t('Comparison'), t('Legacy'), t('Pattern'), t('Range')],
   thumbnail,
   useLegacyApi: true,

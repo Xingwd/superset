@@ -23,6 +23,7 @@ import {
   useCSSTextTruncation,
   truncationCSS,
 } from '@superset-ui/core';
+import React from 'react';
 import Icons from 'src/components/Icons';
 import { Tooltip } from 'src/components/Tooltip';
 import { FilterBarOrientation } from 'src/dashboard/types';

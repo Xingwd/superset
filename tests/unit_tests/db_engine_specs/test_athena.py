@@ -23,7 +23,7 @@ import pytest
 
 from superset.errors import ErrorLevel, SupersetError, SupersetErrorType
 from tests.unit_tests.db_engine_specs.utils import assert_convert_dttm
-from tests.unit_tests.fixtures.common import dttm  # noqa
+from tests.unit_tests.fixtures.common import dttm
 
 SYNTAX_ERROR_REGEX = re.compile(
     ": mismatched input '(?P<syntax_error>.*?)'. Expecting: "
@@ -39,9 +39,7 @@ SYNTAX_ERROR_REGEX = re.compile(
     ],
 )
 def test_convert_dttm(
-    target_type: str,
-    expected_result: Optional[str],
-    dttm: datetime,  # noqa: F811
+    target_type: str, expected_result: Optional[str], dttm: datetime
 ) -> None:
     from superset.db_engine_specs.athena import AthenaEngineSpec as spec
 

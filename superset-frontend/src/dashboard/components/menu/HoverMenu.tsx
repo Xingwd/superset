@@ -17,15 +17,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { RefObject, ReactNode, PureComponent } from 'react';
-
+import React, { RefObject } from 'react';
 import { styled } from '@superset-ui/core';
 import cx from 'classnames';
 
 interface HoverMenuProps {
   position: 'left' | 'top';
   innerRef: RefObject<HTMLDivElement>;
-  children: ReactNode;
+  children: React.ReactNode;
   onHover?: (data: { isHovered: boolean }) => void;
 }
 
@@ -66,7 +65,7 @@ const HoverStyleOverrides = styled.div`
   }
 `;
 
-export default class HoverMenu extends PureComponent<HoverMenuProps> {
+export default class HoverMenu extends React.PureComponent<HoverMenuProps> {
   static defaultProps = {
     position: 'left',
     innerRef: null,

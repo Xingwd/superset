@@ -39,4 +39,3 @@ def login(
         data=dict(username=username, password=password),
     ).get_data(as_text=True)
     assert "User confirmation needed" not in resp
-    return resp

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode } from 'react';
 import { OptionValueType } from 'src/explore/components/controls/DndColumnSelectControl/types';
 import { ControlComponentProps } from 'src/explore/components/Control';
 
@@ -50,7 +49,7 @@ export interface ContourPopoverTriggerProps {
   description?: string;
   hovered?: boolean;
   value?: ContourType;
-  children?: ReactNode;
+  children?: React.ReactNode;
   saveContour: (contour: ContourType) => void;
   isControlled?: boolean;
   visible?: boolean;

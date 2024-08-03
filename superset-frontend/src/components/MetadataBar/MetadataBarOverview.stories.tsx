@@ -17,7 +17,9 @@
  * under the License.
  */
 
+import { Source, Story } from '@storybook/addon-docs';
 import Markdown from 'markdown-to-jsx';
+import React from 'react';
 
 export default {
   title: 'Design System/Components/MetadataBar/Overview',
@@ -40,9 +42,10 @@ Some of the common applications in Superset are:
 - Display the database's metadata in a drill to detail modal to help the user understand what data they are looking
   at while accessing the feature in the dashboard
 
-## [Basic example]((./?path=/docs/design-system-components-metadatabar-examples--basic)
+## Basic example
 `}
     </Markdown>
+    <Story id="design-system-components-metadatabar-examples--basic" />
     <Markdown>
       {`
 ## Variations
@@ -63,122 +66,112 @@ To check each content type in detail and its interactions, check the [MetadataBa
 Below you can find the configurations for each content type:
     `}
     </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export enum MetadataType {
+        Dashboards = 'dashboards',
+        Description = 'description',
+        LastModified = 'lastModified',
+        Owner = 'owner',
+        Rows = 'rows',
+        Sql = 'sql',
+        Table = 'table',
+        Tags = 'tags',
+      }`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export enum MetadataType {
-  Dashboards = 'dashboards',
-  Description = 'description',
-  LastModified = 'lastModified',
-  Owner = 'owner',
-  Rows = 'rows',
-  Sql = 'sql',
-  Table = 'table',
-  Tags = 'tags',
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Dashboards = {
+        type: MetadataType.Dashboards;
+        title: string;
+        description?: string;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type Dashboards = {
-  type: MetadataType.Dashboards;
-  title: string;
-  description?: string;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Description = {
+        type: MetadataType.Description;
+        value: string;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type Description = {
-  type: MetadataType.Description;
-  value: string;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type LastModified = {
+        type: MetadataType.LastModified;
+        value: Date;
+        modifiedBy: string;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type LastModified = {
-  type: MetadataType.LastModified;
-  value: Date;
-  modifiedBy: string;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Owner = {
+        type: MetadataType.Owner;
+        createdBy: string;
+        owners: string[];
+        createdOn: Date;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type Owner = {
-  type: MetadataType.Owner;
-  createdBy: string;
-  owners: string[];
-  createdOn: Date;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Rows = {
+        type: MetadataType.Rows;
+        title: string;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type Rows = {
-  type: MetadataType.Rows;
-  title: string;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Sql = {
+        type: MetadataType.Sql;
+        title: string;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type Sql = {
-  type: MetadataType.Sql;
-  title: string;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Table = {
+        type: MetadataType.Table;
+        title: string;
+        onClick?: (type: string) => void;
+      };`}
+    />
 
-    <Markdown>
-      {`
-\`\`\`
-export type Table = {
-  type: MetadataType.Table;
-  title: string;
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
-
-    <Markdown>
-      {`
-\`\`\`
-export type Tags = {
-  type: MetadataType.Tags;
-  values: string[];
-  onClick?: (type: string) => void;
-};
-\`\`\`
-      `}
-    </Markdown>
+    <Source
+      language="jsx"
+      format
+      code={`
+      export type Tags = {
+        type: MetadataType.Tags;
+        values: string[];
+        onClick?: (type: string) => void;
+      };`}
+    />
   </>
 );

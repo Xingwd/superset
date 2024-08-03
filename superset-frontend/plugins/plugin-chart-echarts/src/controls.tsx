@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import { t } from '@superset-ui/core';
 import {
   ControlPanelsContainerProps,
@@ -33,7 +34,7 @@ import { defaultXAxis } from './defaults';
 const { legendMargin, legendOrientation, legendType, showLegend } =
   DEFAULT_LEGEND_FORM_DATA;
 
-export const showLegendControl: ControlSetItem = {
+const showLegendControl: ControlSetItem = {
   name: 'show_legend',
   config: {
     type: 'CheckboxControl',

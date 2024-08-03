@@ -32,7 +32,8 @@ describe('nativeFilterGate', () => {
     });
 
     afterAll(() => {
-      isFeatureEnabledMock.mockRestore();
+      // @ts-ignore
+      isFeatureEnabledMock.restore();
     });
 
     it('should return true for regular chart', () => {
@@ -64,7 +65,8 @@ describe('nativeFilterGate', () => {
     });
 
     afterAll(() => {
-      isFeatureEnabledMock.mockRestore();
+      // @ts-ignore
+      isFeatureEnabledMock.restore();
     });
 
     it('should return true for regular chart', () => {

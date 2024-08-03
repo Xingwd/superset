@@ -39,6 +39,7 @@ export default class EchartsGraphChartPlugin extends EchartsChartPlugin {
         exampleGallery: [{ url: example }],
         name: t('Graph Chart'),
         tags: [
+          t('Aesthetic'),
           t('Circular'),
           t('Comparison'),
           t('Directional'),
@@ -46,7 +47,6 @@ export default class EchartsGraphChartPlugin extends EchartsChartPlugin {
           t('Relational'),
           t('Structural'),
           t('Transformable'),
-          t('Featured'),
         ],
         thumbnail,
         behaviors: [

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { t } from '@superset-ui/core';
 
 import URLShortLinkButton, {

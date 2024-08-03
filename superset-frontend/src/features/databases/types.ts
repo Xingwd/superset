@@ -63,9 +63,6 @@ export type DatabaseObject = {
     host?: string;
     port?: number;
     database?: string;
-    default_catalog?: string;
-    default_schema?: string;
-    http_path_field?: string;
     username?: string;
     password?: string;
     encryption?: boolean;
@@ -112,7 +109,6 @@ export type DatabaseObject = {
   engine_information?: {
     supports_file_upload?: boolean;
     disable_ssh_tunneling?: boolean;
-    supports_dynamic_catalog?: boolean;
   };
 
   // SSH Tunnel information
@@ -126,18 +122,6 @@ export type DatabaseForm = {
   parameters: {
     properties: {
       database: {
-        description: string;
-        type: string;
-      };
-      default_catalog: {
-        description: string;
-        type: string;
-      };
-      default_schema: {
-        description: string;
-        type: string;
-      };
-      http_path_field: {
         description: string;
         type: string;
       };
@@ -218,7 +202,6 @@ export type DatabaseForm = {
   engine_information: {
     supports_file_upload: boolean;
     disable_ssh_tunneling: boolean;
-    supports_dynamic_catalog: boolean;
   };
 };
 
@@ -239,8 +222,6 @@ export interface ExtraJson {
   cancel_query_on_windows_unload?: boolean; // in Performance
   cost_estimate_enabled?: boolean; // in SQL Lab
   disable_data_preview?: boolean; // in SQL Lab
-  disable_drill_to_detail?: boolean;
-  allow_multi_catalog?: boolean;
   engine_params?: {
     catalog?: Record<string, string>;
     connect_args?: {
@@ -309,8 +290,6 @@ export interface FieldPropTypes {
   db?: DatabaseObject;
   dbModel?: DatabaseForm;
   field: string;
-  default_value?: any;
-  description?: string;
   isEditMode?: boolean;
   sslForced?: boolean;
   defaultDBName?: string;

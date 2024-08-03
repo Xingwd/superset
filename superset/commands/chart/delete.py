@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
-from functools import partial
 from typing import Optional
 
 from flask_babel import lazy_gettext as _
@@ -29,10 +28,10 @@ from superset.commands.chart.exceptions import (
     ChartNotFoundError,
 )
 from superset.daos.chart import ChartDAO
+from superset.daos.exceptions import DAODeleteFailedError
 from superset.daos.report import ReportScheduleDAO
 from superset.exceptions import SupersetSecurityException
 from superset.models.slice import Slice
-from superset.utils.decorators import on_error, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +41,15 @@ class DeleteChartCommand(BaseCommand):
         self._model_ids = model_ids
         self._models: Optional[list[Slice]] = None
 
-    @transaction(on_error=partial(on_error, reraise=ChartDeleteFailedError))
     def run(self) -> None:
         self.validate()
         assert self._models
-        ChartDAO.delete(self._models)
+
+        try:
+            ChartDAO.delete(self._models)
+        except DAODeleteFailedError as ex:
+            logger.exception(ex.exception)
+            raise ChartDeleteFailedError() from ex
 
     def validate(self) -> None:
         # Validate/populate model exists

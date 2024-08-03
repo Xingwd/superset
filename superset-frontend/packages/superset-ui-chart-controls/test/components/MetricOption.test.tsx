@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { isValidElement } from 'react';
+import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { MetricOption, MetricOptionProps } from '../../src';
 
@@ -44,7 +44,7 @@ describe('MetricOption', () => {
     props = { ...defaultProps };
   });
   it('is a valid element', () => {
-    expect(isValidElement(<MetricOption {...defaultProps} />)).toBe(true);
+    expect(React.isValidElement(<MetricOption {...defaultProps} />)).toBe(true);
   });
   it('shows a label with verbose_name', () => {
     const lbl = wrapper.find('.option-label');

@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { combineReducers, createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import mockState from 'spec/fixtures/mockState';

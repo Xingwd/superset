@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { t } from '@superset-ui/core';
 import { Tooltip } from 'src/components/Tooltip';
@@ -44,7 +44,7 @@ const publishedTooltip = t(
   'This dashboard is published. Click to make it a draft.',
 );
 
-export default class PublishedStatus extends Component {
+export default class PublishedStatus extends React.Component {
   componentDidMount() {
     this.togglePublished = this.togglePublished.bind(this);
   }

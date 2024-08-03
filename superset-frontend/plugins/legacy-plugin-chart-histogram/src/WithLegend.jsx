@@ -17,7 +17,7 @@
  * under the License.
  */
 /* eslint-disable react/sort-prop-types, react/jsx-sort-default-props */
-import { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { ParentSize } from '@vx/responsive';
 
@@ -54,7 +54,7 @@ const CHART_STYLE_BASE = {
   position: 'relative',
 };
 
-class WithLegend extends Component {
+class WithLegend extends React.Component {
   getContainerDirection() {
     const { position } = this.props;
     switch (position) {

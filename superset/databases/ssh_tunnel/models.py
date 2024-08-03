@@ -21,10 +21,9 @@ import sqlalchemy as sa
 from flask import current_app
 from flask_appbuilder import Model
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.types import Text
+from sqlalchemy_utils import EncryptedType
 
 from superset.constants import PASSWORD_MASK
-from superset.extensions import encrypted_field_factory
 from superset.models.core import Database
 from superset.models.helpers import (
     AuditMixinNullable,
@@ -54,15 +53,19 @@ class SSHTunnel(AuditMixinNullable, ExtraJSONMixin, ImportExportMixin, Model):
 
     server_address = sa.Column(sa.Text)
     server_port = sa.Column(sa.Integer)
-    username = sa.Column(encrypted_field_factory.create(Text))
+    username = sa.Column(EncryptedType(sa.String, app_config["SECRET_KEY"]))
 
     # basic authentication
-    password = sa.Column(encrypted_field_factory.create(Text), nullable=True)
+    password = sa.Column(
+        EncryptedType(sa.String, app_config["SECRET_KEY"]), nullable=True
+    )
 
     # password protected pkey authentication
-    private_key = sa.Column(encrypted_field_factory.create(Text), nullable=True)
+    private_key = sa.Column(
+        EncryptedType(sa.String, app_config["SECRET_KEY"]), nullable=True
+    )
     private_key_password = sa.Column(
-        encrypted_field_factory.create(Text), nullable=True
+        EncryptedType(sa.String, app_config["SECRET_KEY"]), nullable=True
     )
 
     export_fields = [

@@ -76,7 +76,3 @@ class DashboardImportError(ImportFailedError):
 
 class DashboardAccessDeniedError(ForbiddenError):
     message = _("You don't have access to this dashboard.")
-
-
-class DashboardCopyError(CommandInvalidError):
-    message = _("Dashboard cannot be copied due to invalid parameters.")

@@ -85,7 +85,6 @@ class CacheRestApi(BaseSupersetModelRestApi):
         for ds in datasources.get("datasources", []):
             ds_obj = SqlaTable.get_datasource_by_name(
                 datasource_name=ds.get("datasource_name"),
-                catalog=ds.get("catalog"),
                 schema=ds.get("schema"),
                 database_name=ds.get("database_name"),
             )
@@ -110,13 +109,13 @@ class CacheRestApi(BaseSupersetModelRestApi):
                 )
 
             try:
-                delete_stmt = CacheKey.__table__.delete().where(  # pylint: disable=no-member
-                    CacheKey.cache_key.in_(cache_keys)
+                delete_stmt = (
+                    CacheKey.__table__.delete().where(  # pylint: disable=no-member
+                        CacheKey.cache_key.in_(cache_keys)
+                    )
                 )
-
-                with db.session.begin_nested():
-                    db.session.execute(delete_stmt)
-
+                db.session.execute(delete_stmt)
+                db.session.commit()
                 stats_logger_manager.instance.gauge(
                     "invalidated_cache", len(cache_keys)
                 )
@@ -127,5 +126,7 @@ class CacheRestApi(BaseSupersetModelRestApi):
                 )
             except SQLAlchemyError as ex:  # pragma: no cover
                 logger.error(ex, exc_info=True)
+                db.session.rollback()
                 return self.response_500(str(ex))
+            db.session.commit()
         return self.response(201)

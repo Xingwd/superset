@@ -18,16 +18,13 @@
  */
 
 /* eslint-disable no-param-reassign */
-import {
-  FC,
-  memo,
+import React, {
   useEffect,
   useState,
   useCallback,
   createContext,
   useRef,
 } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   DataMaskStateWithId,
@@ -130,7 +127,7 @@ const publishDataMask = debounce(
 );
 
 export const FilterBarScrollContext = createContext(false);
-const FilterBar: FC<FiltersBarProps> = ({
+const FilterBar: React.FC<FiltersBarProps> = ({
   orientation = FilterBarOrientation.Vertical,
   verticalConfig,
   hidden = false,
@@ -321,4 +318,4 @@ const FilterBar: FC<FiltersBarProps> = ({
     filterBarComponent
   );
 };
-export default memo(FilterBar);
+export default React.memo(FilterBar);

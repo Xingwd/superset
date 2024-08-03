@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import React from 'react';
 import PropTypes from 'prop-types';
 import { reactify, styled, css, useTheme } from '@superset-ui/core';
 import { Global } from '@emotion/react';

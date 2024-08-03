@@ -1,4 +1,4 @@
-import { withJsx } from '@mihkeleidast/storybook-addon-source';
+import { jsxDecorator } from 'storybook-addon-jsx';
 import {
   configure,
   getTimeFormatterRegistry,
@@ -15,7 +15,7 @@ import themeDecorator from './themeDecorator';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './storybook.css';
 
-export const decorators = [withJsx, themeDecorator];
+export const decorators = [jsxDecorator, themeDecorator];
 
 export const parameters = {
   passArgsFirst: false,
@@ -55,6 +55,7 @@ export const parameters = {
 };
 
 // Superset setup
+
 configure();
 
 // Register color schemes

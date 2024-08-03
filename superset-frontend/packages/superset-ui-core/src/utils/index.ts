@@ -32,4 +32,3 @@ export * from './featureFlags';
 export * from './random';
 export * from './typedMemo';
 export * from './html';
-export * from './tooltip';

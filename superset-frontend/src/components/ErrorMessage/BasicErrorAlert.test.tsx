@@ -17,9 +17,11 @@
  * under the License.
  */
 
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
-import { ErrorLevel, supersetTheme } from '@superset-ui/core';
+import { supersetTheme } from '@superset-ui/core';
 import BasicErrorAlert from './BasicErrorAlert';
+import { ErrorLevel } from './types';
 
 jest.mock(
   'src/components/Icons/Icon',

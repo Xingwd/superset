@@ -35,12 +35,7 @@ from superset.css_templates.schemas import (
 )
 from superset.extensions import event_logger
 from superset.models.core import CssTemplate
-from superset.views.base_api import (
-    BaseSupersetModelRestApi,
-    RelatedFieldFilter,
-    statsd_metrics,
-)
-from superset.views.filters import BaseFilterRelatedUsers, FilterRelatedOwners
+from superset.views.base_api import BaseSupersetModelRestApi, statsd_metrics
 
 logger = logging.getLogger(__name__)
 
@@ -95,13 +90,6 @@ class CssTemplateRestApi(BaseSupersetModelRestApi):
     }
     openapi_spec_tag = "CSS Templates"
     openapi_spec_methods = openapi_spec_methods_override
-
-    related_field_filters = {
-        "changed_by": RelatedFieldFilter("first_name", FilterRelatedOwners),
-    }
-    base_related_field_filters = {
-        "changed_by": [["id", BaseFilterRelatedUsers, lambda: []]],
-    }
 
     @expose("/", methods=("DELETE",))
     @protect()

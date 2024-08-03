@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { Popover as AntdPopover } from 'antd';
 import type { PopoverProps as AntdPopoverProps } from 'antd/lib/popover';
 

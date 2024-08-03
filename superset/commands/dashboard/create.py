@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 import logging
-from functools import partial
 from typing import Any, Optional
 
 from flask_appbuilder.models.sqla import Model
@@ -29,19 +28,23 @@ from superset.commands.dashboard.exceptions import (
 )
 from superset.commands.utils import populate_roles
 from superset.daos.dashboard import DashboardDAO
-from superset.utils.decorators import on_error, transaction
+from superset.daos.exceptions import DAOCreateFailedError
 
 logger = logging.getLogger(__name__)
 
 
 class CreateDashboardCommand(CreateMixin, BaseCommand):
-    def __init__(self, data: dict[str, Any]) -> None:
+    def __init__(self, data: dict[str, Any]):
         self._properties = data.copy()
 
-    @transaction(on_error=partial(on_error, reraise=DashboardCreateFailedError))
     def run(self) -> Model:
         self.validate()
-        return DashboardDAO.create(attributes=self._properties)
+        try:
+            dashboard = DashboardDAO.create(attributes=self._properties, commit=True)
+        except DAOCreateFailedError as ex:
+            logger.exception(ex.exception)
+            raise DashboardCreateFailedError() from ex
+        return dashboard
 
     def validate(self) -> None:
         exceptions: list[ValidationError] = []

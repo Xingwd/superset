@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode } from 'react';
+import React from 'react';
 import { t, tn } from '@superset-ui/core';
 
 import { ErrorMessageComponentProps } from './types';
@@ -47,7 +47,7 @@ function DatabaseErrorMessage({
         {t('This may be triggered by:')}
         <br />
         {extra.issue_codes
-          ?.map<ReactNode>(issueCode => (
+          ?.map<React.ReactNode>(issueCode => (
             <IssueCode {...issueCode} key={issueCode.code} />
           ))
           .reduce((prev, curr) => [prev, <br />, curr])}

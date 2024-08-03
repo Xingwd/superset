@@ -44,7 +44,6 @@ export {
   Steps,
   Tag,
   Tree,
-  TreeSelect,
   Typography,
   Upload,
 } from 'antd';

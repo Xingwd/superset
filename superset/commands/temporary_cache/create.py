@@ -16,12 +16,12 @@
 # under the License.
 import logging
 from abc import ABC, abstractmethod
-from functools import partial
+
+from sqlalchemy.exc import SQLAlchemyError
 
 from superset.commands.base import BaseCommand
 from superset.commands.temporary_cache.exceptions import TemporaryCacheCreateFailedError
 from superset.commands.temporary_cache.parameters import CommandParameters
-from superset.utils.decorators import on_error, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -30,12 +30,16 @@ class CreateTemporaryCacheCommand(BaseCommand, ABC):
     def __init__(self, cmd_params: CommandParameters):
         self._cmd_params = cmd_params
 
-    @transaction(on_error=partial(on_error, reraise=TemporaryCacheCreateFailedError))
     def run(self) -> str:
-        return self.create(self._cmd_params)
+        try:
+            return self.create(self._cmd_params)
+        except SQLAlchemyError as ex:
+            logger.exception("Error running create command")
+            raise TemporaryCacheCreateFailedError() from ex
 
     def validate(self) -> None:
         pass
 
     @abstractmethod
-    def create(self, cmd_params: CommandParameters) -> str: ...
+    def create(self, cmd_params: CommandParameters) -> str:
+        ...

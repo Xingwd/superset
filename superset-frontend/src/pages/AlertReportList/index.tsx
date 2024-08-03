@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   t,
@@ -137,7 +137,7 @@ function AlertList({
     toggleBulkSelect,
   } = useListViewResource<AlertObject>(
     'report',
-    t('report'),
+    t('reports'),
     addDangerToast,
     true,
     undefined,

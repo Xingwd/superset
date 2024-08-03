@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import React from 'react';
 import { DatasourceType, t } from '@superset-ui/core';
 import {
   ColumnMeta,

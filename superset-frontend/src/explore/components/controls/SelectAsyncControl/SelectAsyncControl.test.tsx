@@ -18,6 +18,7 @@
  */
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'fetch-mock';
+import React from 'react';
 import { render, screen } from 'spec/helpers/testing-library';
 import SelectAsyncControl from '.';
 

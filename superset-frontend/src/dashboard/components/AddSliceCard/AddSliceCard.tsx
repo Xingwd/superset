@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import {
+import React, {
   CSSProperties,
   ReactNode,
   useEffect,
@@ -25,10 +25,7 @@ import {
   useRef,
   useState,
   PropsWithChildren,
-  RefObject,
-  FC,
 } from 'react';
-
 import { t, isFeatureEnabled, FeatureFlag, css } from '@superset-ui/core';
 import ImageLoader from 'src/components/ListViewCard/ImageLoader';
 import { usePluginContext } from 'src/components/DynamicPlugins';
@@ -46,7 +43,7 @@ const TruncatedTextWithTooltip = ({
   tooltipText?: string;
 }>) => {
   // Uses React.useState for testing purposes
-  const [isTruncated, setIsTruncated] = useState(false);
+  const [isTruncated, setIsTruncated] = React.useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setIsTruncated(
@@ -76,7 +73,7 @@ const TruncatedTextWithTooltip = ({
   );
 };
 
-const MetadataItem: FC<{
+const MetadataItem: React.FC<{
   label: ReactNode;
   value: ReactNode;
   tooltipText?: string;
@@ -112,7 +109,7 @@ const MetadataItem: FC<{
   </div>
 );
 
-const SliceAddedBadgePlaceholder: FC<{
+const SliceAddedBadgePlaceholder: React.FC<{
   showThumbnails?: boolean;
   placeholderRef: (element: HTMLDivElement) => void;
 }> = ({ showThumbnails, placeholderRef }) => (
@@ -124,6 +121,7 @@ const SliceAddedBadgePlaceholder: FC<{
       border-radius: ${theme.gridUnit}px;
       color: ${theme.colors.primary.dark1};
       font-size: ${theme.typography.sizes.xs}px;
+      text-transform: uppercase;
       letter-spacing: 0.02em;
       padding: ${theme.gridUnit / 2}px ${theme.gridUnit * 2}px;
       margin-left: ${theme.gridUnit * 4}px;
@@ -140,7 +138,7 @@ const SliceAddedBadgePlaceholder: FC<{
   </div>
 );
 
-const SliceAddedBadge: FC<{ placeholder?: HTMLDivElement }> = ({
+const SliceAddedBadge: React.FC<{ placeholder?: HTMLDivElement }> = ({
   placeholder,
 }) => (
   <div
@@ -150,6 +148,7 @@ const SliceAddedBadge: FC<{ placeholder?: HTMLDivElement }> = ({
       border-radius: ${theme.gridUnit}px;
       color: ${theme.colors.primary.dark1};
       font-size: ${theme.typography.sizes.xs}px;
+      text-transform: uppercase;
       letter-spacing: 0.02em;
       padding: ${theme.gridUnit / 2}px ${theme.gridUnit * 2}px;
       margin-left: ${theme.gridUnit * 4}px;
@@ -166,10 +165,10 @@ const SliceAddedBadge: FC<{ placeholder?: HTMLDivElement }> = ({
   </div>
 );
 
-const AddSliceCard: FC<{
+const AddSliceCard: React.FC<{
   datasourceUrl?: string;
   datasourceName?: string;
-  innerRef?: RefObject<HTMLDivElement>;
+  innerRef?: React.RefObject<HTMLDivElement>;
   isSelected?: boolean;
   lastModified?: string;
   sliceName: string;

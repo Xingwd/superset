@@ -16,15 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {
+import React, {
   ChangeEventHandler,
   FocusEvent,
   KeyboardEvent,
   useCallback,
   useState,
-  FC,
 } from 'react';
-
 import { t, styled } from '@superset-ui/core';
 import { Input } from 'src/components/Input';
 import { Tooltip } from 'src/components/Tooltip';
@@ -49,11 +47,9 @@ export interface AdhocMetricEditPopoverTitleProps {
   onChange: ChangeEventHandler<HTMLInputElement>;
 }
 
-const AdhocMetricEditPopoverTitle: FC<AdhocMetricEditPopoverTitleProps> = ({
-  title,
-  isEditDisabled,
-  onChange,
-}) => {
+const AdhocMetricEditPopoverTitle: React.FC<
+  AdhocMetricEditPopoverTitleProps
+> = ({ title, isEditDisabled, onChange }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 

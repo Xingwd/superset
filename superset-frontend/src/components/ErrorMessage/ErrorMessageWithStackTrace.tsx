@@ -16,9 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ReactNode } from 'react';
-import { ErrorSource, t, SupersetError } from '@superset-ui/core';
+import React from 'react';
+import { t } from '@superset-ui/core';
 import getErrorMessageComponentRegistry from './getErrorMessageComponentRegistry';
+import { SupersetError, ErrorSource } from './types';
 import ErrorAlert from './ErrorAlert';
 
 const DEFAULT_TITLE = t('Unexpected error');
@@ -27,13 +28,13 @@ type Props = {
   title?: string;
   error?: SupersetError;
   link?: string;
-  subtitle?: ReactNode;
+  subtitle?: React.ReactNode;
   copyText?: string;
   stackTrace?: string;
   source?: ErrorSource;
   description?: string;
   errorMitigationFunction?: () => void;
-  fallback?: ReactNode;
+  fallback?: React.ReactNode;
 };
 
 export default function ErrorMessageWithStackTrace({
