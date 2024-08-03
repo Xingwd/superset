@@ -43,6 +43,7 @@ import {
 } from '@superset-ui/core';
 import { getOriginalSeries } from '@superset-ui/chart-controls';
 import { EChartsCoreOption, SeriesOption } from 'echarts';
+import { LineStyleOption } from 'echarts/types/src/util/types';
 import {
   DEFAULT_FORM_DATA,
   EchartsMixedTimeseriesChartTransformedProps,
@@ -108,6 +109,28 @@ const getFormatter = (
     getCustomFormatter(customFormatters, metrics, formatterKey) ??
     defaultFormatter
   );
+};
+
+const getSeriesTypeWithLineStyle = (
+  seriesType: EchartsTimeseriesSeriesType,
+): { seriesType: EchartsTimeseriesSeriesType; lineStyle: LineStyleOption } => {
+  let realSeriesType: EchartsTimeseriesSeriesType = seriesType;
+  let lineStyle: LineStyleOption;
+  if (seriesType === EchartsTimeseriesSeriesType.SmoothDashed) {
+    realSeriesType = EchartsTimeseriesSeriesType.Smooth;
+    lineStyle = {
+      type: 'dashed',
+    };
+  } else if (seriesType === EchartsTimeseriesSeriesType.SmoothDotted) {
+    realSeriesType = EchartsTimeseriesSeriesType.Smooth;
+    lineStyle = {
+      type: 'dotted',
+    };
+  } else {
+    lineStyle = {};
+  }
+
+  return { seriesType: realSeriesType, lineStyle };
 };
 
 export default function transformProps(
@@ -376,6 +399,8 @@ export default function transformProps(
       !!contributionMode,
     );
 
+    const seriesTypeWithLineStyle = getSeriesTypeWithLineStyle(seriesType);
+
     const transformedSeries = transformSeries(
       entry,
       colorScale,
@@ -385,7 +410,7 @@ export default function transformProps(
         markerEnabled,
         markerSize,
         areaOpacity: opacity,
-        seriesType,
+        seriesType: seriesTypeWithLineStyle.seriesType,
         showValue,
         stack: Boolean(stack),
         stackIdSuffix: '\na',
@@ -404,6 +429,7 @@ export default function transformProps(
         showValueIndexes: showValueIndexesA,
         totalStackedValues,
         thresholdValues,
+        lineStyle: seriesTypeWithLineStyle.lineStyle,
       },
     );
     if (transformedSeries) series.push(transformedSeries);
@@ -423,6 +449,8 @@ export default function transformProps(
       !!contributionMode,
     );
 
+    const seriesTypeWithLineStyle = getSeriesTypeWithLineStyle(seriesTypeB);
+
     const transformedSeries = transformSeries(
       entry,
       colorScale,
@@ -432,7 +460,7 @@ export default function transformProps(
         markerEnabled: markerEnabledB,
         markerSize: markerSizeB,
         areaOpacity: opacityB,
-        seriesType: seriesTypeB,
+        seriesType: seriesTypeWithLineStyle.seriesType,
         showValue: showValueB,
         stack: Boolean(stackB),
         stackIdSuffix: '\nb',
@@ -453,6 +481,7 @@ export default function transformProps(
         showValueIndexes: showValueIndexesB,
         totalStackedValues: totalStackedValuesB,
         thresholdValues: thresholdValuesB,
+        lineStyle: seriesTypeWithLineStyle.lineStyle,
       },
     );
     if (transformedSeries) series.push(transformedSeries);

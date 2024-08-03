@@ -45,6 +45,8 @@ export enum EchartsTimeseriesSeriesType {
   Line = 'line',
   Scatter = 'scatter',
   Smooth = 'smooth',
+  SmoothDashed = 'smoothdashed',
+  SmoothDotted = 'smoothdotted',
   Bar = 'bar',
   Start = 'start',
   Middle = 'middle',

@@ -148,6 +148,8 @@ function createCustomizeSection(
             [EchartsTimeseriesSeriesType.Line, t('Line')],
             [EchartsTimeseriesSeriesType.Scatter, t('Scatter')],
             [EchartsTimeseriesSeriesType.Smooth, t('Smooth Line')],
+            [EchartsTimeseriesSeriesType.SmoothDashed, t('Smooth Dashed Line')],
+            [EchartsTimeseriesSeriesType.SmoothDotted, t('Smooth Dotted Line')],
             [EchartsTimeseriesSeriesType.Bar, t('Bar')],
             [EchartsTimeseriesSeriesType.Start, t('Step - start')],
             [EchartsTimeseriesSeriesType.Middle, t('Step - middle')],
