@@ -30,7 +30,7 @@ fi
 #
 if [ -f "${REQUIREMENTS_LOCAL}" ]; then
   echo "Installing local overrides at ${REQUIREMENTS_LOCAL}"
-  pip install --no-cache-dir -r "${REQUIREMENTS_LOCAL}"
+  pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r "${REQUIREMENTS_LOCAL}"
 else
   echo "Skipping local overrides"
 fi

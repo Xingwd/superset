@@ -26,6 +26,7 @@ FROM --platform=${BUILDPLATFORM} node:16-bookworm-slim AS superset-node
 
 ARG NPM_BUILD_CMD="build"
 
+ADD debian.sources /etc/apt/sources.list.d/
 RUN apt-get update -qq \
     && apt-get install -yqq --no-install-recommends \
         build-essential \
@@ -61,6 +62,7 @@ ENV LANG=C.UTF-8 \
     SUPERSET_HOME="/app/superset_home" \
     SUPERSET_PORT=8088
 
+ADD debian.sources /etc/apt/sources.list.d/
 RUN mkdir -p ${PYTHONPATH} superset/static superset-frontend apache_superset.egg-info requirements \
     && useradd --user-group -d ${SUPERSET_HOME} -m --no-log-init --shell /bin/bash superset \
     && apt-get update -qq && apt-get install -yqq --no-install-recommends \
@@ -79,6 +81,7 @@ RUN mkdir -p ${PYTHONPATH} superset/static superset-frontend apache_superset.egg
 COPY --chown=superset:superset setup.py MANIFEST.in README.md ./
 # setup.py uses the version information in package.json
 COPY --chown=superset:superset superset-frontend/package.json superset-frontend/
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN --mount=type=bind,target=./requirements/local.txt,src=./requirements/local.txt \
     --mount=type=bind,target=./requirements/development.txt,src=./requirements/development.txt \
     --mount=type=bind,target=./requirements/base.txt,src=./requirements/base.txt \
@@ -92,6 +95,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -e . \
     && flask fab babel-compile --target superset/translations \
     && chown -R superset:superset superset/translations
+
+# 安装自定义依赖
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
+    clickhouse-connect>=0.6.8
 
 COPY --chmod=755 ./docker/run-server.sh /usr/bin/
 USER superset
