@@ -90,11 +90,6 @@ export default function PluginFilterTimegrain(
     handleChange(filterState.value ?? []);
   }, [JSON.stringify(filterState.value)]);
 
-  const placeholderText =
-    (data || []).length === 0
-      ? t('No data')
-      : tn('%s option', '%s options', data.length, data.length);
-
   const formItemData: FormItemProps = {};
   if (filterState.validateMessage) {
     formItemData.extra = (
@@ -104,15 +99,24 @@ export default function PluginFilterTimegrain(
     );
   }
 
-  const options = (data || []).map(
-    (row: { name: string; duration: string }) => {
+  const myTimeGrainOptions = ['P1D', 'P1W', 'P1M', 'P1Y'];
+  const options = (data || [])
+    .map((row: { name: string; duration: string }) => {
       const { name, duration } = row;
-      return {
-        label: name,
-        value: duration,
-      };
-    },
-  );
+      if (myTimeGrainOptions.includes(duration)) {
+        return {
+          label: name,
+          value: duration,
+        };
+      }
+      return null;
+    })
+    .filter(item => item !== null && item !== undefined);
+
+  const placeholderText =
+    (options || []).length === 0
+      ? t('No data')
+      : tn('%s option', '%s options', options.length, options.length);
 
   return (
     <FilterPluginStyle height={height} width={width}>

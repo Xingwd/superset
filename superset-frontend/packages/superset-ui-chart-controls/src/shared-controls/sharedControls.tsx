@@ -199,7 +199,15 @@ const time_grain_sqla: SharedControlConfig<'SelectControl'> = {
       'single point on the chart.',
   ),
   mapStateToProps: ({ datasource }) => ({
-    choices: (datasource as Dataset)?.time_grain_sqla || [],
+    choices: ((datasource as Dataset)?.time_grain_sqla || [])
+      .map(row => {
+        const myTimeGrainOptions = ['P1D', 'P1W', 'P1M', 'P1Y'];
+        if (myTimeGrainOptions.includes(row[0])) {
+          return row;
+        }
+        return null;
+      })
+      .filter(item => item !== null && item !== undefined),
   }),
   visibility: displayTimeRelatedControls,
 };
