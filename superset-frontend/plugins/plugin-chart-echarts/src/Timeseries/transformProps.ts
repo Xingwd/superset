@@ -232,6 +232,7 @@ export default function transformProps(
       stack,
       totalStackedValues,
       isHorizontal,
+      metrics,
       sortSeriesType,
       sortSeriesAscending,
       xAxisSortSeries: isMultiSeries ? xAxisSortSeries : undefined,

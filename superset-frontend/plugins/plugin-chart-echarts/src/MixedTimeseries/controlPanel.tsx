@@ -36,6 +36,7 @@ import {
   legendSection,
   minorTicks,
   richTooltipSection,
+  seriesOrderSection,
   truncateXAxis,
   xAxisBounds,
   xAxisBoundaryGap,
@@ -302,6 +303,7 @@ const config: ControlPanelConfig = {
       label: t('Chart Options'),
       expanded: true,
       controlSetRows: [
+        ...seriesOrderSection,
         ['color_scheme'],
         ...createCustomizeSection(t('Query A'), ''),
         ...createCustomizeSection(t('Query B'), 'B'),

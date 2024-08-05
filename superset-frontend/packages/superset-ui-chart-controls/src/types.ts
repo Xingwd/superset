@@ -494,6 +494,7 @@ export function isQueryResponse(
 }
 
 export enum SortSeriesType {
+  MetricsOrder = 'metrics_order',
   Name = 'name',
   Max = 'max',
   Min = 'min',

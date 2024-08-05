@@ -62,11 +62,12 @@ export const QueryModeLabel = {
 };
 
 export const DEFAULT_SORT_SERIES_DATA: SortSeriesData = {
-  sort_series_type: SortSeriesType.Sum,
+  sort_series_type: SortSeriesType.MetricsOrder,
   sort_series_ascending: false,
 };
 
 export const SORT_SERIES_CHOICES = [
+  [SortSeriesType.MetricsOrder, t('Metrics Order')],
   [SortSeriesType.Name, t('Category name')],
   [SortSeriesType.Sum, t('Total value')],
   [SortSeriesType.Min, t('Minimum value')],

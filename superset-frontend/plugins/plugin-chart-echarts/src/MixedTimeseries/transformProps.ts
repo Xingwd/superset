@@ -221,6 +221,8 @@ export default function transformProps(
     yAxisTitleMargin,
     yAxisTitlePosition,
     sliceId,
+    sortSeriesType,
+    sortSeriesAscending,
     timeGrainSqla,
     percentageThreshold,
     metrics = [],
@@ -244,11 +246,17 @@ export default function transformProps(
   const [rawSeriesA] = extractSeries(rebasedDataA, {
     fillNeighborValue: stack ? 0 : undefined,
     xAxis: xAxisLabel,
+    metrics,
+    sortSeriesType,
+    sortSeriesAscending,
   });
   const rebasedDataB = rebaseForecastDatum(data2, verboseMap);
   const [rawSeriesB] = extractSeries(rebasedDataB, {
     fillNeighborValue: stackB ? 0 : undefined,
     xAxis: xAxisLabel,
+    metrics: metricsB,
+    sortSeriesType,
+    sortSeriesAscending,
   });
 
   const dataTypes = getColtypesMapping(queriesData[0]);

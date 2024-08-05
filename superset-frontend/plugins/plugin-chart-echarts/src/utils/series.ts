@@ -30,6 +30,7 @@ import {
   NumberFormats,
   NumberFormatter,
   SupersetTheme,
+  QueryFormMetric,
   TimeFormatter,
   ValueFormatter,
 } from '@superset-ui/core';
@@ -132,6 +133,7 @@ export function sortAndFilterSeries(
   rows: DataRecord[],
   xAxis: string,
   extraMetricLabels: any[],
+  metrics?: QueryFormMetric[],
   sortSeriesType?: SortSeriesType,
   sortSeriesAscending?: boolean,
 ): string[] {
@@ -141,7 +143,29 @@ export function sortAndFilterSeries(
 
   let aggregator: (name: string) => { name: string; value: any };
 
-  switch (sortSeriesType) {
+  const metricList = (metrics || [])
+    .map(metric => {
+      if (typeof metric === 'string') {
+        return metric;
+      }
+      return metric.label;
+    })
+    .reverse();
+
+  const getMetricsLabelIndex = (name: string) => {
+    const index = metricList.indexOf(name);
+    return index === -1 ? Infinity : index;
+  };
+
+  const mySortSeriesType =
+    sortSeriesType === SortSeriesType.MetricsOrder && metricList.length === 0
+      ? undefined
+      : sortSeriesType;
+
+  switch (mySortSeriesType) {
+    case SortSeriesType.MetricsOrder:
+      aggregator = name => ({ name, value: getMetricsLabelIndex(name) });
+      break;
     case SortSeriesType.Sum:
       aggregator = name => ({ name, value: sumBy(rows, name) });
       break;
@@ -260,6 +284,7 @@ export function extractSeries(
     stack?: StackType;
     totalStackedValues?: number[];
     isHorizontal?: boolean;
+    metrics?: QueryFormMetric[];
     sortSeriesType?: SortSeriesType;
     sortSeriesAscending?: boolean;
     xAxisSortSeries?: SortSeriesType;
@@ -274,6 +299,7 @@ export function extractSeries(
     stack = false,
     totalStackedValues = [],
     isHorizontal = false,
+    metrics,
     sortSeriesType,
     sortSeriesAscending,
     xAxisSortSeries,
@@ -288,6 +314,7 @@ export function extractSeries(
     rows,
     xAxis,
     extraMetricLabels,
+    metrics,
     sortSeriesType,
     sortSeriesAscending,
   );
